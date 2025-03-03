@@ -1,11 +1,29 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from './client';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient, User } from '@supabase/supabase-js';
+import { getProfile } from '../action/server';
 
-const Context = createContext<SupabaseClient | null>(null);
+interface Profile {
+  id: string;
+  user_name: string;
+  avatar_url: string;
+  created_at: string;
+}
+
+type ContextType = {
+  supabase: SupabaseClient | null;
+  user: User | null;
+  profile: Profile | null;
+}
+
+const Context = createContext<ContextType>({
+  supabase: null,
+  user: null,
+  profile: null,
+});
 
 export default function SupabaseProvider({
   children
@@ -14,12 +32,25 @@ export default function SupabaseProvider({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     const {
       data: { subscription }
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') router.refresh();
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN') {
+        if (session?.user) {
+          setUser(session.user);
+          const profile = await getProfile();
+          if (profile) {
+            setProfile(profile);
+          }
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setProfile(null);
+      }
     });
 
     return () => {
@@ -27,7 +58,7 @@ export default function SupabaseProvider({
     };
   }, [router, supabase]);
 
-  return <Context.Provider value={supabase}>{children}</Context.Provider>;
+  return <Context.Provider value={{ supabase, user, profile }}>{children}</Context.Provider>;
 }
 
 export const useSupabase = () => {
