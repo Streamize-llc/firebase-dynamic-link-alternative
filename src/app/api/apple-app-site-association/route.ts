@@ -16,7 +16,7 @@ export async function GET() {
     }
     
     // 서브도메인 추출 (프로젝트 ID로 사용)
-    const subdomain = host.split('.')[0];
+    // const subdomain = host.split('.')[0];
     
     // 여기서 서브도메인을 사용하여 해당 프로젝트의 iOS 앱 정보를 조회할 수 있음
     // 예시 코드: const iosApps = await getIosAppsByProjectId(subdomain);

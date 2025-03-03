@@ -30,7 +30,7 @@ export function CreateProjectModal({ isOpen, onClose, onSubmit }: CreateProjectM
       setError(null)
       
       // 서버 액션을 사용하여 프로젝트 생성
-      const newProject = await createProject(
+      await createProject(
         projectName.trim(),
         projectDescription.trim() || undefined
       )

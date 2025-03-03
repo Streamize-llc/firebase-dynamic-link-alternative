@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { useSupabase } from "@/utils/supabase/provider";
 
 function HeroModern() {
-    const { supabase, user, profile } = useSupabase();
+    const { supabase, user } = useSupabase();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [timeLeft, setTimeLeft] = useState({
