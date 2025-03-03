@@ -55,7 +55,7 @@ function HeroModern() {
         await supabase?.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: process.env.NODE_ENV === 'production' ? `https://depl.link/callback` : `${window.location.origin}/callback`,
+                redirectTo: `${window.location.origin}/callback`,
                 scopes: 'profile email'
             },
         });
