@@ -134,6 +134,7 @@ export type Database = {
           id: string
           name: string
           owner_id: string
+          sub_domain: string | null
         }
         Insert: {
           api_key?: string | null
@@ -142,6 +143,7 @@ export type Database = {
           id?: string
           name: string
           owner_id: string
+          sub_domain?: string | null
         }
         Update: {
           api_key?: string | null
@@ -150,6 +152,7 @@ export type Database = {
           id?: string
           name?: string
           owner_id?: string
+          sub_domain?: string | null
         }
         Relationships: [
           {

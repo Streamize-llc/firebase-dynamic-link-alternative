@@ -101,6 +101,7 @@ export async function getProject(projectId: string) {
       name,
       description,
       api_key,
+      sub_domain,
       created_at,
       owner_id,
       profiles:owner_id (
@@ -154,6 +155,39 @@ export async function getProject(projectId: string) {
     platforms,
     apps
   };
+}
+
+export async function updateProjectSubDomain(projectId: string, subDomain: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
+  // 서브도메인 중복 확인
+  const { data: existingDomain, error: checkError } = await supabase
+    .from('projects')
+    .select('id')
+    .eq('sub_domain', subDomain)
+    .neq('id', projectId)
+    .single();
+
+  if (existingDomain) {
+    throw new Error("이미 사용 중인 서브도메인입니다. 다른 서브도메인을 선택해주세요.");
+  }
+
+  const { data: project, error: projectError } = await supabase
+    .from('projects')
+    .update({ sub_domain: subDomain })
+    .eq('id', projectId)
+    .select()
+    .single();
+
+  if (projectError) {
+    throw new Error("프로젝트 도메인 업데이트 중 오류가 발생했습니다: " + projectError.message);
+  }
+
+  return project;
 }
 
 export async function createProject(name: string, description?: string) {

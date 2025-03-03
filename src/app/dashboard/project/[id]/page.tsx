@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import RegisterAndroidModal from "@/components/modal/register-android"
 import RegisterIOSModal from "@/components/modal/register-ios"
+import RegisterDomainModal from "@/components/modal/register-domain"
 import { getProject } from "@/utils/action/server"
 
 export default function ProjectDetailPage() {
@@ -17,6 +18,7 @@ export default function ProjectDetailPage() {
   const [isPlatformModalOpen, setIsPlatformModalOpen] = useState(false)
   const [isAndroidModalOpen, setIsAndroidModalOpen] = useState(false)
   const [isIOSModalOpen, setIsIOSModalOpen] = useState(false)
+  const [isDomainModalOpen, setIsDomainModalOpen] = useState(false)
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -50,6 +52,11 @@ export default function ProjectDetailPage() {
   const handleIOSRegister = (data: { bundleId: string; teamId: string }) => {
     console.log('iOS 앱 등록 완료:', data)
     setIsIOSAppRegistered(true)
+  }
+
+  const handleDomainRegister = (data: { subDomain: string }) => {
+    console.log('도메인 등록 완료:', data)
+    setIsDomainModalOpen(false)
   }
 
   if (isLoading) {
@@ -93,11 +100,18 @@ export default function ProjectDetailPage() {
         project={project}
       />
 
+      <RegisterDomainModal
+        isOpen={isDomainModalOpen}
+        onClose={() => setIsDomainModalOpen(false)}
+        onRegister={handleDomainRegister}
+        project={project}
+      />
+
       <div className="w-full max-w-7xl">
         <div className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">{project.name}</h1>
-            <p className="text-gray-400 text-lg">{project.domain}</p>
+            {/* <p className="text-gray-400 text-lg">fgdfgdf</p> */}
           </div>
           <div className="flex gap-3">
             {isAndroidAppRegistered || project.platforms?.includes('ANDROID') ? (
@@ -275,15 +289,27 @@ export default function ProjectDetailPage() {
                   <p className="text-gray-300 text-sm mb-5 leading-relaxed">
                     딥링크에 사용할 도메인을 설정하세요. 사용자 경험을 위해 짧은 도메인을 권장합니다.
                   </p>
-                  <button 
-                    onClick={() => setIsCustomDomainModalOpen(true)}
-                    className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-purple-400 text-xs font-medium flex items-center hover:from-purple-500/30 hover:to-purple-600/30 transition-all shadow-md hover:shadow-purple-500/10"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                    </svg>
-                    도메인 추가하기
-                  </button>
+                  {project.sub_domain ? (
+                    <button 
+                      onClick={() => setIsDomainModalOpen(true)}
+                      className="px-4 py-2.5 rounded-lg bg-purple-600 text-white text-xs font-medium flex items-center shadow-lg shadow-purple-500/20"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      도메인 설정 완료
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => setIsDomainModalOpen(true)}
+                      className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-purple-400 text-xs font-medium flex items-center hover:from-purple-500/30 hover:to-purple-600/30 transition-all shadow-md hover:shadow-purple-500/10"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                      </svg>
+                      도메인 추가하기
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
