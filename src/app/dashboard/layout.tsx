@@ -1,41 +1,48 @@
-"use client"
-
 import React from "react"
+import Link from "next/link"
+import { headers } from "next/headers"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const headersList = await headers()
+  const pathname = headersList.get("x-pathname") || ""
+  
+  const isProjectPage = pathname.includes('/dashboard/project/')
+  const isRestapiDocs = pathname.includes('/docs/restapi')
+  const isClientDocs = pathname.includes('/docs/client')
+  
   return (
     <div className="flex w-full overflow-auto bg-black min-h-screen">
       <header className="fixed top-0 left-0 w-full h-[5rem] bg-black flex items-center justify-between px-6 z-10">
-        {window.location.pathname.includes('/dashboard/project/') ? (
+        {isProjectPage ? (
           <div className="flex space-x-4">
-            <button className={`px-5 py-2 rounded-full ${!window.location.pathname.includes('/docs/') ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg' : 'text-gray-400 bg-transparent border border-[#333]'} transition-all duration-200 flex items-center`}>
+            <Link href={pathname.split('/docs/')[0]} className={`px-5 py-2 rounded-full ${!pathname.includes('/docs/') ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg' : 'text-gray-400 bg-transparent border border-[#333]'} transition-all duration-200 flex items-center`}>
               <span className="text-sm font-medium">Project</span>
-            </button>
-            <button 
-              onClick={() => window.location.href = window.location.pathname.split('/docs/')[0] + '/docs/restapi'} 
-              className={`px-5 py-2 rounded-full ${window.location.pathname.includes('/docs/restapi') ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg' : 'text-gray-400 bg-transparent border border-[#333]'} transition-all duration-200 flex items-center`}
+            </Link>
+            <Link 
+              href={`${pathname.split('/docs/')[0]}/docs/restapi`}
+              className={`px-5 py-2 rounded-full ${isRestapiDocs ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg' : 'text-gray-400 bg-transparent border border-[#333]'} transition-all duration-200 flex items-center`}
             >
               <span className="text-sm font-medium">API Documentation</span>
-            </button>
-            <button 
-              onClick={() => window.location.href = window.location.pathname.split('/docs/')[0] + '/docs/client'} 
-              className={`px-5 py-2 rounded-full ${window.location.pathname.includes('/docs/client') ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg' : 'text-gray-400 bg-transparent border border-[#333]'} transition-all duration-200 flex items-center`}
+            </Link>
+            <Link 
+              href={`${pathname.split('/docs/')[0]}/docs/client`}
+              className={`px-5 py-2 rounded-full ${isClientDocs ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg' : 'text-gray-400 bg-transparent border border-[#333]'} transition-all duration-200 flex items-center`}
             >
               <span className="text-sm font-medium">Client Integration</span>
-            </button>
+            </Link>
           </div>
         ) : (
           <div className="flex space-x-4">
-            <button className="px-5 py-2 rounded-full text-gray-400 bg-transparent border border-[#333] transition-all duration-200 flex items-center">
+            <Link href="#" className="px-5 py-2 rounded-full text-gray-400 bg-transparent border border-[#333] transition-all duration-200 flex items-center">
               <span className="text-sm font-medium">비디오 제작</span>
-            </button>
-            <button className="px-5 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg flex items-center">
+            </Link>
+            <Link href="#" className="px-5 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg flex items-center">
               <span className="text-sm font-medium">이미지 제작</span>
-            </button>
+            </Link>
           </div>
         )}
         <div className="flex items-center space-x-4">
@@ -52,9 +59,9 @@ export default function DashboardLayout({
             </svg>
             <span className="text-sm font-medium text-white">35</span>
           </div>
-          <button className="w-10 h-10 rounded-full bg-[#333] overflow-hidden">
+          <div className="w-10 h-10 rounded-full bg-[#333] overflow-hidden">
             <img src="https://gcp-cdn.shineai.app/temp/ee/2025-02-14/e5d89715-3a29-4fc7-93f2-16e50af63552.jpg" alt="프로필" className="w-full h-full object-cover" />
-          </button>
+          </div>
         </div>
       </header>
       <main className="pt-[5rem] w-full">
