@@ -37,6 +37,7 @@ export default function RegisterIOSModal({
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
+    // test
     if (iosApp) {
       setBundleId(iosApp.platform_data.bundleId || '');
       setTeamId(iosApp.platform_data.teamId || '');
