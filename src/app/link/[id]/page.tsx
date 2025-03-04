@@ -42,7 +42,7 @@ import { redirect } from 'next/navigation'
 //   }
 // }
 
-export default function AppLinkHandler({ params }: { params: { id: string } }) {
+export default function AppLinkHandler() {
   redirect('https://apps.apple.com/KR/app/id6470640320?mt=8')
   return null
 }
