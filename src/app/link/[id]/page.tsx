@@ -1,6 +1,7 @@
-import LinkContent from './content'
+// import LinkContent from './content'
 import { Metadata, ResolvingMetadata } from 'next'
 import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
 
 type Props = {
   params: { id: string }
@@ -42,5 +43,6 @@ export async function generateMetadata(
 }
 
 export default function AppLinkHandler({ params }: { params: { id: string } }) {
-  return <LinkContent />
+  redirect('https://apps.apple.com/KR/app/id6470640320?mt=8')
+  return null
 }

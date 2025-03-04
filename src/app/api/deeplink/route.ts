@@ -112,7 +112,15 @@ export async function POST(request: Request) {
     // API 키로 프로젝트 조회
     const { data: project, error: projectError } = await supabase
       .from('projects')
-      .select('*')
+      .select(`
+        *,
+        apps (
+          id,
+          name,
+          platform,
+          platform_data
+        )
+      `)
       .eq('api_key', apiKey)
       .single();
     
@@ -127,6 +135,48 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
+
+    // 프로젝트에 연결된 앱 정보 확인
+    if (!project.apps || project.apps.length === 0) {
+      return NextResponse.json(
+        { 
+          error: {
+            code: "NO_APPS_CONFIGURED",
+            message: "프로젝트에 등록된 앱이 없습니다."
+          }
+        },
+        { status: 400 }
+      );
+    }
+    
+    // iOS 및 Android 앱 정보 추출
+    const iosApp = project.apps.find(app => app.platform === 'ios');
+    const androidApp = project.apps.find(app => app.platform === 'android');
+    
+    // iOS 및 Android 파라미터 설정
+    const iosParameters: IOSParameters = {};
+    const androidParameters: AndroidParameters = {};
+    
+    // iOS 앱 정보가 있는 경우 파라미터 설정
+    if (iosApp && iosApp.platform_data) {
+      const iosData = iosApp.platform_data as { bundle_id?: string, app_store_id?: string };
+      if (iosData.bundle_id) {
+        iosParameters.bundle_id = iosData.bundle_id;
+      }
+      if (iosData.app_store_id) {
+        iosParameters.app_store_id = iosData.app_store_id;
+      }
+    }
+    
+    // Android 앱 정보가 있는 경우 파라미터 설정
+    if (androidApp && androidApp.platform_data) {
+      const androidData = androidApp.platform_data as { package_name?: string };
+      if (androidData.package_name) {
+        androidParameters.package_name = androidData.package_name;
+        androidParameters.action = 'android.intent.action.VIEW';
+        androidParameters.fallback_url = 'https://naver.com';
+      }
+    }
     
     // 여기서 실제 딥링크 생성 로직 구현
     const shortCode = generateRandomString(4)
@@ -135,8 +185,8 @@ export async function POST(request: Request) {
     const { data: deeplink, error: deeplinkError } = await supabase
       .from('deeplinks')
       .insert({
-        android_parameters: {},
-        ios_parameters: {},
+        android_parameters: androidParameters,
+        ios_parameters: iosParameters,
         app_params: body.app_params,  
         social_meta: socialMeta,
         project_id: project.id,
