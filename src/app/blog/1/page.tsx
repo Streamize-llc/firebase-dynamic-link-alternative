@@ -200,11 +200,11 @@ export default function BlogPostPage() {
             } else if (block.type === 'list') {
               return (
                 <ul key={index} className="mb-8 space-y-2">
-                  {block.items.map((item, itemIndex) => (
+                  {/* {block.items.map((item, itemIndex) => (
                     <li key={itemIndex} className="text-white/80 pl-2 leading-relaxed">
                       • {item}
                     </li>
-                  ))}
+                  ))} */}
                 </ul>
               )
             }
