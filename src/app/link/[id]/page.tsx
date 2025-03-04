@@ -1,7 +1,7 @@
 // import LinkContent from './content'
 // import { Metadata, ResolvingMetadata } from 'next'
 // import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
+import { redirect, permanentRedirect } from 'next/navigation'
 
 // type Props = {
 //   params: { id: string }
@@ -43,6 +43,6 @@ import { redirect } from 'next/navigation'
 // }
 
 export default function AppLinkHandler() {
-  redirect('https://apps.apple.com/KR/app/id6470640320?mt=8')
+  permanentRedirect('https://apps.apple.com/KR/app/id6470640320?mt=8')
   return null
 }
