@@ -88,7 +88,7 @@ export default function RestApiDocumentation() {
             <p className="mb-4 text-gray-300">모든 API 요청은 다음 기본 URL을 사용합니다:</p>
             <div className="bg-[#0f1629] p-4 rounded-lg border border-[#2d3748] flex items-center justify-between">
               <code className="text-emerald-400 font-mono">
-                https://depl.link/api/v1
+                https://depl.link/api
               </code>
               <button className="bg-[#1e293b] hover:bg-[#2d3748] text-gray-300 p-2 rounded-md transition-colors duration-200" title="복사">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -102,7 +102,7 @@ export default function RestApiDocumentation() {
             <div className="bg-[#1e293b] p-5 border-b border-[#334155] flex items-center justify-between">
               <div className="flex items-center">
                 <span className="bg-gradient-to-r from-emerald-500 to-teal-400 text-white px-3 py-1.5 rounded-md text-xs font-bold mr-3 shadow-sm">POST</span>
-                <code className="text-white font-mono text-lg">/generate</code>
+                <code className="text-white font-mono text-lg">/deeplink</code>
               </div>
               <span className="text-xs px-3 py-1 rounded-full bg-emerald-900/30 text-emerald-400 border border-emerald-800">이미지 생성</span>
             </div>
@@ -134,27 +134,20 @@ export default function RestApiDocumentation() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
                       <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
                     </div>
-                    <span className="text-xs text-gray-400">JSON</span>
+                    <span className="text-xs text-gray-400">Request JSON</span>
                   </div>
                   <pre className="p-4 overflow-x-auto">
                     <code className="text-emerald-400 font-mono">{`{
-  "target_url": "https://yourdomain.com/content/456",
-  "fallback_url": "https://yourdomain.com",
-  "platform_parameters": {
-    "ios": {
-      "app_scheme": "yourapp://content/456",
-      "app_store_id": "123456789"
-    },
-    "android": {
-      "package": "com.yourcompany.yourapp"
-    }
+  "slug": "invite",
+  "app_params": {
+    "user_id": "123456789",
+    "invite_code": "123456789"
   },
-  "meta_data": {
+  "social_meta": {
     "title": "콘텐츠 제목",
     "description": "간단한 설명",
-    "image": "https://yourdomain.com/images/thumbnail.png"
-  },
-  "deeplink_params": {}
+    "thumbnail_url": "https://yourdomain.com/images/thumbnail.png"
+  }
 }`}</code>
                   </pre>
                 </div>
@@ -179,34 +172,22 @@ export default function RestApiDocumentation() {
                     </thead>
                     <tbody>
                       <tr className="hover:bg-[#1a2234] transition-colors duration-150">
-                        <td className="border-b border-[#2d3748] p-3"><code className="text-emerald-400 font-mono">target_url</code></td>
+                        <td className="border-b border-[#2d3748] p-3"><code className="text-emerald-400 font-mono">slug</code></td>
                         <td className="border-b border-[#2d3748] p-3 text-gray-300">문자열</td>
                         <td className="border-b border-[#2d3748] p-3"><span className="text-xs px-2 py-1 rounded-full bg-emerald-900/30 text-emerald-400">필수</span></td>
-                        <td className="border-b border-[#2d3748] p-3 text-gray-300">사용자가 링크를 클릭했을 때 이동할 웹 URL</td>
+                        <td className="border-b border-[#2d3748] p-3 text-gray-300">생성할 딥링크 경로</td>
                       </tr>
                       <tr className="hover:bg-[#1a2234] transition-colors duration-150">
-                        <td className="border-b border-[#2d3748] p-3"><code className="text-emerald-400 font-mono">fallback_url</code></td>
-                        <td className="border-b border-[#2d3748] p-3 text-gray-300">문자열</td>
-                        <td className="border-b border-[#2d3748] p-3"><span className="text-xs px-2 py-1 rounded-full bg-emerald-900/30 text-emerald-400">필수</span></td>
-                        <td className="border-b border-[#2d3748] p-3 text-gray-300">앱이 설치되지 않은 경우 이동할 대체 URL</td>
-                      </tr>
-                      <tr className="hover:bg-[#1a2234] transition-colors duration-150">
-                        <td className="border-b border-[#2d3748] p-3"><code className="text-emerald-400 font-mono">platform_parameters</code></td>
+                        <td className="border-b border-[#2d3748] p-3"><code className="text-emerald-400 font-mono">app_params</code></td>
                         <td className="border-b border-[#2d3748] p-3 text-gray-300">객체</td>
                         <td className="border-b border-[#2d3748] p-3"><span className="text-xs px-2 py-1 rounded-full bg-emerald-900/30 text-emerald-400">필수</span></td>
-                        <td className="border-b border-[#2d3748] p-3 text-gray-300">각 플랫폼별 설정 정보</td>
+                        <td className="border-b border-[#2d3748] p-3 text-gray-300">iOS 또는 Android 앱에서 딥링크가 열릴 때 앱이 수신할 파라미터</td>
                       </tr>
                       <tr className="hover:bg-[#1a2234] transition-colors duration-150">
-                        <td className="border-b border-[#2d3748] p-3"><code className="text-emerald-400 font-mono">meta_data</code></td>
+                        <td className="border-b border-[#2d3748] p-3"><code className="text-emerald-400 font-mono">social_meta</code></td>
                         <td className="border-b border-[#2d3748] p-3 text-gray-300">객체</td>
                         <td className="border-b border-[#2d3748] p-3"><span className="text-xs px-2 py-1 rounded-full bg-gray-700/50 text-gray-400">선택</span></td>
-                        <td className="border-b border-[#2d3748] p-3 text-gray-300">링크 공유 시 표시될 메타데이터</td>
-                      </tr>
-                      <tr className="hover:bg-[#1a2234] transition-colors duration-150">
-                        <td className="border-b border-[#2d3748] p-3"><code className="text-emerald-400 font-mono">deeplink_params</code></td>
-                        <td className="border-b border-[#2d3748] p-3 text-gray-300">객체</td>
-                        <td className="border-b border-[#2d3748] p-3"><span className="text-xs px-2 py-1 rounded-full bg-gray-700/50 text-gray-400">선택</span></td>
-                        <td className="border-b border-[#2d3748] p-3 text-gray-300">딥링크에 추가할 커스텀 파라미터</td>
+                        <td className="border-b border-[#2d3748] p-3 text-gray-300">링크 공유 시 표시될 메타데이터 (제목, 설명, 썸네일 등)</td>
                       </tr>
                     </tbody>
                   </table>
@@ -227,27 +208,179 @@ export default function RestApiDocumentation() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
                       <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
                     </div>
-                    <span className="text-xs text-gray-400">JSON</span>
+                    <span className="text-xs text-gray-400">Response JSON</span>
                   </div>
                   <pre className="p-4 overflow-x-auto">
                     <code className="text-emerald-400 font-mono">{`{
   "success": true,
-  "images": [
-    {
-      "id": "img_7a9b3c2d1e",
-      "url": "https://depl.link/storage/generated/img_7a9b3c2d1e.png",
-      "width": 1024,
-      "height": 1024,
-      "created_at": "2023-09-15T08:30:45Z"
-    }
-  ],
-  "metadata": {
-    "processing_time": 3.2,
-    "model": "stable-diffusion-xl-v1.0",
-    "credits_used": 1
-  }
+  "deeplink_url": "https://app.depl.link/a1b2",
+  "created_at": "2023-09-15T08:30:45Z"
 }`}</code>
                   </pre>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  유스케이스별 예시
+                </h4>
+                
+                <div className="space-y-8">
+                  <div className="bg-gradient-to-r from-[#1a2234] to-[#0f1629] rounded-lg border border-[#2d3748] overflow-hidden shadow-lg">
+                    <div className="flex items-center justify-between px-5 py-3 bg-[#1a2234] border-b border-[#2d3748]">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                          </svg>
+                        </div>
+                        <span className="text-white font-medium text-lg">친구 초대 딥링크</span>
+                      </div>
+                      <span className="text-xs px-2 py-1 rounded-full bg-indigo-900/50 text-indigo-300 font-mono">POST /api/deeplink</span>
+                    </div>
+                    <div className="p-5">
+                      <p className="text-gray-300 mb-4">사용자가 친구를 초대할 때 사용하는 딥링크입니다. 이 딥링크를 통해 앱 내 친구 초대 화면으로 바로 이동하고 리퍼럴 코드를 자동으로 적용할 수 있습니다. 아래 예시는 파이썬을 이용해서 친구 초대 딥링크를 생성하고 응답을 받는 방법을 보여줍니다.</p>
+                      
+                      <div className="mb-5">
+                        <div className="bg-[#0d1220] rounded-lg overflow-hidden border border-[#2d3748]">
+                          <div className="flex items-center justify-between px-4 py-2 bg-[#1a2234] border-b border-[#2d3748]">
+                            <div className="flex items-center">
+                              <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                              <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                              <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                            </div>
+                            <span className="text-xs text-gray-400">Python</span>
+                          </div>
+                          <pre className="p-4 overflow-x-auto">
+                            <code className="text-emerald-400 font-mono text-sm">{`import requests
+import json
+
+url = "https://api.depl.link/api/deeplink"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer YOUR_API_KEY"
+}
+payload = {
+    "app_params": {
+        "screen": "invite",
+        "referral_code": "USER123",
+        "campaign": "summer_event"
+    },
+    "social_meta": {
+        "title": "친구 초대하고 포인트 받기",
+        "description": "지금 앱에 가입하면 5,000포인트를 드려요!",
+        "thumbnail_url": "https://example.com/invite_image.jpg"
+    },
+    "slug": "invite-friend"
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(payload))
+print(response.json())`}</code>
+                          </pre>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="bg-[#0d1220] rounded-lg overflow-hidden border border-[#2d3748]">
+                          <div className="flex items-center justify-between px-4 py-2 bg-[#1a2234] border-b border-[#2d3748]">
+                            <div className="flex items-center">
+                              <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                              <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                              <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                            </div>
+                            <span className="text-xs text-gray-400">Response JSON</span>
+                          </div>
+                          <pre className="p-4 overflow-x-auto">
+                            <code className="text-emerald-400 font-mono text-sm">{`{
+  "success": true,
+  "deeplink_url": "https://app.depl.link/a1b2",
+  "created_at": "2023-09-15T08:30:45Z"
+}`}</code>
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-[#1a2234] to-[#0f1629] rounded-lg border border-[#2d3748] overflow-hidden shadow-lg">
+                    <div className="flex items-center justify-between px-5 py-3 bg-[#1a2234] border-b border-[#2d3748]">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-rose-600 flex items-center justify-center mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <span className="text-white font-medium text-lg">커머스 상품 상세 딥링크</span>
+                      </div>
+                      <span className="text-xs px-2 py-1 rounded-full bg-rose-900/50 text-rose-300 font-mono">POST /api/deeplink</span>
+                    </div>
+                    <div className="p-5">
+                      <p className="text-gray-300 mb-4">특정 상품 페이지로 바로 이동하는 딥링크입니다. 상품 ID와 카테고리 정보를 포함하여 사용자에게 원활한 쇼핑 경험을 제공합니다. 앱 내 상품 상세 화면으로 직접 연결되어 전환율을 높이는 데 효과적입니다.</p>
+                      
+                      <div className="mb-5">
+                        <div className="bg-[#0d1220] rounded-lg overflow-hidden border border-[#2d3748]">
+                          <div className="flex items-center justify-between px-4 py-2 bg-[#1a2234] border-b border-[#2d3748]">
+                            <div className="flex items-center">
+                              <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                              <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                              <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                            </div>
+                            <span className="text-xs text-gray-400">Python</span>
+                          </div>
+                          <pre className="p-4 overflow-x-auto">
+                            <code className="text-emerald-400 font-mono text-sm">{`import requests
+import json
+
+url = "https://api.depl.link/api/deeplink"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer YOUR_API_KEY"
+}
+payload = {
+    "app_params": {
+        "screen": "product_detail",
+        "product_id": "P12345",
+        "category": "electronics"
+    },
+    "social_meta": {
+        "title": "최신 스마트폰 특가",
+        "description": "단 3일간 한정 특가! 지금 바로 확인하세요.",
+        "thumbnail_url": "https://example.com/product_image.jpg"
+    },
+    "slug": "product-p12345"
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(payload))
+print(response.json())`}</code>
+                          </pre>
+                        </div>
+                      </div>
+                      
+                      <div>
+
+                        <div className="bg-[#0d1220] rounded-lg overflow-hidden border border-[#2d3748]">
+                          <div className="flex items-center justify-between px-4 py-2 bg-[#1a2234] border-b border-[#2d3748]">
+                            <div className="flex items-center">
+                              <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                              <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                              <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                            </div>
+                            <span className="text-xs text-gray-400">Response JSON</span>
+                          </div>
+                          <pre className="p-4 overflow-x-auto">
+                            <code className="text-emerald-400 font-mono text-sm">{`{
+  "success": true,
+  "deeplink_url": "https://shop.depl.link/c3d4",
+  "created_at": "2023-09-16T14:22:30Z"
+}`}</code>
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               

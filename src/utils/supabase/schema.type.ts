@@ -44,6 +44,56 @@ export type Database = {
           },
         ]
       }
+      deeplinks: {
+        Row: {
+          android_parameters: Json
+          app_params: Json
+          click_count: number
+          created_at: string
+          ios_parameters: Json
+          project_id: string
+          short_code: string
+          slug: string
+          social_meta: Json
+          sub_domain: string
+          updated_at: string
+        }
+        Insert: {
+          android_parameters: Json
+          app_params: Json
+          click_count?: number
+          created_at?: string
+          ios_parameters: Json
+          project_id: string
+          short_code: string
+          slug: string
+          social_meta: Json
+          sub_domain: string
+          updated_at?: string
+        }
+        Update: {
+          android_parameters?: Json
+          app_params?: Json
+          click_count?: number
+          created_at?: string
+          ios_parameters?: Json
+          project_id?: string
+          short_code?: string
+          slug?: string
+          social_meta?: Json
+          sub_domain?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deeplinks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string
