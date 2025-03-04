@@ -9,6 +9,7 @@ export default async function DashboardLayout({
 }) {
   const headersList = await headers()
   const pathname = headersList.get("x-pathname") || ""
+  console.log("pathname", pathname)
   
   const isProjectPage = pathname.includes('/dashboard/project/')
   const isRestapiDocs = pathname.includes('/docs/restapi')

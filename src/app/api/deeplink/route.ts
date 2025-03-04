@@ -37,15 +37,15 @@ export async function GET() {
     // 간단한 헬로우 월드 응답 반환
     return NextResponse.json(
       { 
-        message: '헬로우 월드',
+        message: 'test',
         host: host
       }, 
       { status: 200 }
     );
   } catch (error) {
-    console.error('오류 발생:', error);
+    console.error('ERROR:', error);
     return NextResponse.json(
-      { error: '서버 오류가 발생했습니다.' },
+      { error: 'ERROR' },
       { status: 500 }
     );
   }
@@ -54,20 +54,20 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     // 요청 본문 파싱
-    const body = await request.json();
-    
-    // 필수 필드 검증
-    // if (!body.target_url || !body.fallback_url || !body.platform_parameters) {
-    //   return NextResponse.json(
-    //     { 
-    //       error: {
-    //         code: "invalid_request",
-    //         message: "필수 필드가 누락되었습니다. target_url, fallback_url, platform_parameters는 필수입니다."
-    //       }
-    //     },
-    //     { status: 400 }
-    //   );
-    // }
+    let body;
+    try {
+      body = await request.json();
+    } catch (error) {
+      return NextResponse.json(
+        { 
+          error: {
+            code: "INVALID_JSON",
+            message: "Request body is not a valid JSON format."
+          }
+        },
+        { status: 400 }
+      );
+    }
 
     if (!body.slug || !body.app_params) {
       return NextResponse.json(
@@ -80,6 +80,13 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // 소셜 메타 데이터 처리
+    const socialMeta = {
+      title: body.social_meta?.title || "Depl.link | App Download",
+      description: body.social_meta?.description || "Download the mobile app for a better experience.",
+      thumbnail_url: body.social_meta?.thumbnail_url || "/images/og-image.jpg"
+    };
     
     // 인증 헤더에서 API 키 추출
     const headersList = await headers();
@@ -131,7 +138,7 @@ export async function POST(request: Request) {
         android_parameters: {},
         ios_parameters: {},
         app_params: body.app_params,  
-        social_meta: body.social_meta,
+        social_meta: socialMeta,
         project_id: project.id,
         short_code: shortCode,
         slug: body.slug,
@@ -143,7 +150,7 @@ export async function POST(request: Request) {
         { 
           error: {
             code: "SERVER_ERROR",
-            message: "서버 오류가 발생했습니다."  
+            message: "server error"
           }
         },
         { status: 500 }
@@ -163,7 +170,7 @@ export async function POST(request: Request) {
       { 
         error: {
           code: "SERVER_ERROR",
-          message: "서버 오류가 발생했습니다."
+          message: "server error"
         }
       },
       { status: 500 }
