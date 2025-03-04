@@ -38,7 +38,7 @@ export async function updateSession(request: NextRequest) {
     // 서브도메인이 존재하면 /api/deeplink로 리다이렉트
     if (subdomain) {
       const url = request.nextUrl.clone();
-      url.pathname = '/api/deeplink';
+      url.pathname = '/link';
       return NextResponse.rewrite(url);
     }
   }
