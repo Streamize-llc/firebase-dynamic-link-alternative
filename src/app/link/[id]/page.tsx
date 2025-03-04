@@ -2,6 +2,7 @@
 // import { Metadata, ResolvingMetadata } from 'next'
 // import { createClient } from '@/utils/supabase/server'
 import { redirect, permanentRedirect } from 'next/navigation'
+import { headers } from 'next/headers'
 
 // type Props = {
 //   params: { id: string }
@@ -42,7 +43,34 @@ import { redirect, permanentRedirect } from 'next/navigation'
 //   }
 // }
 
-export default function AppLinkHandler() {
-  permanentRedirect('https://apps.apple.com/KR/app/id6470640320?mt=8')
-  return null
+// Android 앱 링크 생성 함수
+function createAndroidAppLink(packageName: string, fallbackUrl: string, deepLinkUrl: string): string {
+  // Intent URL 형식으로 생성
+  return `intent://${deepLinkUrl}#Intent;package=${packageName};action=android.intent.action.VIEW;scheme=https;S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end;`;
+}
+
+// iOS 유니버설 링크 생성 함수
+function createIOSUniversalLink(appStoreId: string, bundleId: string, deepLinkUrl: string): string {
+  // iOS의 경우 일반적으로 Universal Link 형식 사용
+  return `https://${deepLinkUrl}`;
+}
+
+export default async function AppLinkHandler() {
+  const headersList = await headers()
+  const userAgent = headersList.get('user-agent') || ''
+
+  const isIOS = /iPhone|iPad|iPod/i.test(userAgent)
+  const isAndroid = /Android/i.test(userAgent)
+  
+  if (isAndroid) {
+    const androidAppLink = createAndroidAppLink('com.streamize.dailystudio', 'https://play.google.com/store/apps/details?id=com.streamize.dailystudio', 'shineai.page.link/a29r')
+    return redirect(androidAppLink)
+  }
+
+  if (isIOS) {
+    // TODO : 아이폰 앱 정보 가져오기
+    return permanentRedirect('https://apps.apple.com/KR/app/id6470640320?mt=8')
+  }
+
+  return redirect('https://naver.com')
 }
