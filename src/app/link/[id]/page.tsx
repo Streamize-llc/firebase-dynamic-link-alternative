@@ -67,16 +67,19 @@ async function getApps(projectId: string) {
   return apps;
 } 
 
-export default async function AppLinkHandler() {
+export default async function AppLinkHandler({ params }: { params: { id: string } }) {
+  const { id } = await params
   const headersList = await headers()
   const userAgent = headersList.get('user-agent') || ''
+  const host = headersList.get('host') || ''
+  const subdomain = host.split('.')[0]
+  const normalizedSubdomain = subdomain === 'www' ? '' : subdomain
 
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent)
   const isAndroid = /Android/i.test(userAgent)
   
   if (isAndroid) {
-    const url = headersList.get('x-url') || ''
-    const deepLinkUrl = url.replace(/^https?:\/\//, '').split('/')[0]
+    const deepLinkUrl = `${normalizedSubdomain}.depl.link/${id}`
     const androidAppLink = createAndroidAppLink('com.streamize.dailystudio', 'https://play.google.com/store/apps/details?id=com.streamize.dailystudio', deepLinkUrl)
     return redirect(androidAppLink)
   }
@@ -86,5 +89,5 @@ export default async function AppLinkHandler() {
     return permanentRedirect('https://apps.apple.com/KR/app/id6470640320?mt=8')
   }
 
-  return redirect('https://naver.com')
+  return null
 }
