@@ -43,32 +43,39 @@ import { createClient } from '@/utils/supabase/server'
 //   }
 // }
 
+interface AndroidParameters {
+  package_name: string;
+}
+
+interface IOSParameters {
+  app_store_id: string;
+  bundle_id: string;
+}
+
+async function getDeepLinkUrl(id: string) {
+  const supabase = await createClient();
+  const { data: deeplink, error } = await supabase
+    .from('deeplinks')
+    .select('*')
+    .eq('short_code', id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+  return deeplink;
+}
+
 // Android 앱 링크 생성 함수
 function createAndroidAppLink(packageName: string, fallbackUrl: string, deepLinkUrl: string): string {
   // Intent URL 형식으로 생성
   return `intent://${deepLinkUrl}#Intent;package=${packageName};action=android.intent.action.VIEW;scheme=https;S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end;`;
 }
 
-// iOS 유니버설 링크 생성 함수
-function createIOSUniversalLink(appStoreId: string, bundleId: string, deepLinkUrl: string): string {
-  // iOS의 경우 일반적으로 Universal Link 형식 사용
-  return `https://${deepLinkUrl}`;
-}
-
-async function getApps(projectId: string) {
-  const supabase = await createClient();
-  const { data: apps, error } = await supabase
-    .from('apps')
-    .select('*')
-    .eq('platform', 'ANDROID')
-    .eq('project_id', projectId)
-    .single();
-
-  return apps;
-} 
-
 export default async function AppLinkHandler({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const deeplink = await getDeepLinkUrl(id)
   const headersList = await headers()
   const userAgent = headersList.get('user-agent') || ''
   const host = headersList.get('host') || ''
@@ -78,15 +85,25 @@ export default async function AppLinkHandler({ params }: { params: Promise<{ id:
   const isIOS = /iPhone|iPad|iPod/i.test(userAgent)
   const isAndroid = /Android/i.test(userAgent)
   
+  if (!deeplink) {
+    return null
+  }
+  
   if (isAndroid) {
     const deepLinkUrl = `${normalizedSubdomain}.depl.link/${id}`
-    const androidAppLink = createAndroidAppLink('com.streamize.dailystudio', 'https://play.google.com/store/apps/details?id=com.streamize.dailystudio', deepLinkUrl)
+    const androidParams = deeplink.android_parameters as unknown as AndroidParameters;
+    const androidAppLink = createAndroidAppLink(
+      androidParams.package_name,
+      `https://play.google.com/store/apps/details?id=${androidParams.package_name}`,
+      deepLinkUrl
+    )
     return redirect(androidAppLink)
   }
 
   if (isIOS) {
     // TODO : 아이폰 앱 정보 가져오기
-    return permanentRedirect('https://apps.apple.com/KR/app/id6470640320?mt=8')
+    const iosParams = deeplink.ios_parameters as unknown as IOSParameters;
+    return permanentRedirect(`https://apps.apple.com/KR/app/id${iosParams.app_store_id}?mt=8`)
   }
 
   return null
