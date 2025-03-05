@@ -28,24 +28,95 @@ export type SocialMeta = {
 };
 
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // 헤더 정보 가져오기
+    // Get header information
     const headersList = await headers();
-    const host = headersList.get('host') || '';
+    const authHeader = headersList.get('authorization');
     
-    // 간단한 헬로우 월드 응답 반환
-    return NextResponse.json(
-      { 
-        message: 'test',
-        host: host
-      }, 
-      { status: 200 }
-    );
+    // Verify authentication with client_key
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { 
+          error: {
+            code: "UNAUTHORIZED",
+            message: "Valid client_key is required."
+          }
+        },
+        { status: 401 }
+      );
+    }
+    
+    const clientKey = authHeader.replace('Bearer ', '');
+    
+    // Extract short_code parameter from URL
+    const { searchParams } = new URL(request.url);
+    const shortCode = searchParams.get('short_code');
+    
+    if (!shortCode) {
+      return NextResponse.json(
+        { 
+          error: {
+            code: "INVALID_REQUEST",
+            message: "short_code parameter is required."
+          }
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Create Supabase client
+    const supabase = await createClient();
+    
+    // First verify project with client_key
+    const { data: projectData, error: projectError } = await supabase
+      .from('projects')
+      .select('id')
+      .eq('client_key', clientKey)
+      .single();
+    
+    if (projectError || !projectData) {
+      return NextResponse.json(
+        { 
+          error: {
+            code: "INVALID_CLIENT_KEY",
+            message: "Invalid client_key."
+          }
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Query deeplink with project ID and short_code
+    const { data: deeplinkData, error: deeplinkError } = await supabase
+      .from('deeplinks')
+      .select('*')
+      .eq('project_id', projectData.id)
+      .eq('short_code', shortCode)
+      .single();
+    
+    if (deeplinkError || !deeplinkData) {
+      return NextResponse.json(
+        { 
+          error: {
+            code: "NOT_FOUND",
+            message: "Deeplink with the specified short_code not found."
+          }
+        },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json(deeplinkData, { status: 200 });
   } catch (error) {
     console.error('ERROR:', error);
     return NextResponse.json(
-      { error: 'ERROR' },
+      { 
+        error: {
+          code: "SERVER_ERROR",
+          message: "An internal server error occurred."
+        }
+      },
       { status: 500 }
     );
   }

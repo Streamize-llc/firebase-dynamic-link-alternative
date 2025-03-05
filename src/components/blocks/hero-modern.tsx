@@ -125,7 +125,7 @@ function HeroModern() {
                                     transition-colors"
                                     onClick={() => window.location.href = '/dashboard/project'}
                                 >
-                                    대시보드
+                                    Dashboard
                                 </Button>
                             ) : (
                                 <Button
@@ -133,7 +133,7 @@ function HeroModern() {
                                     transition-colors"
                                     onClick={handleLogin}
                                 >
-                                    로그인
+                                    Login
                                 </Button>
                             )}
                         </div>
@@ -210,7 +210,7 @@ function HeroModern() {
                                             className="h-12 px-8 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white group"
                                             onClick={() => window.location.href = '/dashboard'}
                                         >
-                                            대시보드로 이동
+                                            Go to Dashboard
                                             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     ) : (
@@ -218,7 +218,7 @@ function HeroModern() {
                                             className="h-12 px-8 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white group"
                                             onClick={handleLogin}
                                         >
-                                            구글로 시작하기
+                                            Start with Google
                                             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     )}
@@ -226,7 +226,7 @@ function HeroModern() {
                                         variant="outline"
                                         className="h-12 px-8 border-white/10 hover:bg-white/5"
                                     >
-                                        문서 보기
+                                        View Documentation
                                     </Button>
                                 </div>
                             </div>
@@ -279,6 +279,8 @@ function HeroModern() {
                                 </div>
                             </div>
                         </div>
+
+                        
                     </div>
                 </div>
             </main>

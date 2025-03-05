@@ -36,7 +36,7 @@ export default function RegisterAndroidModal({
 }: RegisterAndroidModalProps) {
   const androidApp = project?.apps?.find((app: any) => app.platform === 'ANDROID');
   const isEditMode = !!androidApp;
-  const lang = 'en';
+  const lang = getCurrentLanguage();
   
   const [packageName, setPackageName] = useState<string>('');
   const [sha256Fingerprints, setSha256Fingerprints] = useState<string[]>(['']);

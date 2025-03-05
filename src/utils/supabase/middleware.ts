@@ -64,8 +64,6 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  // refreshing the auth token
-  await supabase.auth.getUser()
 
   return supabaseResponse
 }

@@ -22,8 +22,8 @@ export default function RestApiDocumentation() {
         const projectData = await getProject(projectId)
         setProject(projectData)
       } catch (err) {
-        console.error("프로젝트 정보를 가져오는 중 오류가 발생했습니다:", err)
-        setError(err instanceof Error ? err.message : "프로젝트 정보를 가져오는 중 오류가 발생했습니다")
+        console.error("Error occurred while fetching project information:", err)
+        setError(err instanceof Error ? err.message : "Error occurred while fetching project information")
       } finally {
         setLoading(false)
       }
@@ -37,7 +37,7 @@ export default function RestApiDocumentation() {
       <div className="min-h-screen bg-black text-white p-8 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-          <p className="text-xl">로딩 중...</p>
+          <p className="text-xl">Loading...</p>
         </div>
       </div>
     )
@@ -48,7 +48,7 @@ export default function RestApiDocumentation() {
       <div className="min-h-screen bg-black text-white p-8 flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="text-red-500 text-5xl mb-4">⚠️</div>
-          <h1 className="text-2xl font-bold mb-4">오류가 발생했습니다</h1>
+          <h1 className="text-2xl font-bold mb-4">An error has occurred</h1>
           <p className="text-gray-400 mb-6">{error}</p>
         </div>
       </div>

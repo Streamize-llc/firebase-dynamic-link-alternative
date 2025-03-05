@@ -388,7 +388,7 @@ export default function ProjectDetailPage() {
         </div>
         
         {/* 통계 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           <div className="border border-gray-800 rounded-2xl p-6 bg-gradient-to-br from-[#111] to-[#151515]">
             <h3 className="text-gray-400 font-medium mb-2">총 링크</h3>
             <p className="text-4xl font-bold text-white">1234</p>
@@ -401,7 +401,7 @@ export default function ProjectDetailPage() {
             <h3 className="text-gray-400 font-medium mb-2">전환율</h3>
             <p className="text-4xl font-bold text-white">1234</p>
           </div>
-        </div>
+        </div> */}
         
         {/* 딥링크 생성 메뉴 */}
         {/* 딥링크 생성 메뉴 - 디자인 개선 버전 */}
@@ -474,7 +474,7 @@ export default function ProjectDetailPage() {
 
         
         {/* 링크 목록 */}
-        <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8">
+        {/* <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8">
           <h2 className="text-2xl font-bold text-white mb-6">딥링크 목록</h2>
           <div className="overflow-hidden rounded-xl border border-gray-800">
             <table className="min-w-full divide-y divide-gray-800">
@@ -524,7 +524,7 @@ export default function ProjectDetailPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        </div> */}
         
 
       </div>
