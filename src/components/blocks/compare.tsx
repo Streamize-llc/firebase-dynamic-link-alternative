@@ -60,7 +60,7 @@ function CompareSection() {
   ];
 
   return (
-    <section className="relative bg-black text-white overflow-hidden py-16">
+    <section className="relative bg-black text-white overflow-hidden">
       {/* Background gradient effect */}
       <div
         className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-transparent to-blue-600/10 blur-3xl"
