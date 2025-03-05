@@ -4,13 +4,13 @@ import { headers } from 'next/headers';
 
 interface PlatformData {
   sha256: string;
-  packageName: string;
+  package_name: string;
 }
 
 function isPlatformData(data: any): data is PlatformData {
   return typeof data === 'object' && 
          typeof data.sha256 === 'string' && 
-         typeof data.packageName === 'string';
+         typeof data.package_name === 'string';
 }
 
 export async function GET() {
@@ -67,7 +67,7 @@ export async function GET() {
         relation: ['delegate_permission/common.handle_all_urls'],
         target: {
           namespace: 'android_app',
-          package_name: platformData.packageName,
+          package_name: platformData.package_name,
           sha256_cert_fingerprints: [platformData.sha256]
         }
       }

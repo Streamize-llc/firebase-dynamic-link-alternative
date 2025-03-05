@@ -3,14 +3,14 @@ import { headers } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 
 interface PlatformData {
-  teamId: string;
-  bundleId: string;
+  team_id: string;
+  bundle_id: string;
 }
 
 function isPlatformData(data: any): data is PlatformData {
   return typeof data === 'object' && 
-         typeof data.teamId === 'string' && 
-         typeof data.bundleId === 'string';
+         typeof data.team_id === 'string' && 
+         typeof data.bundle_id === 'string';
 }
 
 export async function GET() {
@@ -68,8 +68,8 @@ export async function GET() {
     const dummyIosApps = [
       {
         platform_data: {
-          teamId: platformData.teamId,
-          bundleId: platformData.bundleId
+          teamId: platformData.team_id,
+          bundleId: platformData.bundle_id
         }
       }
     ];
@@ -79,7 +79,7 @@ export async function GET() {
       applinks: {
         apps: [],
         details: dummyIosApps.map((app: any) => ({
-          appID: `${app.platform_data.teamId}.${app.platform_data.bundleId}`,
+          appID: `${app.platform_data.team_id}.${app.platform_data.bundle_id}`,
           paths: ["NOT /_/*", "/*"]
         }))
       }
