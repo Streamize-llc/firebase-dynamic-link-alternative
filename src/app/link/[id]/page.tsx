@@ -67,7 +67,7 @@ async function getApps(projectId: string) {
   return apps;
 } 
 
-export default async function AppLinkHandler({ params }: { params: { id: string } }) {
+export default async function AppLinkHandler({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const headersList = await headers()
   const userAgent = headersList.get('user-agent') || ''
