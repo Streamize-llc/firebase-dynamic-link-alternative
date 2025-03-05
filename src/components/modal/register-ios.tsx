@@ -39,8 +39,8 @@ export default function RegisterIOSModal({
   useEffect(() => {
     // tests
     if (iosApp) {
-      setBundleId(iosApp.platform_data.bundleId || '');
-      setTeamId(iosApp.platform_data.teamId || '');
+      setBundleId(iosApp.platform_data.bundle_id || '');
+      setTeamId(iosApp.platform_data.team_id || '');
     } else {
       setBundleId(project.id ? `com.example.${project.id}` : '');
       setTeamId('');
@@ -55,8 +55,8 @@ export default function RegisterIOSModal({
     try {
       // createApp 함수를 사용하여 iOS 앱 생성
       const platformData = {
-        bundleId,
-        teamId
+        bundle_id: bundleId,
+        team_id: teamId
       };
       
       await createApp(project.id, 'IOS', platformData);

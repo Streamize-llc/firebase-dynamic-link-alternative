@@ -37,7 +37,7 @@ export default function RegisterAndroidModal({
 
   useEffect(() => {
     if (androidApp) {
-      setPackageName(androidApp.platform_data.packageName || '');
+      setPackageName(androidApp.platform_data.package_name || '');
       setSha256(androidApp.platform_data.sha256 || '');
     } else {
       setPackageName(project.id ? `com.example.${project.id}` : '');
@@ -53,8 +53,8 @@ export default function RegisterAndroidModal({
     try {
       // createApp 함수 직접 호출
       const platformData = {
-        packageName,
-        sha256
+        package_name: packageName,
+        sha256: sha256
       };
       
       await createApp(project.id, 'ANDROID', platformData);

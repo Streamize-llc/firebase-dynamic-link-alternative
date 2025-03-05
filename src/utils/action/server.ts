@@ -255,9 +255,9 @@ export async function createApp(projectId: string, platform: 'IOS' | 'ANDROID', 
   const appName = platform === 'IOS' ? 'iOS 앱' : '안드로이드 앱';
 
   // 플랫폼 데이터 유효성 검사
-  if (platform === 'IOS' && (!platformData.bundleId || !platformData.teamId)) {
+  if (platform === 'IOS' && (!platformData.bundle_id || !platformData.team_id)) {
     throw new Error("iOS 앱 등록을 위해 bundleId와 teamId가 필요합니다.");
-  } else if (platform === 'ANDROID' && (!platformData.packageName || !platformData.sha256)) {
+  } else if (platform === 'ANDROID' && (!platformData.package_name || !platformData.sha256)) {
     throw new Error("안드로이드 앱 등록을 위해 packageName과 sha256가 필요합니다.");
   }
 

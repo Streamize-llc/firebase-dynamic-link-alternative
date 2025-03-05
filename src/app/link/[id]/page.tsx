@@ -3,7 +3,7 @@
 // import { createClient } from '@/utils/supabase/server'
 import { redirect, permanentRedirect } from 'next/navigation'
 import { headers } from 'next/headers'
-
+import { createClient } from '@/utils/supabase/server'
 // type Props = {
 //   params: { id: string }
 //   searchParams: { [key: string]: string | string[] | undefined }
@@ -55,6 +55,18 @@ function createIOSUniversalLink(appStoreId: string, bundleId: string, deepLinkUr
   return `https://${deepLinkUrl}`;
 }
 
+async function getApps(projectId: string) {
+  const supabase = await createClient();
+  const { data: apps, error } = await supabase
+    .from('apps')
+    .select('*')
+    .eq('platform', 'ANDROID')
+    .eq('project_id', projectId)
+    .single();
+
+  return apps;
+} 
+
 export default async function AppLinkHandler() {
   const headersList = await headers()
   const userAgent = headersList.get('user-agent') || ''
@@ -63,7 +75,9 @@ export default async function AppLinkHandler() {
   const isAndroid = /Android/i.test(userAgent)
   
   if (isAndroid) {
-    const androidAppLink = createAndroidAppLink('com.streamize.dailystudio', 'https://play.google.com/store/apps/details?id=com.streamize.dailystudio', 'shineai.page.link/a29r')
+    const url = headersList.get('x-url') || ''
+    const deepLinkUrl = url.replace(/^https?:\/\//, '').split('/')[0]
+    const androidAppLink = createAndroidAppLink('com.streamize.dailystudio', 'https://play.google.com/store/apps/details?id=com.streamize.dailystudio', deepLinkUrl)
     return redirect(androidAppLink)
   }
 

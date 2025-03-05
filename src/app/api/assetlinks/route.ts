@@ -79,11 +79,11 @@ export async function GET() {
       }
     });
   } catch (error) {
-    console.error('ERROR:', error);
-    return NextResponse.json(
-      { error: 'ERROR' },
-      { status: 500 }
-    );
+    return NextResponse.json([], {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
   }
 }
 

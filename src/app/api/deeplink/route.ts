@@ -174,7 +174,7 @@ export async function POST(request: Request) {
       if (androidData.package_name) {
         androidParameters.package_name = androidData.package_name;
         androidParameters.action = 'android.intent.action.VIEW';
-        androidParameters.fallback_url = 'https://naver.com';
+        androidParameters.fallback_url = `https://play.google.com/store/apps/details?id=${androidData.package_name}`;
       }
     }
     
