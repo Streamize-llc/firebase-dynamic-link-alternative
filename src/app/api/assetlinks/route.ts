@@ -3,13 +3,13 @@ import { createClient } from '@/utils/supabase/server';
 import { headers } from 'next/headers';
 
 interface PlatformData {
-  sha256: string;
+  sha256_list: string;
   package_name: string;
 }
 
 function isPlatformData(data: any): data is PlatformData {
   return typeof data === 'object' && 
-         typeof data.sha256 === 'string' && 
+         typeof data.sha256_list === 'string' && 
          typeof data.package_name === 'string';
 }
 
@@ -68,7 +68,7 @@ export async function GET() {
         target: {
           namespace: 'android_app',
           package_name: platformData.package_name,
-          sha256_cert_fingerprints: [platformData.sha256]
+          sha256_cert_fingerprints: platformData.sha256_list
         }
       }
     ]

@@ -33,7 +33,6 @@ export async function GET() {
     // Extract subdomain (assume 'test' if not in production environment)
     const subdomain = isProd ? host.split('.')[0] : 'test';
     const supabase = await createClient();
-    console.log(subdomain);
     // Query project and iOS app information at once
     const { data: project, error: projectError } = await supabase
       .from('projects')

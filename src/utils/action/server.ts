@@ -101,6 +101,7 @@ export async function getProject(projectId: string) {
       name,
       description,
       api_key,
+      client_key,
       sub_domain,
       created_at,
       owner_id,
@@ -204,7 +205,8 @@ export async function createProject(name: string, description?: string) {
       name,
       description,
       owner_id: user.id,
-      api_key: crypto.randomUUID()
+      api_key: crypto.randomUUID(),
+      client_key: crypto.randomUUID()
     })
     .select()
     .single();
@@ -255,10 +257,10 @@ export async function createApp(projectId: string, platform: 'IOS' | 'ANDROID', 
   const appName = platform === 'IOS' ? 'iOS 앱' : '안드로이드 앱';
 
   // 플랫폼 데이터 유효성 검사
-  if (platform === 'IOS' && (!platformData.bundle_id || !platformData.team_id)) {
-    throw new Error("iOS 앱 등록을 위해 bundleId와 teamId가 필요합니다.");
-  } else if (platform === 'ANDROID' && (!platformData.package_name || !platformData.sha256)) {
-    throw new Error("안드로이드 앱 등록을 위해 packageName과 sha256가 필요합니다.");
+  if (platform === 'IOS' && (!platformData.bundle_id || !platformData.team_id || !platformData.app_id)) {
+    throw new Error("iOS 앱 등록을 위해 bundleId, teamId, appId가 필요합니다.");
+  } else if (platform === 'ANDROID' && (!platformData.package_name || !platformData.sha256_list)) {
+    throw new Error("안드로이드 앱 등록을 위해 packageName과 sha256_list가 필요합니다.");
   }
 
   if (existingApp) {

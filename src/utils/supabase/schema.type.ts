@@ -179,6 +179,7 @@ export type Database = {
       projects: {
         Row: {
           api_key: string | null
+          client_key: string | null
           created_at: string
           description: string | null
           id: string
@@ -188,6 +189,7 @@ export type Database = {
         }
         Insert: {
           api_key?: string | null
+          client_key?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -197,6 +199,7 @@ export type Database = {
         }
         Update: {
           api_key?: string | null
+          client_key?: string | null
           created_at?: string
           description?: string | null
           id?: string

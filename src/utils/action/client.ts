@@ -1,3 +1,53 @@
+"use client";
+
+/**
+ * 현재 사용자의 언어 설정을 가져오는 함수
+ * 브라우저의 언어 설정을 기반으로 언어 코드를 반환합니다.
+ * @returns {string} 언어 코드 (예: 'ko', 'en', 'ja' 등)
+ */
+export function getCurrentLanguage(): string {
+  const supportedLanguages = ['ko', 'en', 'ja'];
+  
+  if (typeof window !== 'undefined') {
+    // navigator.language가 없을 경우 기본값으로 'en' 사용
+    const browserLang = navigator.language || 'en';
+    // 언어 코드만 추출 (예: 'ko-KR'에서 'ko'만 추출)
+    const langCode = browserLang.split('-')[0];
+    
+    // 지원하는 언어 목록에 있는지 확인
+    if (supportedLanguages.includes(langCode)) {
+      return langCode;
+    }
+  }
+  
+  // 서버 사이드 또는 지원하지 않는 언어의 경우 기본 언어('en') 반환
+  return 'en';
+}
+
+/**
+ * 로컬 스토리지에서 사용자가 설정한 언어 설정을 가져오는 함수
+ * @param {string} defaultLang 기본 언어 코드
+ * @returns {string} 저장된 언어 코드 또는 기본 언어 코드
+ */
+export function getSavedLanguage(defaultLang: string = 'ko'): string {
+  if (typeof window !== 'undefined') {
+    const savedLang = localStorage.getItem('userLanguage');
+    return savedLang || defaultLang;
+  }
+  return defaultLang;
+}
+
+/**
+ * 사용자 언어 설정을 로컬 스토리지에 저장하는 함수
+ * @param {string} langCode 저장할 언어 코드
+ */
+export function saveLanguagePreference(langCode: string): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('userLanguage', langCode);
+  }
+}
+
+
 // export async function getTaskResultList(): Promise<Task[]> {
 //   const supabase = createClient();
 //   const { data: { user } } = await supabase.auth.getUser();

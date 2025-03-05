@@ -6,7 +6,7 @@ import RegisterAndroidModal from "@/components/modal/register-android"
 import RegisterIOSModal from "@/components/modal/register-ios"
 import RegisterDomainModal from "@/components/modal/register-domain"
 import { getProject } from "@/utils/action/server"
-
+import { toast } from "sonner"
 export default function ProjectDetailPage() {
   const params = useParams()
   const projectId = params.id as string
@@ -36,7 +36,6 @@ export default function ProjectDetailPage() {
         
         setIsLoading(false);
       } catch (error) {
-        console.error("프로젝트 정보 로딩 중 오류 발생:", error);
         setIsLoading(false);
       }
     };
@@ -44,19 +43,91 @@ export default function ProjectDetailPage() {
     fetchProjectData();
   }, [projectId]);
 
-  const handleAndroidRegister = (data: { packageName: string; sha256: string }) => {
-    console.log('안드로이드 앱 등록 완료:', data)
+  const handleAndroidRegister = (data: { packageName: string; sha256_list: string[] }) => {
+    // 프로젝트 데이터 업데이트
+    if (project) {
+      // 현재 프로젝트 데이터에서 앱 목록 업데이트
+      const updatedApps = project.apps || [];
+      
+      // 새로 등록된 안드로이드 앱 정보 추가
+      const androidAppIndex = updatedApps.findIndex((app: any) => app.platform === 'ANDROID');
+      
+      if (androidAppIndex >= 0) {
+        // 기존 앱 정보 업데이트
+        updatedApps[androidAppIndex].platform_data = {
+          package_name: data.packageName,
+          sha256_list: data.sha256_list
+        };
+      } else {
+        // 새 앱 정보 추가
+        updatedApps.push({
+          platform: 'ANDROID',
+          platform_data: {
+            package_name: data.packageName,
+            sha256_list: data.sha256_list
+          }
+        });
+      }
+      
+      // 프로젝트 데이터 업데이트
+      setProject({
+        ...project,
+        apps: updatedApps
+      });
+    }
     setIsAndroidAppRegistered(true)
   }
 
-  const handleIOSRegister = (data: { bundleId: string; teamId: string }) => {
-    console.log('iOS 앱 등록 완료:', data)
+  const handleIOSRegister = (data: { bundleId: string; teamId: string; appId: string }) => {
+    // 프로젝트 데이터 업데이트
+    if (project) {
+      // 현재 프로젝트 데이터에서 앱 목록 업데이트
+      const updatedApps = project.apps || [];
+      
+      // 새로 등록된 iOS 앱 정보 추가
+      const iosAppIndex = updatedApps.findIndex((app: any) => app.platform === 'IOS');
+      
+      if (iosAppIndex >= 0) {
+        // 기존 앱 정보 업데이트
+        updatedApps[iosAppIndex].platform_data = {
+          bundle_id: data.bundleId,
+          team_id: data.teamId,
+          app_id: data.appId
+        };
+      } else {
+        // 새 앱 정보 추가
+        updatedApps.push({
+          platform: 'IOS',
+          platform_data: {
+            bundle_id: data.bundleId,
+            team_id: data.teamId,
+            app_id: data.appId
+          }
+        });
+      }
+      
+      // 프로젝트 데이터 업데이트
+      setProject({
+        ...project,
+        apps: updatedApps
+      });
+    }
     setIsIOSAppRegistered(true)
   }
 
   const handleDomainRegister = (data: { subDomain: string }) => {
-    console.log('도메인 등록 완료:', data)
+    if (project) {
+      setProject({
+        ...project,
+        sub_domain: data.subDomain
+      });
+    }
     setIsDomainModalOpen(false)
+  }
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert('Copied to clipboard.');
   }
 
   if (isLoading) {
@@ -378,17 +449,25 @@ export default function ProjectDetailPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                   </svg>
                 </div>
-                <h3 className="text-white font-medium text-lg">API 키 관리</h3>
+                <h3 className="text-white font-medium text-lg">키 관리</h3>
               </div>
               <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                API 키를 생성하고 관리하여 안전하게 딥링크 API에 접근하세요. 키 권한 설정 및 사용량 모니터링이 가능합니다.
+                API 키와 클라이언트 키를 생성하고 관리하여 안전하게 딥링크 서비스에 접근하세요. 키 권한 설정 및 사용량 모니터링이 가능합니다.
               </p>
-              <button className="text-purple-400 text-sm font-medium flex items-center group-hover:text-purple-300 transition-colors">
-                API 키 확인하기
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              <div className="flex space-x-4">
+                <button onClick={() => copyToClipboard(project.api_key)} className="text-purple-400 text-sm font-medium flex items-center group-hover:text-purple-300 transition-colors">
+                  API 키 확인하기
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <button onClick={() => copyToClipboard(project.client_key)} className="text-green-400 text-sm font-medium flex items-center group-hover:text-green-300 transition-colors">
+                  클라이언트 키 확인하기
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
