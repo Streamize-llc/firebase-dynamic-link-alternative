@@ -5,8 +5,127 @@ import { useParams } from "next/navigation"
 import RegisterAndroidModal from "@/components/modal/register-android"
 import RegisterIOSModal from "@/components/modal/register-ios"
 import RegisterDomainModal from "@/components/modal/register-domain"
-import { getProject } from "@/utils/action/server"
-import { toast } from "sonner"
+import { getProject, getDeepLinkAdmin } from "@/utils/action/server"
+import { getCurrentLanguage } from "@/utils/action/client";
+
+// 번역 객체 정의
+const translations = {
+  ko: {
+    projectSettingsGuide: "프로젝트 설정 가이드",
+    deepLinkActivation: "딥링크 활성화를 위한 3단계 설정",
+    requiredSettings: "필수 설정",
+    projectCreation: "프로젝트 생성",
+    projectCreationSuccess: "프로젝트가 성공적으로 생성되었습니다. 이제 앱과 도메인을 설정해 보세요.",
+    completed: "완료됨",
+    appRegistration: "앱 등록",
+    appRegistrationDesc: "딥링크를 사용하려면 모바일 앱을 등록하세요. Android와 iOS 모두 지원합니다.",
+    androidCompleted: "Android 완료",
+    androidRegister: "Android 등록",
+    iosCompleted: "iOS 완료",
+    iosRegister: "iOS 등록",
+    domainSetting: "도메인 설정",
+    domainSettingDesc: "딥링크에 사용할 도메인을 설정하세요. 사용자 경험을 위해 짧은 도메인을 권장합니다.",
+    domainSettingCompleted: "도메인 설정 완료",
+    addDomain: "도메인 추가하기",
+    deepLinkCreation: "딥링크 생성",
+    deepLinkCreationDesc: "프로젝트의 딥링크를 쉽게 생성하고 관리하세요",
+    restApiDocs: "REST API 문서",
+    restApiDocsDesc: "프로그래밍 방식으로 딥링크를 생성하는 방법에 대한 API 문서를 확인하세요. 모든 엔드포인트와 파라미터가 자세히 설명되어 있습니다.",
+    viewDocs: "문서 보기",
+    keyManagement: "키 관리",
+    keyManagementDesc: "API 키와 클라이언트 키를 생성하고 관리하여 안전하게 딥링크 서비스에 접근하세요. 키 권한 설정 및 사용량 모니터링이 가능합니다.",
+    checkApiKey: "API 키 확인하기",
+    checkClientKey: "클라이언트 키 확인하기",
+    deepLinkList: "딥링크 목록",
+    deepLinkListDesc: "디버깅 용으로 제공되는 최근 생성된 10개의 딥링크를 출력합니다.",
+    slug: "슬러그",
+    url: "URL",
+    clicks: "클릭수",
+    creationDate: "생성일",
+    noDeepLinks: "아직 생성된 딥링크가 없습니다.",
+    createFirstDeepLink: "첫 딥링크 생성하기",
+    androidAppEdit: "Android 앱 수정",
+    iosAppEdit: "iOS 앱 수정",
+    required: "필요"
+  },
+  en: {
+    projectSettingsGuide: "Project Settings Guide",
+    deepLinkActivation: "3-step setup for deep link activation",
+    requiredSettings: "Required Settings",
+    projectCreation: "Project Creation",
+    projectCreationSuccess: "Project has been successfully created. Now set up your apps and domain.",
+    completed: "Completed",
+    appRegistration: "App Registration",
+    appRegistrationDesc: "Register your mobile apps to use deep links. Both Android and iOS are supported.",
+    androidCompleted: "Android Completed",
+    androidRegister: "Register Android",
+    iosCompleted: "iOS Completed",
+    iosRegister: "Register iOS",
+    domainSetting: "Domain Setting",
+    domainSettingDesc: "Set up a domain for your deep links. Short domains are recommended for better user experience.",
+    domainSettingCompleted: "Domain Setting Completed",
+    addDomain: "Add Domain",
+    deepLinkCreation: "Deep Link Creation",
+    deepLinkCreationDesc: "Easily create and manage deep links for your project",
+    restApiDocs: "REST API Docs",
+    restApiDocsDesc: "Check the API documentation on how to create deep links programmatically. All endpoints and parameters are explained in detail.",
+    viewDocs: "View Docs",
+    keyManagement: "Key Management",
+    keyManagementDesc: "Create and manage API keys and client keys to securely access the deep link service. Key permission settings and usage monitoring are available.",
+    checkApiKey: "Check API Key",
+    checkClientKey: "Check Client Key",
+    deepLinkList: "Deep Link List",
+    deepLinkListDesc: "Displays the 10 most recently created deep links for debugging purposes.",
+    slug: "Slug",
+    url: "URL",
+    clicks: "Clicks",
+    creationDate: "Creation Date",
+    noDeepLinks: "No deep links have been created yet.",
+    createFirstDeepLink: "Create Your First Deep Link",
+    androidAppEdit: "Edit Android App",
+    iosAppEdit: "Edit iOS App",
+    required: "Required"
+  },
+  ja: {
+    projectSettingsGuide: "プロジェクト設定ガイド",
+    deepLinkActivation: "ディープリンク有効化のための3ステップ設定",
+    requiredSettings: "必須設定",
+    projectCreation: "プロジェクト作成",
+    projectCreationSuccess: "プロジェクトが正常に作成されました。アプリとドメインを設定してください。",
+    completed: "完了",
+    appRegistration: "アプリ登録",
+    appRegistrationDesc: "ディープリンクを使用するにはモバイルアプリを登録してください。AndroidとiOSの両方をサポートしています。",
+    androidCompleted: "Android完了",
+    androidRegister: "Android登録",
+    iosCompleted: "iOS完了",
+    iosRegister: "iOS登録",
+    domainSetting: "ドメイン設定",
+    domainSettingDesc: "ディープリンクに使用するドメインを設定してください。ユーザー体験のために短いドメインをお勧めします。",
+    domainSettingCompleted: "ドメイン設定完了",
+    addDomain: "ドメイン追加",
+    deepLinkCreation: "ディープリンク作成",
+    deepLinkCreationDesc: "プロジェクトのディープリンクを簡単に作成・管理できます",
+    restApiDocs: "REST APIドキュメント",
+    restApiDocsDesc: "プログラムでディープリンクを作成する方法についてのAPIドキュメントを確認してください。すべてのエンドポイントとパラメータが詳細に説明されています。",
+    viewDocs: "ドキュメントを見る",
+    keyManagement: "キー管理",
+    keyManagementDesc: "APIキーとクライアントキーを作成・管理して、ディープリンクサービスに安全にアクセスしてください。キー権限設定と使用量モニタリングが可能です。",
+    checkApiKey: "APIキーを確認",
+    checkClientKey: "クライアントキーを確認",
+    deepLinkList: "ディープリンク一覧",
+    deepLinkListDesc: "デバッグ用に最近作成された10個のディープリンクを表示します。",
+    slug: "スラッグ",
+    url: "URL",
+    clicks: "クリック数",
+    creationDate: "作成日",
+    noDeepLinks: "まだディープリンクが作成されていません。",
+    createFirstDeepLink: "最初のディープリンクを作成",
+    androidAppEdit: "Androidアプリ編集",
+    iosAppEdit: "iOSアプリ編集",
+    required: "必須"
+  }
+};
+
 export default function ProjectDetailPage() {
   const params = useParams()
   const projectId = params.id as string
@@ -19,6 +138,9 @@ export default function ProjectDetailPage() {
   const [isAndroidModalOpen, setIsAndroidModalOpen] = useState(false)
   const [isIOSModalOpen, setIsIOSModalOpen] = useState(false)
   const [isDomainModalOpen, setIsDomainModalOpen] = useState(false)
+  const [deeplinks, setDeeplinks] = useState<any[]>([])
+  const lang = getCurrentLanguage();
+  const t = translations[lang as keyof typeof translations] || translations.en;
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -27,12 +149,14 @@ export default function ProjectDetailPage() {
         
         // server.ts에서 getProject 함수 호출
         const projectData = await getProject(projectId);
-        
+        const deeplinks = await getDeepLinkAdmin(projectId);
+
         // 프로젝트 데이터 설정
         setProject(projectData);
+        setDeeplinks(deeplinks);
         
-        // 앱 등록 상태 확인 로직 추가 필요
-        // TODO: 앱 등록 상태 확인 로직 구현
+        // 앱 등록 상태 확인
+        checkAppRegistrationStatus(projectData);
         
         setIsLoading(false);
       } catch (error) {
@@ -43,77 +167,67 @@ export default function ProjectDetailPage() {
     fetchProjectData();
   }, [projectId]);
 
-  const handleAndroidRegister = (data: { packageName: string; sha256_list: string[] }) => {
-    // 프로젝트 데이터 업데이트
-    if (project) {
-      // 현재 프로젝트 데이터에서 앱 목록 업데이트
-      const updatedApps = project.apps || [];
-      
-      // 새로 등록된 안드로이드 앱 정보 추가
-      const androidAppIndex = updatedApps.findIndex((app: any) => app.platform === 'ANDROID');
-      
-      if (androidAppIndex >= 0) {
-        // 기존 앱 정보 업데이트
-        updatedApps[androidAppIndex].platform_data = {
-          package_name: data.packageName,
-          sha256_list: data.sha256_list
-        };
-      } else {
-        // 새 앱 정보 추가
-        updatedApps.push({
-          platform: 'ANDROID',
-          platform_data: {
-            package_name: data.packageName,
-            sha256_list: data.sha256_list
-          }
-        });
-      }
-      
-      // 프로젝트 데이터 업데이트
-      setProject({
-        ...project,
-        apps: updatedApps
+  // 앱 등록 상태 확인 함수
+  const checkAppRegistrationStatus = (projectData: any) => {
+    if (!projectData || !projectData.apps) return;
+    
+    // 안드로이드 앱 등록 상태 확인
+    const androidApp = projectData.apps.find((app: any) => app.platform === 'ANDROID');
+    setIsAndroidAppRegistered(!!androidApp);
+    
+    // iOS 앱 등록 상태 확인
+    const iosApp = projectData.apps.find((app: any) => app.platform === 'IOS');
+    setIsIOSAppRegistered(!!iosApp);
+  };
+
+  // 앱 정보 업데이트 함수
+  const updateAppInfo = (platform: 'ANDROID' | 'IOS', platformData: any) => {
+    if (!project) return;
+    
+    // 현재 프로젝트 데이터에서 앱 목록 업데이트
+    const updatedApps = [...(project.apps || [])];
+    
+    // 해당 플랫폼 앱 인덱스 찾기
+    const appIndex = updatedApps.findIndex((app: any) => app.platform === platform);
+    
+    if (appIndex >= 0) {
+      // 기존 앱 정보 업데이트
+      updatedApps[appIndex].platform_data = platformData;
+    } else {
+      // 새 앱 정보 추가
+      updatedApps.push({
+        platform,
+        platform_data: platformData
       });
     }
-    setIsAndroidAppRegistered(true)
-  }
+    
+    // 프로젝트 데이터 업데이트
+    setProject({
+      ...project,
+      apps: updatedApps
+    });
+  };
+
+  const handleAndroidRegister = (data: { packageName: string; sha256_list: string[] }) => {
+    // 안드로이드 앱 정보 업데이트
+    updateAppInfo('ANDROID', {
+      package_name: data.packageName,
+      sha256_list: data.sha256_list
+    });
+    
+    setIsAndroidAppRegistered(true);
+  };
 
   const handleIOSRegister = (data: { bundleId: string; teamId: string; appId: string }) => {
-    // 프로젝트 데이터 업데이트
-    if (project) {
-      // 현재 프로젝트 데이터에서 앱 목록 업데이트
-      const updatedApps = project.apps || [];
-      
-      // 새로 등록된 iOS 앱 정보 추가
-      const iosAppIndex = updatedApps.findIndex((app: any) => app.platform === 'IOS');
-      
-      if (iosAppIndex >= 0) {
-        // 기존 앱 정보 업데이트
-        updatedApps[iosAppIndex].platform_data = {
-          bundle_id: data.bundleId,
-          team_id: data.teamId,
-          app_id: data.appId
-        };
-      } else {
-        // 새 앱 정보 추가
-        updatedApps.push({
-          platform: 'IOS',
-          platform_data: {
-            bundle_id: data.bundleId,
-            team_id: data.teamId,
-            app_id: data.appId
-          }
-        });
-      }
-      
-      // 프로젝트 데이터 업데이트
-      setProject({
-        ...project,
-        apps: updatedApps
-      });
-    }
-    setIsIOSAppRegistered(true)
-  }
+    // iOS 앱 정보 업데이트
+    updateAppInfo('IOS', {
+      bundle_id: data.bundleId,
+      team_id: data.teamId,
+      app_id: data.appId
+    });
+    
+    setIsIOSAppRegistered(true);
+  };
 
   const handleDomainRegister = (data: { subDomain: string }) => {
     if (project) {
@@ -193,7 +307,7 @@ export default function ProjectDetailPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.87 11.87 0 0 0-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48A10.98 10.98 0 0 0 1 18h22a10.98 10.98 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/>
                 </svg>
-                Android 앱 수정
+                {t.androidAppEdit}
               </button>
             ) : (
               <button 
@@ -203,8 +317,8 @@ export default function ProjectDetailPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-emerald-500" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.87 11.87 0 0 0-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48A10.98 10.98 0 0 0 1 18h22a10.98 10.98 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/>
                 </svg>
-                Android 앱 등록
-                <span className="ml-2 text-xs bg-emerald-500/20 px-2 py-0.5 rounded-full">필요</span>
+                {t.androidRegister}
+                <span className="ml-2 text-xs bg-emerald-500/20 px-2 py-0.5 rounded-full">{t.required}</span>
               </button>
             )}
             
@@ -217,7 +331,7 @@ export default function ProjectDetailPage() {
                   <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.74 3.51 7.1 8.42 6.82c1.74-.08 2.9.83 3.84.83.93 0 2.65-1.03 4.5-.88 1.65.14 2.95.81 3.79 2.01-3.34 2.23-2.77 6.76.5 8.5z"/>
                   <path d="M12.77 4.05c.83-1.07 1.41-2.55 1.2-4.05-1.4.07-3.08.96-4.05 2.13-.85 1.04-1.56 2.56-1.28 4.02 1.49.12 3.03-.74 4.13-2.1z"/>
                 </svg>
-                iOS 앱 수정
+                {t.iosAppEdit}
               </button>
             ) : (
               <button 
@@ -228,8 +342,8 @@ export default function ProjectDetailPage() {
                   <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.74 3.51 7.1 8.42 6.82c1.74-.08 2.9.83 3.84.83.93 0 2.65-1.03 4.5-.88 1.65.14 2.95.81 3.79 2.01-3.34 2.23-2.77 6.76.5 8.5z"/>
                   <path d="M12.77 4.05c.83-1.07 1.41-2.55 1.2-4.05-1.4.07-3.08.96-4.05 2.13-.85 1.04-1.56 2.56-1.28 4.02 1.49.12 3.03-.74 4.13-2.1z"/>
                 </svg>
-                iOS 앱 등록
-                <span className="ml-2 text-xs bg-gray-500/20 px-2 py-0.5 rounded-full">필요</span>
+                {t.iosRegister}
+                <span className="ml-2 text-xs bg-gray-500/20 px-2 py-0.5 rounded-full">{t.required}</span>
               </button>
             )}
           </div>
@@ -251,12 +365,12 @@ export default function ProjectDetailPage() {
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-white tracking-tight">프로젝트 설정 가이드</h2>
-                  <p className="text-blue-300/80 text-sm mt-1.5">딥링크 활성화를 위한 3단계 설정</p>
+                  <h2 className="text-2xl font-bold text-white tracking-tight">{t.projectSettingsGuide}</h2>
+                  <p className="text-blue-300/80 text-sm mt-1.5">{t.deepLinkActivation}</p>
                 </div>
               </div>
               <span className="px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-medium shadow-lg shadow-blue-500/20 animate-pulse">
-                필수 설정
+                {t.requiredSettings}
               </span>
             </div>
             
@@ -267,20 +381,18 @@ export default function ProjectDetailPage() {
                 <div className="relative z-10">
                   <div className="flex items-center mb-5">
                     <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mr-3 shadow-inner">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
+                      <span className="text-green-400 font-bold text-lg">1</span>
                     </div>
-                    <h3 className="text-white font-semibold text-lg">프로젝트 생성</h3>
+                    <h3 className="text-white font-semibold text-lg">{t.projectCreation}</h3>
                   </div>
                   <p className="text-gray-300 text-sm mb-5 leading-relaxed">
-                    프로젝트가 성공적으로 생성되었습니다. 이제 앱과 도메인을 설정해 보세요.
+                    {t.projectCreationSuccess}
                   </p>
-                  <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="inline-flex items-center px-4 py-2.5 rounded-lg bg-green-600 text-white text-xs font-medium shadow-lg shadow-green-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    완료됨
+                    {t.completed}
                   </span>
                 </div>
               </div>
@@ -293,10 +405,10 @@ export default function ProjectDetailPage() {
                     <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mr-3 shadow-inner">
                       <span className="text-blue-400 font-bold text-lg">2</span>
                     </div>
-                    <h3 className="text-white font-semibold text-lg">앱 등록</h3>
+                    <h3 className="text-white font-semibold text-lg">{t.appRegistration}</h3>
                   </div>
                   <p className="text-gray-300 text-sm mb-5 leading-relaxed">
-                    딥링크를 사용하려면 모바일 앱을 등록하세요. Android와 iOS 모두 지원합니다.
+                    {t.appRegistrationDesc}
                   </p>
                   <div className="flex gap-3">
                     {isAndroidAppRegistered ? (
@@ -307,7 +419,7 @@ export default function ProjectDetailPage() {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        Android 완료
+                        {t.androidCompleted}
                       </button>
                     ) : (
                       <button 
@@ -317,7 +429,7 @@ export default function ProjectDetailPage() {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M17.523 15.34c-.5 0-.906.406-.906.906s.406.906.906.906.906-.406.906-.906-.406-.906-.906-.906m-11.046 0c-.5 0-.906.406-.906.906s.406.906.906.906.906-.406.906-.906-.406-.906-.906-.906m11.816-6.5l1.571-2.718a.325.325 0 00-.12-.445.325.325 0 00-.445.12l-1.59 2.754a10.384 10.384 0 00-4.709-1.12c-1.7 0-3.304.414-4.73 1.146L6.69 5.792a.33.33 0 00-.445-.12.33.33 0 00-.12.445l1.572 2.718c-2.438 1.665-4.047 4.345-4.047 7.394h15.703c0-3.049-1.61-5.73-4.047-7.394M7.168 13.434a.906.906 0 110-1.813.906.906 0 010 1.813m9.665 0a.906.906 0 110-1.813.906.906 0 010 1.813"/>
                         </svg>
-                        Android 등록
+                        {t.androidRegister}
                       </button>
                     )}
                     
@@ -329,7 +441,7 @@ export default function ProjectDetailPage() {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        iOS 완료
+                        {t.iosCompleted}
                       </button>
                     ) : (
                       <button 
@@ -340,7 +452,7 @@ export default function ProjectDetailPage() {
                           <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.74 3.51 7.1 8.42 6.82c1.74-.08 2.9.83 3.84.83.93 0 2.65-1.03 4.5-.88 1.65.14 2.95.81 3.79 2.01-3.34 2.23-2.77 6.76.5 8.5z"/>
                           <path d="M12.77 4.05c.83-1.07 1.41-2.55 1.2-4.05-1.4.07-3.08.96-4.05 2.13-.85 1.04-1.56 2.56-1.28 4.02 1.49.12 3.03-.74 4.13-2.1z"/>
                         </svg>
-                        iOS 등록
+                        {t.iosRegister}
                       </button>
                     )}
                   </div>
@@ -355,10 +467,10 @@ export default function ProjectDetailPage() {
                     <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mr-3 shadow-inner">
                       <span className="text-purple-400 font-bold text-lg">3</span>
                     </div>
-                    <h3 className="text-white font-semibold text-lg">도메인 설정</h3>
+                    <h3 className="text-white font-semibold text-lg">{t.domainSetting}</h3>
                   </div>
                   <p className="text-gray-300 text-sm mb-5 leading-relaxed">
-                    딥링크에 사용할 도메인을 설정하세요. 사용자 경험을 위해 짧은 도메인을 권장합니다.
+                    {t.domainSettingDesc}
                   </p>
                   {project.sub_domain ? (
                     <button 
@@ -368,7 +480,7 @@ export default function ProjectDetailPage() {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      도메인 설정 완료
+                      {t.domainSettingCompleted}
                     </button>
                   ) : (
                     <button 
@@ -378,7 +490,7 @@ export default function ProjectDetailPage() {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                       </svg>
-                      도메인 추가하기
+                      {t.addDomain}
                     </button>
                   )}
                 </div>
@@ -408,15 +520,15 @@ export default function ProjectDetailPage() {
         <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8 shadow-xl hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">딥링크 생성</h2>
-              <p className="text-gray-400 text-sm mt-1">프로젝트의 딥링크를 쉽게 생성하고 관리하세요</p>
+              <h2 className="text-2xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">{t.deepLinkCreation}</h2>
+              <p className="text-gray-400 text-sm mt-1">{t.deepLinkCreationDesc}</p>
             </div>
-            <button className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center">
+            {/* <button className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
               새 딥링크 만들기
-            </button>
+            </button> */}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -427,15 +539,15 @@ export default function ProjectDetailPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                   </svg>
                 </div>
-                <h3 className="text-white font-medium text-lg">REST API 문서</h3>
+                <h3 className="text-white font-medium text-lg">{t.restApiDocs}</h3>
               </div>
               <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                프로그래밍 방식으로 딥링크를 생성하는 방법에 대한 API 문서를 확인하세요. 모든 엔드포인트와 파라미터가 자세히 설명되어 있습니다.
+                {t.restApiDocsDesc}
               </p>
               <button 
                 onClick={() => window.location.href = window.location.pathname + '/docs/restapi'} 
                 className="text-blue-400 text-sm font-medium flex items-center group-hover:text-blue-300 transition-colors">
-                문서 보기
+                {t.viewDocs}
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -449,20 +561,20 @@ export default function ProjectDetailPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                   </svg>
                 </div>
-                <h3 className="text-white font-medium text-lg">키 관리</h3>
+                <h3 className="text-white font-medium text-lg">{t.keyManagement}</h3>
               </div>
               <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                API 키와 클라이언트 키를 생성하고 관리하여 안전하게 딥링크 서비스에 접근하세요. 키 권한 설정 및 사용량 모니터링이 가능합니다.
+                {t.keyManagementDesc}
               </p>
               <div className="flex space-x-4">
                 <button onClick={() => copyToClipboard(project.api_key)} className="text-purple-400 text-sm font-medium flex items-center group-hover:text-purple-300 transition-colors">
-                  API 키 확인하기
+                  {t.checkApiKey}
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
                 <button onClick={() => copyToClipboard(project.client_key)} className="text-green-400 text-sm font-medium flex items-center group-hover:text-green-300 transition-colors">
-                  클라이언트 키 확인하기
+                  {t.checkClientKey}
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -470,6 +582,146 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* 딥링크 목록 섹션 */}
+        <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8 shadow-lg hover:shadow-indigo-500/10 transition-all duration-300">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                {t.deepLinkList}
+              </h2>
+              <p className="text-gray-400">{t.deepLinkListDesc}</p>
+            </div>
+            {/* <button className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              새 딥링크 만들기
+            </button> */}
+          </div>
+          
+          <div className="overflow-hidden rounded-xl border border-gray-800 bg-black/40 backdrop-blur-sm shadow-inner">
+            <table className="min-w-full divide-y divide-gray-800">
+              <thead className="bg-gradient-to-r from-gray-900 to-gray-800">
+                <tr>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    {t.slug}
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    {t.url}
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    {t.clicks}
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    {t.creationDate}
+                  </th>
+                  {/* <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    관리
+                  </th> */}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {deeplinks && deeplinks.length > 0 ? (
+                  deeplinks.map((link, index) => (
+                    <tr key={link.short_code} className={`hover:bg-indigo-900/10 transition-colors ${index % 2 === 0 ? 'bg-black/60' : 'bg-black/80'}`}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                        <div className="flex items-center">
+                          <span className="w-2 h-2 rounded-full bg-indigo-500 mr-2"></span>
+                          {link.slug}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                        <div className="flex items-center group">
+                          <span className="truncate max-w-xs">
+                            {link.sub_domain ? 
+                              `https://${link.sub_domain}.depl.link/${link.short_code}` : 
+                              `https://${project.sub_domain || project.id}.depl.link/${link.short_code}`}
+                          </span>
+                          <button className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => copyToClipboard(link.sub_domain ? 
+                              `https://${link.sub_domain}.depl.link/${link.short_code}` : 
+                              `https://${project.sub_domain || project.id}.depl.link/${link.short_code}`)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-indigo-400 hover:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <span className="text-sm text-gray-400">{link.click_count}</span>
+                          <span className="ml-2 px-2 py-1 text-xs rounded-full bg-indigo-900/30 text-indigo-400">
+                            {t.clicks}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                        {new Date(link.created_at).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </td>
+                      {/* <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex space-x-2">
+                          <button 
+                            onClick={() => window.location.href = window.location.pathname + `/deeplink/${link.short_code}`}
+                            className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            상세보기
+                          </button>
+                          <button 
+                            className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            수정
+                          </button>
+                        </div>
+                      </td> */}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-16 text-center">
+                      <div className="flex flex-col items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        <p className="text-gray-400 mb-4">{t.noDeepLinks}</p>
+                        <button 
+                          onClick={() => window.location.href = window.location.pathname + '/deeplink/create'} 
+                          className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 text-sm shadow-md hover:shadow-indigo-500/20">
+                          {t.createFirstDeepLink}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* {deeplinks && deeplinks.length > 0 && (
+            <div className="mt-6 flex justify-between items-center">
+              <p className="text-sm text-gray-500">총 {deeplinks.length}개의 딥링크</p>
+              <div className="flex space-x-2">
+                <button className="px-3 py-1 bg-gray-800 text-gray-300 rounded hover:bg-gray-700 transition-colors text-sm">
+                  이전
+                </button>
+                <button className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors text-sm">
+                  다음
+                </button>
+              </div>
+            </div>
+          )} */}
         </div>
 
         

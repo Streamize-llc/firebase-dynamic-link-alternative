@@ -36,7 +36,7 @@ export default function RegisterIOSModal({
 }: RegisterIOSModalProps) {
   const iosApp = project?.apps?.find((app: any) => app.platform === 'IOS');
   const isEditMode = !!iosApp;
-  const lang = 'en';
+  const lang = getCurrentLanguage();
   
   const [bundleId, setBundleId] = useState<string>('');
   const [teamId, setTeamId] = useState<string>('');

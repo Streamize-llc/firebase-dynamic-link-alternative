@@ -23,6 +23,22 @@ export async function getProfile() {
   return profile;
 }
 
+export async function getDeepLinkAdmin(projectId: string) {
+  const supabase = await createClient();
+
+  const { data: deeplinks, error } = await supabase
+    .from('deeplinks')
+    .select('*')
+    .eq('project_id', projectId)
+    .limit(10);
+
+  if (error) {
+    throw new Error("딥링크 조회 중 오류가 발생했습니다: " + error.message);
+  }
+
+  return deeplinks;
+}
+
 export async function getProjects() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -39,9 +55,17 @@ export async function getProjects() {
       description,
       created_at,
       owner_id,
+      api_key,
+      client_key,
       profiles:owner_id (
         user_name,
         avatar_url
+      ),
+      apps!project_id (
+        id,
+        name,
+        platform,
+        platform_data
       )
     `)
     .eq('owner_id', user.id);
@@ -66,6 +90,12 @@ export async function getProjects() {
         profiles:owner_id (
           user_name,
           avatar_url
+        ),
+        apps!project_id (
+          id,
+          name,
+          platform,
+          platform_data
         )
       )
     `)
