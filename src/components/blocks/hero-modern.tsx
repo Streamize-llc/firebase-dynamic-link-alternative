@@ -222,12 +222,12 @@ function HeroModern() {
                                             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     )}
-                                    <Button
+                                    {/* <Button
                                         variant="outline"
                                         className="h-12 px-8 border-white/10 hover:bg-white/5"
                                     >
                                         View Documentation
-                                    </Button>
+                                    </Button> */}
                                 </div>
                             </div>
                         </div>
