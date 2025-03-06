@@ -54,10 +54,10 @@ function HeroModern() {
     const handleLogin = async () => {
         await supabase?.auth.signInWithOAuth({
             provider: 'google',
-            options: {
-                redirectTo: `${window.location.origin}/callback`,
-                scopes: 'profile email'
-            },
+            // options: {
+            //     redirectTo: `${window.location.origin}/callback`,
+            //     scopes: 'profile email'
+            // },
         });
     };
 
