@@ -78,7 +78,7 @@ function CompareSection() {
       </div>
       
       {/* Main content */}
-      <div className="max-w-6xl mx-auto px-4 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 relative z-10 pb-28 pt-14">
         <div className="text-center mb-16">
           <div className="inline-block mb-3 px-4 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10">
             <span className="text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
@@ -150,7 +150,7 @@ function CompareSection() {
           </p>
         </div>
         
-        <div className="mt-12 rounded-xl overflow-hidden backdrop-blur-sm bg-gradient-to-br from-black/40 to-black/60 border border-white/10 shadow-[0_10px_30px_rgba(123,58,180,0.07)]">
+        <div className="mt-12 rounded-xl overflow-hidden backdrop-blur-sm bg-gradient-to-br from-black/40 to-black/60 border border-red-400/20 hover:border-orange-400/30 transition-all duration-300 shadow-[0_10px_30px_rgba(123,58,180,0.07)]">
           {/* Header with elegant gradient accent */}
           <div className="p-5 border-b border-white/5 relative bg-white/[0.03]">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-400/80 via-orange-400/80 to-transparent"></div>

@@ -162,9 +162,9 @@ function HeroModern() {
                                 <div className="flex items-center gap-4">
                                     <div
                                         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full 
-                                        bg-purple-500/10 border border-purple-500/20"
+                                        bg-orange-500/10 border border-orange-500/20"
                                     >
-                                        <Circle className="h-2 w-2 fill-purple-500 animate-pulse" />
+                                        <Circle className="h-2 w-2 fill-orange-500 animate-pulse" />
                                         <span className="text-sm font-medium tracking-wide">
                                             Firebase Dynamic Links Alternative
                                         </span>
@@ -173,23 +173,23 @@ function HeroModern() {
 
                                 <div className="space-y-6">
                                     <h1 className="text-5xl font-bold tracking-tight leading-[1.2]">
-                                        Unlimited deep links
+                                        Firebase Dynamic Links
                                         <br />
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500">
-                                          at zero cost
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">
+                                          shutting down soon
                                         </span>
                                     </h1>
 
                                     <div className="flex gap-4">
-                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors">
+                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-orange-500/20 transition-colors">
                                             <div className="text-3xl font-bold tracking-wider">{String(timeLeft.days).padStart(2, '0')}</div>
                                             <div className="text-sm text-white/70 mt-1">days</div>
                                         </div>
-                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors">
+                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-orange-500/20 transition-colors">
                                             <div className="text-3xl font-bold tracking-wider">{String(timeLeft.hours).padStart(2, '0')}</div>
                                             <div className="text-sm text-white/70 mt-1">hours</div>
                                         </div>
-                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors">
+                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-orange-500/20 transition-colors">
                                             <div className="text-3xl font-bold tracking-wider">{String(timeLeft.minutes).padStart(2, '0')}</div>
                                             <div className="text-sm text-white/70 mt-1">minutes</div>
                                         </div>
@@ -197,11 +197,11 @@ function HeroModern() {
                                 </div>
 
                                 <p className="text-lg text-white/80 leading-relaxed max-w-lg font-medium">
-                                    No SDK required. Get comprehensive analytics 
+                                    Time is running out. Switch to our alternative
                                     <br />
-                                    and unlimited deep links - completely free, forever.
+                                    with unlimited deep links and comprehensive analytics.
                                     <br />
-                                    Start before Firebase shuts down their service.
+                                    No SDK required and completely free, forever.
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-4">
