@@ -16,7 +16,7 @@ export default function SubscriptionPage() {
   const params = useParams()
   const projectId = params.id as string
   const lang = getCurrentLanguage()
-  const userEmail = 'test@test.com'
+  const userEmail = 'test@naver.com'
   const priceId = 'pri_01jnwrj8tapkvcvx07qry11mjf'
 
   const handleCheckoutEvents = (event: CheckoutEventsData) => {
@@ -41,10 +41,7 @@ export default function SubscriptionPage() {
             variant: 'one-page',
             displayMode: 'inline',
             theme: 'dark',
-            allowLogout: true,
-            frameTarget: 'paddle-checkout-frame',
-            frameInitialHeight: 450,
-            frameStyle: 'width: 100%; background-color: transparent; border: none',
+            allowLogout: false,
             successUrl: '/checkout/success',
           },
         }
@@ -275,6 +272,8 @@ export default function SubscriptionPage() {
 
   return (
     <div className="flex flex-col items-center justify-center w-full min-h-screen px-6 py-16">
+      <div className={'paddle-checkout-frame'} />
+
       <div className="w-full max-w-7xl flex flex-col items-center">
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">{t.title}</h1>
