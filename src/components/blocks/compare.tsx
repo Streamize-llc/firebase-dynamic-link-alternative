@@ -86,7 +86,7 @@ function CompareSection() {
             </span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight leading-[1.2]">
-            Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500">Depl</span>
+            Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500">DEPL</span>
           </h2>
           <p className="text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
             The free alternative to Firebase Dynamic Links with more features and better performance
@@ -102,7 +102,7 @@ function CompareSection() {
               <div className="absolute -top-1 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-blue-500"></div>
               <div className="font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center gap-2">
                 <Star className="h-5 w-5 fill-purple-500 text-transparent" />
-                Depl
+                DEPL
               </div>
               <div className="text-xs text-white/50 mt-1">Recommended</div>
             </div>
