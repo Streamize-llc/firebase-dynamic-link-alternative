@@ -441,7 +441,7 @@ export default function SubscriptionPage() {
             </div>
             
             <Button 
-              onClick={onPressSubscribe}
+              onClick={() => onPressSubscribe('enterprise')}
               className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg font-medium transition-all duration-300 mt-10"
             >
               {t.contact}
