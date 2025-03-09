@@ -36,6 +36,8 @@ export class ProcessWebhook {
         .select('*')
         .eq('subscription_id', eventData.data.id)
         .maybeSingle();
+      
+      console.log("customData", customData);
 
       let response;
       if (existingSubscription) {
