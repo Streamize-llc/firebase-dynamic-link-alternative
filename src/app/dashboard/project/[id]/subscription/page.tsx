@@ -40,7 +40,7 @@ export default function SubscriptionPage() {
           settings: {
             variant: 'one-page',
             displayMode: 'inline',
-            theme: 'dark',
+            theme: 'light',
             allowLogout: false,
             successUrl: '/checkout/success',
           },
