@@ -6,27 +6,30 @@ import { getCurrentLanguage } from "@/utils/action/client"
 import { type Environments, initializePaddle, type Paddle } from '@paddle/paddle-js';
 import type { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
 import { Button } from "@/components/ui/button"
+import { useSupabase } from "@/utils/supabase/provider";
 
 export default function SubscriptionPage() {
+  const { user } = useSupabase()
   const [isLoading, setIsLoading] = useState(true)
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [paddle, setPaddle] = useState<Paddle | null>(null)
   const [checkoutData, setCheckoutData] = useState<CheckoutEventsData | null>(null);
   const router = useRouter()
   const params = useParams()
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const projectId = params.id as string
-  const lang = getCurrentLanguage()
-  const userEmail = 'test@naver.com'
-  const priceId = 'pri_01jnwrj8tapkvcvx07qry11mjf'
+  const [lang, setLang] = useState('en')
+
+  useEffect(() => {
+    setLang(getCurrentLanguage())
+  }, [])
 
   const handleCheckoutEvents = (event: CheckoutEventsData) => {
     setCheckoutData(event);
   };
   
   useEffect(() => {
-    console.log('paddle_initialized', paddle?.Initialized)
     if (!paddle?.Initialized && process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && process.env.NEXT_PUBLIC_PADDLE_ENV) {
-      console.log('paddle_initialized!!!', paddle?.Initialized)
       initializePaddle({
         token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
         environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environments,
@@ -39,7 +42,7 @@ export default function SubscriptionPage() {
         checkout: {
           settings: {
             variant: 'one-page',
-            displayMode: 'inline',
+            displayMode: 'overlay',
             theme: 'light',
             allowLogout: false,
             successUrl: '/checkout/success',
@@ -47,17 +50,34 @@ export default function SubscriptionPage() {
         }
       }).then(async (paddle) => {
         if (paddle) {
-          console.log(process.env.NEXT_PUBLIC_PADDLE_ENV)
-          console.log('try_open_checkout', paddle?.Initialized, priceId)
           setPaddle(paddle)
-          paddle.Checkout.open({
-            ...(userEmail && { customer: { email: userEmail } }),
-            items: [{ priceId: priceId, quantity: 1 }],
-          })
         }
       })
     }
   }, [paddle?.Initialized])
+
+  const onPressSubscribe = (planName: string) => {
+    if (!paddle?.Initialized) {
+      console.log('paddle_not_initialized')
+      return;
+    }
+
+    // 요금제 ID 설정
+    let priceId = '';
+    
+    if (planName === 'standard') {
+      if (billingCycle === 'monthly') {
+        priceId = 'pri_01jnwrgzb9edpezmrfv1wvp8a7';
+      } else if (billingCycle === 'yearly') {
+        priceId = 'pri_01jnwrj8tapkvcvx07qry11mjf';
+      }
+    }
+
+    paddle.Checkout.open({
+      ...(user?.email && { customer: { email: user?.email } }),
+      items: [{ priceId: priceId, quantity: 1 }],
+    })
+  }
 
   const translations = {
     ko: {
@@ -204,7 +224,6 @@ export default function SubscriptionPage() {
   };
 
   const t = translations[lang as keyof typeof translations] || translations.en;
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   useEffect(() => {
     // 구독 정보 로드 시뮬레이션
@@ -272,7 +291,7 @@ export default function SubscriptionPage() {
 
   return (
     <div className="flex flex-col items-center justify-center w-full min-h-screen px-6 py-16">
-      <div className={'paddle-checkout-frame'} />
+      {/* <div className={'paddle-checkout-frame flex justify-center items-center bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl mx-auto'} /> */}
 
       <div className="w-full max-w-7xl flex flex-col items-center">
         <div className="mb-12 text-center">
@@ -340,7 +359,7 @@ export default function SubscriptionPage() {
             </div>
             
             <Button 
-              onClick={() => handleSubscribe('free')}
+              onClick={() => onPressSubscribe('free')}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-medium transition-all duration-300 mt-10"
             >
               {t.startFree}
@@ -382,7 +401,7 @@ export default function SubscriptionPage() {
             </div>
             
             <Button 
-              onClick={() => handleSubscribe('pro')}
+              onClick={() => onPressSubscribe('standard')}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-all duration-300 mt-10"
             >
               {t.subscribe}
@@ -417,7 +436,7 @@ export default function SubscriptionPage() {
             </div>
             
             <Button 
-              onClick={() => handleSubscribe('enterprise')}
+              onClick={onPressSubscribe}
               className="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg font-medium transition-all duration-300 mt-10"
             >
               {t.contact}
