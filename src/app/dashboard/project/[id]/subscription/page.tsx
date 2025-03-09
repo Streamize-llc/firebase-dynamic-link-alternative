@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/utils/supabase/provider";
 
 export default function SubscriptionPage() {
-  const { user } = useSupabase()
+  const { user, profile } = useSupabase()
   const [isLoading, setIsLoading] = useState(true)
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [paddle, setPaddle] = useState<Paddle | null>(null)
@@ -74,8 +74,13 @@ export default function SubscriptionPage() {
     }
 
     paddle.Checkout.open({
-      ...(user?.email && { customer: { email: user?.email } }),
+      ...(user?.email && { customer: { 
+        email: user?.email 
+      }}),
       items: [{ priceId: priceId, quantity: 1 }],
+      customData: {
+        userId: profile?.id
+      }
     })
   }
 

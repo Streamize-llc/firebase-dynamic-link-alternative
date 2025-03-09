@@ -217,6 +217,50 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          paddle_customer_id: string
+          price_id: string
+          product_id: string
+          scheduled_change: string | null
+          subscription_id: string
+          subscription_status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paddle_customer_id: string
+          price_id: string
+          product_id: string
+          scheduled_change?: string | null
+          subscription_id: string
+          subscription_status: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paddle_customer_id?: string
+          price_id?: string
+          product_id?: string
+          scheduled_change?: string | null
+          subscription_id?: string
+          subscription_status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
