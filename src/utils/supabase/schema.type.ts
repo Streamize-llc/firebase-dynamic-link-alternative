@@ -183,6 +183,7 @@ export type Database = {
           client_key: string | null
           created_at: string
           current_monthly_click_count: number
+          current_monthly_create_count: number
           description: string | null
           id: string
           name: string
@@ -199,6 +200,7 @@ export type Database = {
           client_key?: string | null
           created_at?: string
           current_monthly_click_count?: number
+          current_monthly_create_count?: number
           description?: string | null
           id?: string
           name: string
@@ -215,6 +217,7 @@ export type Database = {
           client_key?: string | null
           created_at?: string
           current_monthly_click_count?: number
+          current_monthly_create_count?: number
           description?: string | null
           id?: string
           name?: string

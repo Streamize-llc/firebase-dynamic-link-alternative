@@ -11,7 +11,7 @@ export default function RestApiDocumentation() {
   const params = useParams()
   const projectId = params.id as string
   const [activeTab, setActiveTab] = useState("authentication")
-  const [project, setProject] = useState<Tables<"projects"> | null>(null)
+  const [project, setProject] = useState<any>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
