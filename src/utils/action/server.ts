@@ -135,6 +135,9 @@ export async function getProject(projectId: string) {
       sub_domain,
       created_at,
       owner_id,
+      subscription_tier,
+      current_monthly_create_count,
+      current_monthly_click_count,
       profiles:owner_id (
         user_name,
         avatar_url

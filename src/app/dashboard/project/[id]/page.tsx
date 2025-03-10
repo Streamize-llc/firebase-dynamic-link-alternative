@@ -611,7 +611,7 @@ export default function ProjectDetailPage() {
                 <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full">무제한</span>
               </div>
               <div className="flex items-end gap-2 mb-2">
-                <span className="text-3xl font-bold text-white">24</span>
+                <span className="text-3xl font-bold text-white">{project.current_monthly_create_count}</span>
                 <span className="text-gray-400 text-sm mb-1">개</span>
               </div>
               <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
@@ -626,28 +626,49 @@ export default function ProjectDetailPage() {
                 <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full">기본</span>
               </div>
               <div className="flex items-end gap-2 mb-2">
-                <span className="text-3xl font-bold text-white">1,432</span>
+                <span className="text-3xl font-bold text-white">{project.current_monthly_click_count}</span>
                 <span className="text-gray-400 text-sm mb-1">/ 10,000</span>
               </div>
               <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
-                <div className="bg-purple-500 h-2 rounded-full" style={{ width: '14.32%' }}></div>
+                <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${(project.current_monthly_click_count / 100000) * 100}%` }}></div>
               </div>
-              <p className="text-gray-500 text-xs">8,568개 클릭 남음</p>
+              <p className="text-gray-500 text-xs">{100000 - project.current_monthly_click_count}개 클릭 남음</p>
             </div>
             
-            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-5 border border-gray-800">
+            <div className={`backdrop-blur-sm rounded-xl p-5 border ${project.subscription_tier === 'free' 
+              ? 'bg-black/40 border-gray-800' 
+              : 'bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border-indigo-700'}`}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-white font-medium">현재 구독</h3>
-                <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-full">활성</span>
+                {project.subscription_tier === 'free' ? (
+                  <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-full">기본</span>
+                ) : (
+                  <span className="text-xs px-2 py-1 bg-indigo-500/30 text-indigo-300 rounded-full shadow-sm shadow-indigo-500/30">프리미엄</span>
+                )}
               </div>
               <div className="flex items-end gap-2 mb-2">
-                <span className="text-3xl font-bold text-white">무료</span>
-                <span className="text-gray-400 text-sm mb-1">요금제</span>
+                {project.subscription_tier === 'free' ? (
+                  <>
+                    <span className="text-3xl font-bold text-white">무료</span>
+                    <span className="text-gray-400 text-sm mb-1">요금제</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">프리미엄</span>
+                    <span className="text-indigo-200 text-sm mb-1">요금제</span>
+                  </>
+                )}
               </div>
               <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
+                {project.subscription_tier === 'free' ? (
+                  <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
+                ) : (
+                  <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full shadow-sm shadow-indigo-500/50" style={{ width: '100%' }}></div>
+                )}
               </div>
-              <p className="text-gray-500 text-xs">다음 갱신일: 2024년 12월 1일</p>
+              <p className={`text-xs ${project.subscription_tier === 'free' ? 'text-gray-500' : 'text-indigo-300'}`}>
+                다음 갱신일: 2024년 12월 1일
+              </p>
             </div>
           </div>
         </div>
