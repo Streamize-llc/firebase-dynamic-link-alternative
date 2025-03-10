@@ -666,9 +666,9 @@ export default function ProjectDetailPage() {
                   <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full shadow-sm shadow-indigo-500/50" style={{ width: '100%' }}></div>
                 )}
               </div>
-              <p className={`text-xs ${project.subscription_tier === 'free' ? 'text-gray-500' : 'text-indigo-300'}`}>
+              {/* <p className={`text-xs ${project.subscription_tier === 'free' ? 'text-gray-500' : 'text-indigo-300'}`}>
                 다음 갱신일: 2024년 12월 1일
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
