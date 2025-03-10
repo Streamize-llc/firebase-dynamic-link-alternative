@@ -107,17 +107,24 @@ function HeroModern() {
                         </a>
 
                         <div className="hidden md:flex items-center gap-12">
-                            {["Products", "Pricing", "Docs", "Blog"].map(
+                            {[
+                                { name: "Products", href: "/" },
+                                { name: "Blog", href: "/blog" }
+                            ].map(
                                 (item) => (
                                     <a
-                                        key={item}
-                                        href="#"
-                                        className="text-sm text-white/70 hover:text-white transition-colors relative group"
+                                        key={item.name}
+                                        href={item.href}
+                                        className={`text-sm ${window.location.pathname === item.href || 
+                                            (item.href === "/blog" && window.location.pathname.includes("/blog")) 
+                                            ? "text-white" : "text-white/70"} hover:text-white transition-colors relative group`}
                                     >
-                                        {item}
+                                        {item.name}
                                         <span
-                                            className="absolute -bottom-1 left-0 w-2 h-px bg-purple-500/50 
-                                            transition-all group-hover:w-full"
+                                            className={`absolute -bottom-1 left-0 ${window.location.pathname === item.href || 
+                                            (item.href === "/blog" && window.location.pathname.includes("/blog")) 
+                                            ? "w-full" : "w-2"} h-px bg-purple-500/50 
+                                            transition-all group-hover:w-full`}
                                         />
                                     </a>
                                 )
