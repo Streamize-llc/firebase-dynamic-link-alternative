@@ -94,15 +94,21 @@ function HeroModern() {
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex items-center justify-between h-24">
                         <a
-                            href="https://kokonutui.com/"
+                            href="/"
                             className="flex items-center gap-3"
                         >
-                            <Command
-                                className="h-6 w-6 text-purple-500"
-                                strokeWidth={1.5}
-                            />
+                            <div className="relative">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg blur opacity-70"></div>
+                                <div className="relative h-6 w-6 bg-black rounded-lg flex items-center justify-center">
+                                    <Command
+                                        className="h-4 w-4 text-orange-500"
+                                        strokeWidth={2}
+                                    />
+                                </div>
+                            </div>
                             <span className="text-xl font-medium tracking-wide">
                                 DEPL
+                                <span className="text-orange-500 font-bold">.</span>
                             </span>
                         </a>
 
