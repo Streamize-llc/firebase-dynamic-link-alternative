@@ -7,6 +7,7 @@ import { Menu, ArrowRight, X, Command, Circle, Zap, Link2, BarChart3 } from "luc
 import { useState, useEffect } from "react";
 import { useSupabase } from "@/utils/supabase/provider";
 import { trackEvent } from "@/lib/mixpanelClient";
+import { usePathname } from "next/navigation";
 
 function HeroModern() {
     const { supabase, user } = useSupabase();
@@ -18,6 +19,7 @@ function HeroModern() {
         minutes: 0,
         seconds: 0
     });
+    const pathname = usePathname();
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -121,14 +123,14 @@ function HeroModern() {
                                     <a
                                         key={item.name}
                                         href={item.href}
-                                        className={`text-sm ${window.location.pathname === item.href || 
-                                            (item.href === "/blog" && window.location.pathname.includes("/blog")) 
+                                        className={`text-sm ${pathname === item.href || 
+                                            (item.href === "/blog" && pathname.includes("/blog")) 
                                             ? "text-white" : "text-white/70"} hover:text-white transition-colors relative group`}
                                     >
                                         {item.name}
                                         <span
-                                            className={`absolute -bottom-1 left-0 ${window.location.pathname === item.href || 
-                                            (item.href === "/blog" && window.location.pathname.includes("/blog")) 
+                                            className={`absolute -bottom-1 left-0 ${pathname === item.href || 
+                                            (item.href === "/blog" && pathname.includes("/blog")) 
                                             ? "w-full" : "w-2"} h-px bg-purple-500/50 
                                             transition-all group-hover:w-full`}
                                         />

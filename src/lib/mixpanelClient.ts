@@ -11,16 +11,25 @@ export const initMixpanel = () => {
     console.warn('Mixpanel token is missing! Check your .env file.');
     return;
   }
- 
-  mixpanel.init(MIXPANEL_TOKEN, { autotrack: true });
-  isInitialized = true;
+  
+  try {
+    mixpanel.init(MIXPANEL_TOKEN, { autotrack: true });
+    isInitialized = true;
+  } catch (error) {
+    console.error('Mixpanel 초기화 중 오류 발생:', error);
+  }
 }
 
 export const trackEvent = (eventName: string, properties?: Record<string, any>) => {
-  if (typeof window !== 'undefined') {
+  try {
+    if (typeof window === 'undefined') return;
+    
     if (!isInitialized) {
       initMixpanel();
     }
+    
     mixpanel.track(eventName, properties);
+  } catch (error) {
+    console.error('이벤트 추적 중 오류 발생:', error);
   }
 };
