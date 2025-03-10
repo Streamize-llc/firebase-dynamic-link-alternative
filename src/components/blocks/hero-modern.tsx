@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, ArrowRight, X, Command, Circle, Zap, Link2, BarChart3 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSupabase } from "@/utils/supabase/provider";
+import { trackEvent } from "@/lib/mixpanelClient";
 
 function HeroModern() {
     const { supabase, user } = useSupabase();
@@ -27,6 +28,7 @@ function HeroModern() {
         };
 
         window.addEventListener("mousemove", handleMouseMove);
+        trackEvent("landing_page_view");
         return () => window.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
@@ -52,6 +54,7 @@ function HeroModern() {
     }, []);
 
     const handleLogin = async () => {
+        trackEvent("landing_page_login_click");
         await supabase?.auth.signInWithOAuth({
             provider: 'google',
             options: {
