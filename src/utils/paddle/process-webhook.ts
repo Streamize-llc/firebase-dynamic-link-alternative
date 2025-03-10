@@ -79,7 +79,8 @@ export class ProcessWebhook {
         .maybeSingle();
       
       // 프로젝트가 존재하면 구독 정보 업데이트
-      if (project && response.data && response.data.length > 0) {
+      console.log("WOW", project, response.data);
+      if (project && response.data) {
         if (eventData.data.status === 'active') {
           const subscriptionInfo = getSubscriptionInfoFromPriceId(eventData.data.items[0].price?.id || '');
           await supabase
