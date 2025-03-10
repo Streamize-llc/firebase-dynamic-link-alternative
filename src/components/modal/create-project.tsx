@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation"
 interface CreateProjectModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (data: { name: string; description?: string }) => void
+  onSubmit: (data: { name: string; description?: string; projectId: string }) => void
 }
 
 export function CreateProjectModal({ isOpen, onClose, onSubmit }: CreateProjectModalProps) {
@@ -30,7 +30,7 @@ export function CreateProjectModal({ isOpen, onClose, onSubmit }: CreateProjectM
       setError(null)
       
       // 서버 액션을 사용하여 프로젝트 생성
-      await createProject(
+      const createdProject = await createProject(
         projectName.trim(),
         projectDescription.trim() || undefined
       )
@@ -38,7 +38,8 @@ export function CreateProjectModal({ isOpen, onClose, onSubmit }: CreateProjectM
       // 성공 시 콜백 호출
       onSubmit({
         name: projectName.trim(),
-        description: projectDescription.trim() || undefined
+        description: projectDescription.trim() || undefined,
+        projectId: createdProject.id
       })
       
       // 상태 초기화

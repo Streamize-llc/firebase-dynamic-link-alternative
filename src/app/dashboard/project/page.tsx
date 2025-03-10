@@ -65,8 +65,9 @@ export default function ProjectPage() {
     fetchProjects()
   }, [t.loadingError])
 
-  const handleCreateProject = (data: { name: string; description?: string }) => {
+  const handleCreateProject = (data: { name: string; description?: string, projectId: string }) => {
     console.log("새 프로젝트 생성:", data)
+    router.push(`/dashboard/project/${data.projectId}`)
   }
 
   const handleProjectClick = (projectId: string) => {
