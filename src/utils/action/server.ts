@@ -235,6 +235,8 @@ export async function createProject(name: string, description?: string) {
       name,
       description,
       owner_id: user.id,
+      subscription_tier: 'free',
+      next_quota_update_at: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
       api_key: crypto.randomUUID(),
       client_key: crypto.randomUUID()
     })

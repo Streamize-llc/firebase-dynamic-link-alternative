@@ -178,36 +178,61 @@ export type Database = {
       }
       projects: {
         Row: {
+          active_subscription_id: string | null
           api_key: string | null
           client_key: string | null
           created_at: string
+          current_monthly_click_count: number
           description: string | null
           id: string
           name: string
+          next_quota_update_at: string | null
+          next_subscription_update_at: string | null
           owner_id: string
           sub_domain: string | null
+          subscription_status: string | null
+          subscription_tier: string | null
         }
         Insert: {
+          active_subscription_id?: string | null
           api_key?: string | null
           client_key?: string | null
           created_at?: string
+          current_monthly_click_count?: number
           description?: string | null
           id?: string
           name: string
+          next_quota_update_at?: string | null
+          next_subscription_update_at?: string | null
           owner_id: string
           sub_domain?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
         }
         Update: {
+          active_subscription_id?: string | null
           api_key?: string | null
           client_key?: string | null
           created_at?: string
+          current_monthly_click_count?: number
           description?: string | null
           id?: string
           name?: string
+          next_quota_update_at?: string | null
+          next_subscription_update_at?: string | null
           owner_id?: string
           sub_domain?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "projects_active_subscription_id_fkey"
+            columns: ["active_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "projects_owner_id_fkey"
             columns: ["owner_id"]
@@ -224,10 +249,11 @@ export type Database = {
           paddle_customer_id: string
           price_id: string
           product_id: string
+          project_id: string | null
           scheduled_change: string | null
           subscription_id: string
           subscription_status: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -235,10 +261,11 @@ export type Database = {
           paddle_customer_id: string
           price_id: string
           product_id: string
+          project_id?: string | null
           scheduled_change?: string | null
           subscription_id: string
           subscription_status: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -246,12 +273,20 @@ export type Database = {
           paddle_customer_id?: string
           price_id?: string
           product_id?: string
+          project_id?: string | null
           scheduled_change?: string | null
           subscription_id?: string
           subscription_status?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "subscriptions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "subscriptions_user_id_fkey"
             columns: ["user_id"]

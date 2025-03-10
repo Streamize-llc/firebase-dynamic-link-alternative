@@ -7,9 +7,11 @@ import {
   SubscriptionUpdatedEvent,
 } from '@paddle/paddle-node-sdk';
 import { createClient } from '@/utils/supabase/server';
+import { getSubscriptionInfoFromPriceId } from './subscription-item';
 
 interface CustomData {
   userId: string;
+  projectId: string;
 }
 
 export class ProcessWebhook {
@@ -36,8 +38,6 @@ export class ProcessWebhook {
         .select('*')
         .eq('subscription_id', eventData.data.id)
         .maybeSingle();
-      
-      console.log("customData", customData);
 
       let response;
       if (existingSubscription) {
@@ -56,6 +56,7 @@ export class ProcessWebhook {
           .select();
       } else {
         // 기존 구독이 없으면 새로 삽입
+        eventData.data.status
         response = await supabase
           .from('subscriptions')
           .insert({
@@ -69,6 +70,29 @@ export class ProcessWebhook {
           })
           .select();
       }
+
+      // 프로젝트 정보 조회
+      const { data: project } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', customData.projectId)
+        .maybeSingle();
+      
+      // 프로젝트가 존재하면 구독 정보 업데이트
+      if (project && response.data && response.data.length > 0) {
+        const subscriptionInfo = getSubscriptionInfoFromPriceId(eventData.data.items[0].price?.id || '');
+        await supabase
+          .from('projects')
+          .update({
+            active_subscription_id: response.data[0].id,
+            subscription_status: eventData.data.status,
+            subscription_tier: subscriptionInfo.planType,
+          })
+          .eq('id', customData.projectId);
+      }
+
+
+
       console.log(response);
     } catch (e) {
       console.error(e);

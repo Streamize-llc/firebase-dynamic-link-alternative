@@ -7,6 +7,7 @@ import { type Environments, initializePaddle, type Paddle } from '@paddle/paddle
 import type { CheckoutEventsData } from '@paddle/paddle-js/types/checkout/events';
 import { Button } from "@/components/ui/button"
 import { useSupabase } from "@/utils/supabase/provider";
+import { getSubscriptionPriceId } from "@/utils/paddle/subscription-item";
 
 export default function SubscriptionPage() {
   const { user, profile } = useSupabase()
@@ -62,16 +63,7 @@ export default function SubscriptionPage() {
       return;
     }
 
-    // 요금제 ID 설정
-    let priceId = '';
-    
-    if (planName === 'standard') {
-      if (billingCycle === 'monthly') {
-        priceId = 'pri_01jnwrgzb9edpezmrfv1wvp8a7';
-      } else if (billingCycle === 'yearly') {
-        priceId = 'pri_01jnwrj8tapkvcvx07qry11mjf';
-      }
-    }
+    const priceId = getSubscriptionPriceId(billingCycle, planName as 'standard' | 'premium');
 
     paddle.Checkout.open({
       ...(user?.email && { customer: { 
@@ -79,7 +71,8 @@ export default function SubscriptionPage() {
       }}),
       items: [{ priceId: priceId, quantity: 1 }],
       customData: {
-        userId: profile?.id
+        userId: profile?.id,
+        projectId: projectId
       }
     })
   }
