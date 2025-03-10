@@ -80,18 +80,29 @@ export class ProcessWebhook {
       
       // 프로젝트가 존재하면 구독 정보 업데이트
       if (project && response.data && response.data.length > 0) {
-        const subscriptionInfo = getSubscriptionInfoFromPriceId(eventData.data.items[0].price?.id || '');
-        await supabase
-          .from('projects')
-          .update({
-            active_subscription_id: response.data[0].id,
-            subscription_status: eventData.data.status,
-            subscription_tier: subscriptionInfo.planType,
-          })
-          .eq('id', customData.projectId);
+        if (eventData.data.status === 'active') {
+          const subscriptionInfo = getSubscriptionInfoFromPriceId(eventData.data.items[0].price?.id || '');
+          await supabase
+            .from('projects')
+            .update({
+              active_subscription_id: response.data[0].id,
+              subscription_status: eventData.data.status,
+              plan_type: subscriptionInfo.planType,
+              current_monthly_click_count: 0,
+              current_monthly_create_count: 0,
+              next_quota_update_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              next_subscription_update_at: eventData.data.nextBilledAt
+            })
+            .eq('id', customData.projectId);
+        } else {
+          await supabase
+            .from('projects')
+            .update({
+              subscription_status: eventData.data.status
+            })
+            .eq('id', customData.projectId);
+        }
       }
-
-
 
       console.log(response);
     } catch (e) {
