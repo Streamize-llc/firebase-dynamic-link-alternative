@@ -596,7 +596,9 @@ export default function ProjectDetailPage() {
               </h2>
               <p className="text-gray-400">현재 월간 이용량 및 구독 상태를 확인하세요</p>
             </div>
-            <button className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center">
+            <button
+              onClick={() => window.location.href = `${window.location.pathname}/subscription`}
+              className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
