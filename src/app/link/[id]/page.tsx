@@ -169,5 +169,7 @@ export default async function AppLinkHandler({ params }: { params: Promise<{ id:
     return permanentRedirect(`https://apps.apple.com/KR/app/id${iosParams.app_store_id}?mt=8`)
   }
 
-  return null
+  return (
+    <p>This link requires a mobile device. Please open this link on an iOS or Android device to continue.</p>
+  )
 }
