@@ -4,52 +4,63 @@ import { useState, useEffect } from "react"
 import { CreateProjectModal } from "@/components/modal/create-project"
 import { getProjects } from "@/utils/action/server"
 import { useRouter } from "next/navigation"
-import { getCurrentLanguage } from "@/utils/action/client";
+import { getCurrentLanguage } from "@/utils/action/client"
+import { Plus, Rocket, Activity, ChevronRight, Grid3X3, List, Search, Filter, MoreVertical } from "lucide-react"
 
 export default function ProjectPage() {
   const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false)
   const [projects, setProjects] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const router = useRouter()
-  const lang = getCurrentLanguage();
+  const lang = getCurrentLanguage()
 
   const translations = {
     ko: {
-      title: "프로젝트",
-      subtitle: "딥링크 프로젝트를 관리하고 새로운 프로젝트를 생성하세요",
+      title: "Your Projects",
+      subtitle: "Build powerful deep link solutions for your mobile apps",
       loadingError: "프로젝트 로드 중 오류:",
-      newProjectTitle: "새 프로젝트 생성",
-      newProjectDesc: "새로운 딥링크 프로젝트를 시작하세요",
-      clickToStart: "클릭하여 시작하기",
-      noDescription: "설명 없음",
-      active: "활성",
-      linkCount: "링크 수:"
+      newProjectTitle: "Create New Project",
+      newProjectDesc: "Start building your deep link infrastructure",
+      clickToStart: "Get Started",
+      noDescription: "Configure your deep links and analytics",
+      active: "Active",
+      linkCount: "Links",
+      viewProject: "View Project",
+      searchPlaceholder: "프로젝트 검색...",
+      filter: "필터"
     },
     en: {
-      title: "Projects",
-      subtitle: "Manage your deeplink projects and create new ones",
+      title: "Your Projects",
+      subtitle: "Build powerful deep link solutions for your mobile apps",
       loadingError: "Error loading projects:",
       newProjectTitle: "Create New Project",
-      newProjectDesc: "Start a new deeplink project",
-      clickToStart: "Click to start",
-      noDescription: "No description",
+      newProjectDesc: "Start building your deep link infrastructure",
+      clickToStart: "Get Started",
+      noDescription: "Configure your deep links and analytics",
       active: "Active",
-      linkCount: "Links:"
+      linkCount: "Links",
+      viewProject: "View Project",
+      searchPlaceholder: "Search projects...",
+      filter: "Filter"
     },
     ja: {
-      title: "プロジェクト",
-      subtitle: "ディープリンクプロジェクトを管理し、新しいプロジェクトを作成します",
+      title: "Your Projects",
+      subtitle: "Build powerful deep link solutions for your mobile apps",
       loadingError: "プロジェクト読み込み中のエラー:",
-      newProjectTitle: "新規プロジェクト作成",
-      newProjectDesc: "新しいディープリンクプロジェクトを始めましょう",
-      clickToStart: "クリックして開始",
-      noDescription: "説明なし",
-      active: "アクティブ",
-      linkCount: "リンク数:"
+      newProjectTitle: "Create New Project",
+      newProjectDesc: "Start building your deep link infrastructure",
+      clickToStart: "Get Started",
+      noDescription: "Configure your deep links and analytics",
+      active: "Active",
+      linkCount: "Links",
+      viewProject: "View Project",
+      searchPlaceholder: "プロジェクトを検索...",
+      filter: "フィルター"
     }
-  };
+  }
   
-  const t = translations[lang as keyof typeof translations] || translations.en;
+  const t = translations[lang as keyof typeof translations] || translations.en
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -66,7 +77,7 @@ export default function ProjectPage() {
   }, [t.loadingError])
 
   const handleCreateProject = (data: { name: string; description?: string }) => {
-    console.log("새 프로젝트 생성:", data)
+    console.log("Creating new project:", data)
   }
 
   const handleProjectClick = (projectId: string) => {
@@ -74,101 +85,248 @@ export default function ProjectPage() {
   }
 
   return (
-    <div className="flex w-full h-full px-6 max-w-[125rem] gap-[1.5rem] pt-[6rem] pb-[5rem] justify-center">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">{t.title}</h1>
+          <p className="text-gray-400 mt-2">{t.subtitle}</p>
+        </div>
+        <button
+          onClick={() => setIsCreateProjectModalOpen(true)}
+          className="flex items-center px-4 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-sm font-medium rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg shadow-slate-500/10"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          {t.newProjectTitle}
+        </button>
+      </div>
+
+      {/* Filters and View Toggle */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder={t.searchPlaceholder}
+              className="pl-10 pr-4 py-2 bg-gray-900/50 border border-gray-800 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-gray-700 w-64"
+            />
+          </div>
+          
+          {/* Filter */}
+          <button className="flex items-center px-4 py-2 bg-gray-900/50 border border-gray-800 rounded-lg text-gray-300 hover:text-white hover:border-gray-700 transition-all">
+            <Filter className="w-4 h-4 mr-2" />
+            {t.filter}
+          </button>
+        </div>
+        
+        {/* View Mode Toggle */}
+        <div className="flex items-center bg-gray-900/50 border border-gray-800 rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`p-2 rounded transition-all ${
+              viewMode === 'grid' 
+                ? 'bg-gray-800 text-white' 
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <Grid3X3 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`p-2 rounded transition-all ${
+              viewMode === 'list' 
+                ? 'bg-gray-800 text-white' 
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <List className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Projects Content */}
+      <div>
+        {isLoading ? (
+          <div className={viewMode === 'grid' ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className={viewMode === 'grid' ? "" : "flex items-center space-x-4 p-4 bg-gray-900/50 border border-gray-800 rounded-lg"}>
+                {viewMode === 'grid' ? (
+                  <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 p-6 animate-pulse">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-gray-800"></div>
+                      <div className="w-16 h-5 rounded-full bg-gray-800"></div>
+                    </div>
+                    <div className="h-5 w-3/4 bg-gray-800 rounded mb-2"></div>
+                    <div className="h-4 w-full bg-gray-800 rounded mb-4"></div>
+                    <div className="flex gap-2 mb-4">
+                      <div className="h-5 w-12 bg-gray-800 rounded-full"></div>
+                      <div className="h-5 w-12 bg-gray-800 rounded-full"></div>
+                    </div>
+                    <div className="h-9 bg-gray-800 rounded-lg"></div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="w-12 h-12 rounded-lg bg-gray-800"></div>
+                    <div className="flex-1">
+                      <div className="h-5 w-48 bg-gray-800 rounded mb-2"></div>
+                      <div className="h-4 w-64 bg-gray-800 rounded"></div>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="h-5 w-16 bg-gray-800 rounded-full"></div>
+                      <div className="h-5 w-16 bg-gray-800 rounded-full"></div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={viewMode === 'grid' ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+            {/* Create New Project Card - Grid View */}
+            {viewMode === 'grid' && (
+              <div 
+                className="group cursor-pointer"
+                onClick={() => setIsCreateProjectModalOpen(true)}
+              >
+                <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border-2 border-dashed border-gray-700 p-6 hover:border-slate-600/40 transition-all h-full flex flex-col justify-center items-center text-center min-h-[240px]">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-slate-800/30 to-slate-700/30 flex items-center justify-center mb-4">
+                    <Plus className="w-6 h-6 text-slate-400" />
+                  </div>
+                  <h3 className="text-base font-medium text-white mb-2">{t.newProjectTitle}</h3>
+                  <p className="text-sm text-gray-400 mb-4">
+                    {t.newProjectDesc}
+                  </p>
+                  <button className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-all text-sm">
+                    {t.clickToStart}
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {/* Existing Projects */}
+            {projects.map((project) => (
+              viewMode === 'grid' ? (
+                <div 
+                  key={project.id} 
+                  className="group cursor-pointer"
+                  onClick={() => handleProjectClick(project.id)}
+                >
+                  <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 p-6 hover:border-gray-700 transition-all h-full flex flex-col min-h-[240px]">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-slate-800/30 to-slate-700/30 rounded-lg flex items-center justify-center">
+                          <Rocket className="w-6 h-6 text-slate-400" />
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                      </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation() }}
+                        className="p-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+                      >
+                        <MoreVertical className="w-4 h-4 text-gray-400" />
+                      </button>
+                    </div>
+                    
+                    <h3 className="text-lg font-medium text-white mb-2">{project.name}</h3>
+                    <p className="text-sm text-gray-400 mb-4 flex-1 line-clamp-2">
+                      {project.description || t.noDescription}
+                    </p>
+                    
+                    {/* Platform indicators */}
+                    <div className="flex gap-2 mb-4">
+                      <div className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        project.apps?.some((app: any) => app.platform === 'IOS') 
+                          ? 'bg-gray-700 text-gray-300' 
+                          : 'bg-gray-800 text-gray-500'
+                      }`}>
+                        iOS
+                      </div>
+                      <div className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        project.apps?.some((app: any) => app.platform === 'ANDROID') 
+                          ? 'bg-emerald-900/20 text-emerald-400' 
+                          : 'bg-gray-800 text-gray-500'
+                      }`}>
+                        Android
+                      </div>
+                    </div>
+                    
+                    {/* Stats */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-800">
+                      <div className="flex items-center space-x-4 text-sm text-gray-400">
+                        <div className="flex items-center space-x-1">
+                          <Activity className="w-4 h-4" />
+                          <span>0 {t.linkCount}</span>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-slate-300 transition-colors" />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div 
+                  key={project.id}
+                  className="flex items-center space-x-4 p-4 bg-gray-900/50 border border-gray-800 rounded-lg hover:border-gray-700 transition-all cursor-pointer"
+                  onClick={() => handleProjectClick(project.id)}
+                >
+                  <div className="relative">
+                    <div className="w-12 h-12 bg-gradient-to-br from-slate-800/30 to-slate-700/30 rounded-lg flex items-center justify-center">
+                      <Rocket className="w-6 h-6 text-slate-400" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full"></div>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <h3 className="text-base font-medium text-white">{project.name}</h3>
+                    <p className="text-sm text-gray-400 mt-1">
+                      {project.description || t.noDescription}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4">
+                    <div className="flex gap-2">
+                      <div className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        project.apps?.some((app: any) => app.platform === 'IOS') 
+                          ? 'bg-gray-700 text-gray-300' 
+                          : 'bg-gray-800 text-gray-500'
+                      }`}>
+                        iOS
+                      </div>
+                      <div className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        project.apps?.some((app: any) => app.platform === 'ANDROID') 
+                          ? 'bg-emerald-900/20 text-emerald-400' 
+                          : 'bg-gray-800 text-gray-500'
+                      }`}>
+                        Android
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-1 text-sm text-gray-400">
+                      <Activity className="w-4 h-4" />
+                      <span>0</span>
+                    </div>
+                    
+                    <button 
+                      onClick={(e) => { e.stopPropagation() }}
+                      className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
+                    >
+                      <MoreVertical className="w-4 h-4 text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+              )
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Create Project Modal */}
       <CreateProjectModal
         isOpen={isCreateProjectModalOpen}
         onClose={() => setIsCreateProjectModalOpen(false)}
         onSubmit={handleCreateProject}
       />
-      <div className="w-full max-w-7xl">
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">{t.title}</h1>
-          <p className="text-gray-400 text-lg">{t.subtitle}</p>
-        </div>
-        
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(3)].map((_, index) => (
-              <div key={index} className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] shadow-lg animate-pulse">
-                <div className="flex justify-between items-start mb-8">
-                  <div className="w-14 h-14 rounded-full bg-gray-700/30"></div>
-                  <div className="w-16 h-6 rounded-full bg-gray-700/30"></div>
-                </div>
-                <div className="h-7 w-40 bg-gray-700/30 rounded mb-2"></div>
-                <div className="h-5 w-32 bg-gray-700/30 rounded mb-6"></div>
-                
-                <div className="flex gap-3 mb-6">
-                  <div className="h-6 w-20 bg-gray-700/30 rounded-full"></div>
-                  <div className="h-6 w-16 bg-gray-700/30 rounded-full"></div>
-                </div>
-                
-                <div className="h-12 bg-gray-700/20 rounded-xl"></div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* 새 프로젝트 카드 */}
-            <div className="border-2 border-dashed border-gray-700 rounded-2xl p-8 flex flex-col items-center justify-between bg-[#111] hover:bg-[#161616] transition-all cursor-pointer hover:border-purple-500/50 group shadow-lg hover:shadow-xl" onClick={() => setIsCreateProjectModalOpen(true)}>
-              <div className="flex flex-col items-center justify-center flex-1 py-8">
-                <div className="w-14 h-14 rounded-full bg-purple-500/10 flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-medium text-white mb-2">{t.newProjectTitle}</h3>
-                <p className="text-gray-400 text-center text-base">{t.newProjectDesc}</p>
-              </div>
-              
-              <div className="flex justify-center items-center bg-black/20 p-3 rounded-xl w-full">
-                <span className="text-sm font-medium text-gray-400">{t.clickToStart}</span>
-              </div>
-            </div>
-            
-            {/* 실제 프로젝트 목록 */}
-            {projects.map((project) => (
-              <div 
-                key={project.id} 
-                className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] hover:from-[#131313] hover:to-[#1a1a1a] transition-all cursor-pointer shadow-lg hover:shadow-xl"
-                onClick={() => handleProjectClick(project.id)}
-              >
-                <div className="flex justify-between items-start mb-8">
-                  <div className="w-14 h-14 rounded-full bg-blue-500/15 flex items-center justify-center shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <span className="text-xs font-medium text-emerald-400 bg-emerald-500/15 px-3 py-1.5 rounded-full shadow-sm">{t.active}</span>
-                </div>
-                <h3 className="text-2xl font-medium text-white mb-2">{project.name}</h3>
-                <p className="text-gray-400 text-base mb-6">{project.description || t.noDescription}</p>
-                
-                {/* 앱 플랫폼 표시 */}
-                <div className="flex gap-3 mb-6">
-                  {project.apps && project.apps.some((app: any) => app.platform === 'ANDROID') ? (
-                    <span className="text-xs font-medium text-blue-400 bg-blue-500/15 px-3 py-1.5 rounded-full">Android</span>
-                  ) : (
-                    <span className="text-xs font-medium text-gray-400 bg-gray-500/15 px-3 py-1.5 rounded-full">Android</span>
-                  )}
-                  {project.apps && project.apps.some((app: any) => app.platform === 'IOS') ? (
-                    <span className="text-xs font-medium text-blue-400 bg-blue-500/15 px-3 py-1.5 rounded-full">iOS</span>
-                  ) : (
-                    <span className="text-xs font-medium text-gray-400 bg-gray-500/15 px-3 py-1.5 rounded-full">iOS</span>
-                  )}
-                </div>
-                
-                <div className="flex justify-between items-center bg-black/20 p-3 rounded-xl">
-                  <div className="flex items-center">
-                    <span className="text-xs text-gray-500">{t.linkCount}</span>
-                    <span className="text-sm font-medium text-white ml-2">0</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          
-          </div>
-        )}
-      </div>
     </div>
   )
 }

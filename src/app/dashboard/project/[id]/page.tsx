@@ -6,7 +6,25 @@ import RegisterAndroidModal from "@/components/modal/register-android"
 import RegisterIOSModal from "@/components/modal/register-ios"
 import RegisterDomainModal from "@/components/modal/register-domain"
 import { getProject, getDeepLinkAdmin } from "@/utils/action/server"
-import { getCurrentLanguage } from "@/utils/action/client";
+import { getCurrentLanguage } from "@/utils/action/client"
+import { 
+  Check, 
+  Smartphone, 
+  Globe, 
+  Key, 
+  FileText, 
+  Activity, 
+  ArrowRight,
+  Plus,
+  ExternalLink,
+  Copy,
+  MoreVertical,
+  Calendar,
+  Link2,
+  ChevronRight,
+  Code,
+  Zap
+} from "lucide-react"
 
 // 번역 객체 정의
 const translations = {
@@ -30,10 +48,10 @@ const translations = {
     deepLinkCreation: "딥링크 생성",
     deepLinkCreationDesc: "프로젝트의 딥링크를 쉽게 생성하고 관리하세요",
     restApiDocs: "REST API 문서",
-    restApiDocsDesc: "프로그래밍 방식으로 딥링크를 생성하는 방법에 대한 API 문서를 확인하세요. 모든 엔드포인트와 파라미터가 자세히 설명되어 있습니다.",
+    restApiDocsDesc: "프로그래밍 방식으로 딥링크를 생성하는 방법에 대한 API 문서를 확인하세요.",
     viewDocs: "문서 보기",
     keyManagement: "키 관리",
-    keyManagementDesc: "API 키와 클라이언트 키를 생성하고 관리하여 안전하게 딥링크 서비스에 접근하세요. 키 권한 설정 및 사용량 모니터링이 가능합니다.",
+    keyManagementDesc: "API 키와 클라이언트 키를 생성하고 관리하여 안전하게 딥링크 서비스에 접근하세요.",
     checkApiKey: "API 키 확인하기",
     checkClientKey: "클라이언트 키 확인하기",
     deepLinkList: "딥링크 목록",
@@ -68,10 +86,10 @@ const translations = {
     deepLinkCreation: "Deep Link Creation",
     deepLinkCreationDesc: "Easily create and manage deep links for your project",
     restApiDocs: "REST API Docs",
-    restApiDocsDesc: "Check the API documentation on how to create deep links programmatically. All endpoints and parameters are explained in detail.",
+    restApiDocsDesc: "Check the API documentation on how to create deep links programmatically.",
     viewDocs: "View Docs",
     keyManagement: "Key Management",
-    keyManagementDesc: "Create and manage API keys and client keys to securely access the deep link service. Key permission settings and usage monitoring are available.",
+    keyManagementDesc: "Create and manage API keys and client keys to securely access the deep link service.",
     checkApiKey: "Check API Key",
     checkClientKey: "Check Client Key",
     deepLinkList: "Deep Link List",
@@ -106,10 +124,10 @@ const translations = {
     deepLinkCreation: "ディープリンク作成",
     deepLinkCreationDesc: "プロジェクトのディープリンクを簡単に作成・管理できます",
     restApiDocs: "REST APIドキュメント",
-    restApiDocsDesc: "プログラムでディープリンクを作成する方法についてのAPIドキュメントを確認してください。すべてのエンドポイントとパラメータが詳細に説明されています。",
+    restApiDocsDesc: "プログラムでディープリンクを作成する方法についてのAPIドキュメントを確認してください。",
     viewDocs: "ドキュメントを見る",
     keyManagement: "キー管理",
-    keyManagementDesc: "APIキーとクライアントキーを作成・管理して、ディープリンクサービスに安全にアクセスしてください。キー権限設定と使用量モニタリングが可能です。",
+    keyManagementDesc: "APIキーとクライアントキーを作成・管理して、ディープリンクサービスに安全にアクセスしてください。",
     checkApiKey: "APIキーを確認",
     checkClientKey: "クライアントキーを確認",
     deepLinkList: "ディープリンク一覧",
@@ -244,25 +262,20 @@ export default function ProjectDetailPage() {
     alert('Copied to clipboard.');
   }
 
-  if (isLoading) {
+  if (isLoading || !project) {
     return (
-      <div className="flex w-full h-full px-6 max-w-[125rem] gap-[1.5rem] pt-[6rem] pb-[5rem] justify-center">
-        <div className="w-full max-w-7xl animate-pulse">
-          <div className="h-10 w-64 bg-gray-700/30 rounded mb-4"></div>
-          <div className="h-6 w-96 bg-gray-700/30 rounded mb-10"></div>
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 w-64 bg-gray-800 rounded mb-4"></div>
+          <div className="h-6 w-96 bg-gray-800 rounded mb-8"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-            {[...Array(3)].map((_, index) => (
-              <div key={index} className="border border-gray-800 rounded-2xl p-6 bg-gradient-to-br from-[#111] to-[#151515]">
-                <div className="h-8 w-32 bg-gray-700/30 rounded mb-4"></div>
-                <div className="h-10 w-20 bg-gray-700/30 rounded"></div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                <div className="h-10 w-10 bg-gray-800 rounded-lg mb-2"></div>
+                <div className="h-6 w-20 bg-gray-800 rounded"></div>
               </div>
             ))}
-          </div>
-          
-          <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8">
-            <div className="h-8 w-48 bg-gray-700/30 rounded mb-6"></div>
-            <div className="h-64 bg-gray-700/20 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -270,7 +283,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="flex w-full h-full px-6 max-w-[125rem] gap-[1.5rem] pt-[6rem] pb-[5rem] justify-center">
+    <div className="space-y-6">
       <RegisterAndroidModal
         isOpen={isAndroidModalOpen}
         onClose={() => setIsAndroidModalOpen(false)}
@@ -292,493 +305,330 @@ export default function ProjectDetailPage() {
         project={project}
       />
 
-      <div className="w-full max-w-7xl">
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">{project.name}</h1>
-            {/* <p className="text-gray-400 text-lg">fgdfgdf</p> */}
-          </div>
-          <div className="flex gap-3">
-            {isAndroidAppRegistered || project.platforms?.includes('ANDROID') ? (
-              <button 
-                onClick={() => setIsAndroidModalOpen(true)}
-                className="px-4 py-2.5 rounded-lg bg-green-600/15 hover:bg-green-600/25 text-green-400 font-medium transition-all flex items-center border border-green-500/20 shadow-sm"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.87 11.87 0 0 0-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48A10.98 10.98 0 0 0 1 18h22a10.98 10.98 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/>
-                </svg>
-                {t.androidAppEdit}
-              </button>
-            ) : (
-              <button 
-                onClick={() => setIsAndroidModalOpen(true)}
-                className="px-4 py-2.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 font-medium transition-all flex items-center border border-emerald-500/20 shadow-sm"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-emerald-500" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.87 11.87 0 0 0-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48A10.98 10.98 0 0 0 1 18h22a10.98 10.98 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/>
-                </svg>
-                {t.androidRegister}
-                <span className="ml-2 text-xs bg-emerald-500/20 px-2 py-0.5 rounded-full">{t.required}</span>
-              </button>
-            )}
-            
-            {isIOSAppRegistered || project.platforms?.includes('IOS') ? (
-              <button 
-                onClick={() => setIsIOSModalOpen(true)}
-                className="px-4 py-2.5 rounded-lg bg-blue-600/15 hover:bg-blue-600/25 text-blue-400 font-medium transition-all flex items-center border border-blue-500/20 shadow-sm"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.74 3.51 7.1 8.42 6.82c1.74-.08 2.9.83 3.84.83.93 0 2.65-1.03 4.5-.88 1.65.14 2.95.81 3.79 2.01-3.34 2.23-2.77 6.76.5 8.5z"/>
-                  <path d="M12.77 4.05c.83-1.07 1.41-2.55 1.2-4.05-1.4.07-3.08.96-4.05 2.13-.85 1.04-1.56 2.56-1.28 4.02 1.49.12 3.03-.74 4.13-2.1z"/>
-                </svg>
-                {t.iosAppEdit}
-              </button>
-            ) : (
-              <button 
-                onClick={() => setIsIOSModalOpen(true)}
-                className="px-4 py-2.5 rounded-lg bg-gray-600/15 hover:bg-gray-600/25 text-gray-300 font-medium transition-all flex items-center border border-gray-500/20 shadow-sm"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-300" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.74 3.51 7.1 8.42 6.82c1.74-.08 2.9.83 3.84.83.93 0 2.65-1.03 4.5-.88 1.65.14 2.95.81 3.79 2.01-3.34 2.23-2.77 6.76.5 8.5z"/>
-                  <path d="M12.77 4.05c.83-1.07 1.41-2.55 1.2-4.05-1.4.07-3.08.96-4.05 2.13-.85 1.04-1.56 2.56-1.28 4.02 1.49.12 3.03-.74 4.13-2.1z"/>
-                </svg>
-                {t.iosRegister}
-                <span className="ml-2 text-xs bg-gray-500/20 px-2 py-0.5 rounded-full">{t.required}</span>
-              </button>
-            )}
-          </div>
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">{project.name}</h1>
+          <p className="text-gray-400 mt-2">{project.description || '딥링크 관리 및 분석 플랫폼'}</p>
         </div>
+        <div className="flex items-center space-x-3">
+          <button className="p-2 rounded-lg hover:bg-gray-800 transition-colors">
+            <MoreVertical className="w-5 h-5 text-gray-400" />
+          </button>
+        </div>
+      </div>
 
-        {/* 앱 설정 온보딩 */}
-        <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#0D1117] to-[#161B22] mb-10 relative overflow-hidden shadow-xl">
-          {/* 배경 장식 요소 */}
-          <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl"></div>
-          <div className="absolute top-20 left-40 w-24 h-24 bg-green-500/10 rounded-full blur-xl"></div>
-          
-          <div className="relative z-10">
-            <div className="flex justify-between items-center mb-8">
-              <div className="flex items-center">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mr-5 shadow-lg shadow-blue-500/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white tracking-tight">{t.projectSettingsGuide}</h2>
-                  <p className="text-blue-300/80 text-sm mt-1.5">{t.deepLinkActivation}</p>
-                </div>
-              </div>
-              <span className="px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-medium shadow-lg shadow-blue-500/20 animate-pulse">
-                {t.requiredSettings}
-              </span>
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-10 h-10 rounded-lg bg-slate-800/50 flex items-center justify-center">
+              <Link2 className="w-5 h-5 text-slate-400" />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* 스텝 1: 프로젝트 생성 */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all shadow-lg relative group hover:transform hover:scale-[1.02] duration-300">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative z-10">
-                  <div className="flex items-center mb-5">
-                    <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mr-3 shadow-inner">
-                      <span className="text-green-400 font-bold text-lg">1</span>
-                    </div>
-                    <h3 className="text-white font-semibold text-lg">{t.projectCreation}</h3>
-                  </div>
-                  <p className="text-gray-300 text-sm mb-5 leading-relaxed">
-                    {t.projectCreationSuccess}
-                  </p>
-                  <span className="inline-flex items-center px-4 py-2.5 rounded-lg bg-green-600 text-white text-xs font-medium shadow-lg shadow-green-500/20">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {t.completed}
-                  </span>
-                </div>
-              </div>
-              
-              {/* 스텝 2: 앱 등록 */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all shadow-lg relative group hover:transform hover:scale-[1.02] duration-300">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-blue-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative z-10">
-                  <div className="flex items-center mb-5">
-                    <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mr-3 shadow-inner">
-                      <span className="text-blue-400 font-bold text-lg">2</span>
-                    </div>
-                    <h3 className="text-white font-semibold text-lg">{t.appRegistration}</h3>
-                  </div>
-                  <p className="text-gray-300 text-sm mb-5 leading-relaxed">
-                    {t.appRegistrationDesc}
-                  </p>
-                  <div className="flex gap-3">
-                    {isAndroidAppRegistered ? (
-                      <button 
-                        onClick={() => setIsAndroidModalOpen(true)}
-                        className="px-4 py-2.5 rounded-lg bg-green-600 text-white text-xs font-medium flex items-center shadow-lg shadow-green-500/20"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        {t.androidCompleted}
-                      </button>
-                    ) : (
-                      <button 
-                        onClick={() => setIsAndroidModalOpen(true)}
-                        className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-400 text-xs font-medium flex items-center hover:from-green-500/30 hover:to-green-600/30 transition-all shadow-md hover:shadow-green-500/10"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M17.523 15.34c-.5 0-.906.406-.906.906s.406.906.906.906.906-.406.906-.906-.406-.906-.906-.906m-11.046 0c-.5 0-.906.406-.906.906s.406.906.906.906.906-.406.906-.906-.406-.906-.906-.906m11.816-6.5l1.571-2.718a.325.325 0 00-.12-.445.325.325 0 00-.445.12l-1.59 2.754a10.384 10.384 0 00-4.709-1.12c-1.7 0-3.304.414-4.73 1.146L6.69 5.792a.33.33 0 00-.445-.12.33.33 0 00-.12.445l1.572 2.718c-2.438 1.665-4.047 4.345-4.047 7.394h15.703c0-3.049-1.61-5.73-4.047-7.394M7.168 13.434a.906.906 0 110-1.813.906.906 0 010 1.813m9.665 0a.906.906 0 110-1.813.906.906 0 010 1.813"/>
-                        </svg>
-                        {t.androidRegister}
-                      </button>
-                    )}
-                    
-                    {isIOSAppRegistered ? (
-                      <button 
-                        onClick={() => setIsIOSModalOpen(true)}
-                        className="px-4 py-2.5 rounded-lg bg-blue-600 text-white text-xs font-medium flex items-center shadow-lg shadow-blue-500/20"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        {t.iosCompleted}
-                      </button>
-                    ) : (
-                      <button 
-                        onClick={() => setIsIOSModalOpen(true)}
-                        className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-400 text-xs font-medium flex items-center hover:from-blue-500/30 hover:to-blue-600/30 transition-all shadow-md hover:shadow-blue-500/10"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.74 3.51 7.1 8.42 6.82c1.74-.08 2.9.83 3.84.83.93 0 2.65-1.03 4.5-.88 1.65.14 2.95.81 3.79 2.01-3.34 2.23-2.77 6.76.5 8.5z"/>
-                          <path d="M12.77 4.05c.83-1.07 1.41-2.55 1.2-4.05-1.4.07-3.08.96-4.05 2.13-.85 1.04-1.56 2.56-1.28 4.02 1.49.12 3.03-.74 4.13-2.1z"/>
-                        </svg>
-                        {t.iosRegister}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {/* 스텝 3: 도메인 설정 */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all shadow-lg relative group hover:transform hover:scale-[1.02] duration-300">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative z-10">
-                  <div className="flex items-center mb-5">
-                    <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mr-3 shadow-inner">
-                      <span className="text-purple-400 font-bold text-lg">3</span>
-                    </div>
-                    <h3 className="text-white font-semibold text-lg">{t.domainSetting}</h3>
-                  </div>
-                  <p className="text-gray-300 text-sm mb-5 leading-relaxed">
-                    {t.domainSettingDesc}
-                  </p>
-                  {project.sub_domain ? (
-                    <button 
-                      onClick={() => setIsDomainModalOpen(true)}
-                      className="px-4 py-2.5 rounded-lg bg-purple-600 text-white text-xs font-medium flex items-center shadow-lg shadow-purple-500/20"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {t.domainSettingCompleted}
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={() => setIsDomainModalOpen(true)}
-                      className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-purple-400 text-xs font-medium flex items-center hover:from-purple-500/30 hover:to-purple-600/30 transition-all shadow-md hover:shadow-purple-500/10"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                      </svg>
-                      {t.addDomain}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
+            <span className="text-sm text-gray-500">Total</span>
           </div>
+          <p className="text-2xl font-bold text-white">{deeplinks.length}</p>
+          <p className="text-xs text-gray-400 mt-1">딥링크</p>
         </div>
         
-        {/* 통계 카드 */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-          <div className="border border-gray-800 rounded-2xl p-6 bg-gradient-to-br from-[#111] to-[#151515]">
-            <h3 className="text-gray-400 font-medium mb-2">총 링크</h3>
-            <p className="text-4xl font-bold text-white">1234</p>
-          </div>
-          <div className="border border-gray-800 rounded-2xl p-6 bg-gradient-to-br from-[#111] to-[#151515]">
-            <h3 className="text-gray-400 font-medium mb-2">총 클릭</h3>
-            <p className="text-4xl font-bold text-white">1234</p>
-          </div>
-          <div className="border border-gray-800 rounded-2xl p-6 bg-gradient-to-br from-[#111] to-[#151515]">
-            <h3 className="text-gray-400 font-medium mb-2">전환율</h3>
-            <p className="text-4xl font-bold text-white">1234</p>
-          </div>
-        </div> */}
-        
-        {/* 딥링크 생성 메뉴 */}
-        {/* 딥링크 생성 메뉴 - 디자인 개선 버전 */}
-        <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8 shadow-xl hover:shadow-2xl transition-all duration-300">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">{t.deepLinkCreation}</h2>
-              <p className="text-gray-400 text-sm mt-1">{t.deepLinkCreationDesc}</p>
+        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-10 h-10 rounded-lg bg-emerald-900/20 flex items-center justify-center">
+              <Activity className="w-5 h-5 text-emerald-400" />
             </div>
-            {/* <button className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              새 딥링크 만들기
-            </button> */}
+            <span className="text-sm text-gray-500">Total</span>
+          </div>
+          <p className="text-2xl font-bold text-white">0</p>
+          <p className="text-xs text-gray-400 mt-1">클릭수</p>
+        </div>
+        
+        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-10 h-10 rounded-lg bg-indigo-900/20 flex items-center justify-center">
+              <Smartphone className="w-5 h-5 text-indigo-400" />
+            </div>
+            <span className="text-sm text-gray-500">Platforms</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+              isIOSAppRegistered ? 'bg-gray-700' : 'bg-gray-800'
+            }`}>
+              <Smartphone className="w-4 h-4 text-gray-400" />
+            </div>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+              isAndroidAppRegistered ? 'bg-emerald-900/20' : 'bg-gray-800'
+            }`}>
+              <Smartphone className="w-4 h-4 text-emerald-400" />
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-1">연결된 앱</p>
+        </div>
+        
+        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-10 h-10 rounded-lg bg-amber-900/20 flex items-center justify-center">
+              <Globe className="w-5 h-5 text-amber-400" />
+            </div>
+            <span className="text-sm text-gray-500">Domain</span>
+          </div>
+          <p className="text-sm font-medium text-white truncate">
+            {project.sub_domain ? `${project.sub_domain}.depl.link` : '미설정'}
+          </p>
+          <p className="text-xs text-gray-400 mt-1">서브도메인</p>
+        </div>
+      </div>
+
+      {/* Setup Progress */}
+      <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-white mb-4">{t.projectSettingsGuide}</h2>
+        <p className="text-sm text-gray-400 mb-6">{t.deepLinkActivation}</p>
+        
+        <div className="space-y-4">
+          {/* Step 1 */}
+          <div className="flex items-center space-x-4">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              true ? 'bg-emerald-600' : 'bg-gray-800'
+            }`}>
+              {true ? (
+                <Check className="w-5 h-5 text-white" />
+              ) : (
+                <span className="text-sm font-medium text-gray-400">1</span>
+              )}
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-white">{t.projectCreation}</h3>
+              <p className="text-xs text-gray-400 mt-1">{t.projectCreationSuccess}</p>
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="border border-gray-800 rounded-xl p-6 bg-gradient-to-br from-black/40 to-blue-900/10 hover:from-black/50 hover:to-blue-900/20 transition-all duration-300 cursor-pointer group shadow-md hover:shadow-blue-500/5">
-              <div className="flex items-center mb-5">
-                <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mr-4 shadow-inner group-hover:bg-blue-500/30 transition-all duration-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-medium text-lg">{t.restApiDocs}</h3>
-              </div>
-              <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                {t.restApiDocsDesc}
-              </p>
-              <button 
-                onClick={() => window.location.href = window.location.pathname + '/docs/restapi'} 
-                className="text-blue-400 text-sm font-medium flex items-center group-hover:text-blue-300 transition-colors">
-                {t.viewDocs}
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+          {/* Step 2 */}
+          <div className="flex items-center space-x-4">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              isAndroidAppRegistered && isIOSAppRegistered ? 'bg-emerald-600' : 'bg-gray-800'
+            }`}>
+              {isAndroidAppRegistered && isIOSAppRegistered ? (
+                <Check className="w-5 h-5 text-white" />
+              ) : (
+                <span className="text-sm font-medium text-gray-400">2</span>
+              )}
             </div>
-            
-            <div className="border border-gray-800 rounded-xl p-6 bg-gradient-to-br from-black/40 to-purple-900/10 hover:from-black/50 hover:to-purple-900/20 transition-all duration-300 cursor-pointer group shadow-md hover:shadow-purple-500/5">
-              <div className="flex items-center mb-5">
-                <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mr-4 shadow-inner group-hover:bg-purple-500/30 transition-all duration-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-medium text-lg">{t.keyManagement}</h3>
-              </div>
-              <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                {t.keyManagementDesc}
-              </p>
-              <div className="flex space-x-4">
-                <button onClick={() => copyToClipboard(project.api_key)} className="text-purple-400 text-sm font-medium flex items-center group-hover:text-purple-300 transition-colors">
-                  {t.checkApiKey}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-white">{t.appRegistration}</h3>
+              <p className="text-xs text-gray-400 mt-1">{t.appRegistrationDesc}</p>
+              <div className="flex items-center space-x-2 mt-2">
+                <button
+                  onClick={() => setIsAndroidModalOpen(true)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center ${
+                    isAndroidAppRegistered
+                      ? 'bg-emerald-900/20 text-emerald-400 border border-emerald-600/30'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <Smartphone className="w-3 h-3 mr-1.5" />
+                  Android {isAndroidAppRegistered && '✓'}
                 </button>
-                <button onClick={() => copyToClipboard(project.client_key)} className="text-green-400 text-sm font-medium flex items-center group-hover:text-green-300 transition-colors">
-                  {t.checkClientKey}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                <button
+                  onClick={() => setIsIOSModalOpen(true)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center ${
+                    isIOSAppRegistered
+                      ? 'bg-slate-800/30 text-slate-300 border border-slate-600/30'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <Smartphone className="w-3 h-3 mr-1.5" />
+                  iOS {isIOSAppRegistered && '✓'}
                 </button>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* 딥링크 목록 섹션 */}
-        <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8 shadow-lg hover:shadow-indigo-500/10 transition-all duration-300">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                {t.deepLinkList}
-              </h2>
-              <p className="text-gray-400">{t.deepLinkListDesc}</p>
-            </div>
-            {/* <button className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              새 딥링크 만들기
-            </button> */}
-          </div>
           
-          <div className="overflow-hidden rounded-xl border border-gray-800 bg-black/40 backdrop-blur-sm shadow-inner">
-            <table className="min-w-full divide-y divide-gray-800">
-              <thead className="bg-gradient-to-r from-gray-900 to-gray-800">
-                <tr>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    {t.slug}
-                  </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    {t.url}
-                  </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    {t.clicks}
-                  </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    {t.creationDate}
-                  </th>
-                  {/* <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    관리
-                  </th> */}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {deeplinks && deeplinks.length > 0 ? (
-                  deeplinks.map((link, index) => (
-                    <tr key={link.short_code} className={`hover:bg-indigo-900/10 transition-colors ${index % 2 === 0 ? 'bg-black/60' : 'bg-black/80'}`}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                        <div className="flex items-center">
-                          <span className="w-2 h-2 rounded-full bg-indigo-500 mr-2"></span>
-                          {link.slug}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                        <div className="flex items-center group">
-                          <span className="truncate max-w-xs">
-                            {link.sub_domain ? 
-                              `https://${link.sub_domain}.depl.link/${link.short_code}` : 
-                              `https://${project.sub_domain || project.id}.depl.link/${link.short_code}`}
-                          </span>
-                          <button className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => copyToClipboard(link.sub_domain ? 
-                              `https://${link.sub_domain}.depl.link/${link.short_code}` : 
-                              `https://${project.sub_domain || project.id}.depl.link/${link.short_code}`)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-indigo-400 hover:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <span className="text-sm text-gray-400">{link.click_count}</span>
-                          <span className="ml-2 px-2 py-1 text-xs rounded-full bg-indigo-900/30 text-indigo-400">
-                            {t.clicks}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                        {new Date(link.created_at).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </td>
-                      {/* <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex space-x-2">
-                          <button 
-                            onClick={() => window.location.href = window.location.pathname + `/deeplink/${link.short_code}`}
-                            className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            상세보기
-                          </button>
-                          <button 
-                            className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            수정
-                          </button>
-                        </div>
-                      </td> */}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-16 text-center">
-                      <div className="flex flex-col items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                        <p className="text-gray-400 mb-4">{t.noDeepLinks}</p>
+          {/* Step 3 */}
+          <div className="flex items-center space-x-4">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              project.sub_domain ? 'bg-emerald-600' : 'bg-gray-800'
+            }`}>
+              {project.sub_domain ? (
+                <Check className="w-5 h-5 text-white" />
+              ) : (
+                <span className="text-sm font-medium text-gray-400">3</span>
+              )}
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-white">{t.domainSetting}</h3>
+              <p className="text-xs text-gray-400 mt-1">{t.domainSettingDesc}</p>
+              <button
+                onClick={() => setIsDomainModalOpen(true)}
+                className={`mt-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center ${
+                  project.sub_domain
+                    ? 'bg-indigo-900/20 text-indigo-400 border border-indigo-600/30'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <Globe className="w-3 h-3 mr-1.5" />
+                {project.sub_domain || t.addDomain}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div 
+          className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all cursor-pointer group"
+          onClick={() => window.location.href = window.location.pathname + '/docs/restapi'}
+        >
+          <div className="flex items-center mb-4">
+            <div className="w-12 h-12 rounded-lg bg-slate-800/50 flex items-center justify-center mr-4">
+              <Code className="w-6 h-6 text-slate-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-white">{t.restApiDocs}</h3>
+              <p className="text-sm text-gray-400">{t.restApiDocsDesc}</p>
+            </div>
+          </div>
+          <div className="flex items-center text-sm text-indigo-400 group-hover:text-indigo-300">
+            <span>{t.viewDocs}</span>
+            <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+        
+        <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6">
+          <div className="flex items-center mb-4">
+            <div className="w-12 h-12 rounded-lg bg-indigo-900/20 flex items-center justify-center mr-4">
+              <Key className="w-6 h-6 text-indigo-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-white">{t.keyManagement}</h3>
+              <p className="text-sm text-gray-400">{t.keyManagementDesc}</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <button 
+              onClick={() => copyToClipboard(project.api_key)} 
+              className="flex items-center justify-between w-full px-3 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors group"
+            >
+              <span className="text-sm text-gray-300">API Key</span>
+              <Copy className="w-4 h-4 text-gray-400 group-hover:text-white" />
+            </button>
+            <button 
+              onClick={() => copyToClipboard(project.client_key)} 
+              className="flex items-center justify-between w-full px-3 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors group"
+            >
+              <span className="text-sm text-gray-300">Client Key</span>
+              <Copy className="w-4 h-4 text-gray-400 group-hover:text-white" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Deep Links Table */}
+      <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-800">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-white">{t.deepLinkList}</h2>
+              <p className="text-sm text-gray-400 mt-1">{t.deepLinkListDesc}</p>
+            </div>
+            <button className="flex items-center px-4 py-2 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-sm font-medium rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all">
+              <Plus className="w-4 h-4 mr-2" />
+              새 딥링크
+            </button>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-gray-800">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  {t.slug}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  {t.url}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  {t.clicks}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  {t.creationDate}
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  작업
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800">
+              {deeplinks && deeplinks.length > 0 ? (
+                deeplinks.map((link) => (
+                  <tr key={link.short_code} className="hover:bg-gray-800/50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Link2 className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-sm font-medium text-white">{link.slug}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center group">
+                        <span className="text-sm text-gray-400 truncate max-w-xs">
+                          {link.sub_domain ? 
+                            `https://${link.sub_domain}.depl.link/${link.short_code}` : 
+                            `https://${project.sub_domain || project.id}.depl.link/${link.short_code}`}
+                        </span>
                         <button 
-                          onClick={() => window.location.href = window.location.pathname + '/deeplink/create'} 
-                          className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 text-sm shadow-md hover:shadow-indigo-500/20">
-                          {t.createFirstDeepLink}
+                          onClick={() => copyToClipboard(link.sub_domain ? 
+                            `https://${link.sub_domain}.depl.link/${link.short_code}` : 
+                            `https://${project.sub_domain || project.id}.depl.link/${link.short_code}`)}
+                          className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Copy className="w-4 h-4 text-gray-400 hover:text-white" />
                         </button>
                       </div>
                     </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          
-          {/* {deeplinks && deeplinks.length > 0 && (
-            <div className="mt-6 flex justify-between items-center">
-              <p className="text-sm text-gray-500">총 {deeplinks.length}개의 딥링크</p>
-              <div className="flex space-x-2">
-                <button className="px-3 py-1 bg-gray-800 text-gray-300 rounded hover:bg-gray-700 transition-colors text-sm">
-                  이전
-                </button>
-                <button className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors text-sm">
-                  다음
-                </button>
-              </div>
-            </div>
-          )} */}
-        </div>
-
-        
-        {/* 링크 목록 */}
-        {/* <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6">딥링크 목록</h2>
-          <div className="overflow-hidden rounded-xl border border-gray-800">
-            <table className="min-w-full divide-y divide-gray-800">
-              <thead className="bg-gray-900">
-                <tr>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    링크 이름
-                  </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    URL
-                  </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    클릭
-                  </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    생성일
-                  </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    상태
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-black divide-y divide-gray-800">
-                {[...Array(5)].map((_, index) => (
-                  <tr key={index} className="hover:bg-gray-900/50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                      {project.name} 링크 {index + 1}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                      {project.customDomain ? 
-                        `https://${project.customDomain}/${index + 1}` : 
-                        `https://${project.id}.depl.link/${index + 1}`}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                      {Math.floor(Math.random() * 1000)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                      2023-{Math.floor(Math.random() * 3) + 10}-{Math.floor(Math.random() * 28) + 1}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-white">{link.click_count}</span>
+                        <Activity className="w-4 h-4 text-gray-500" />
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        활성
-                      </span>
+                      <div className="flex items-center space-x-2 text-sm text-gray-400">
+                        <Calendar className="w-4 h-4 text-gray-500" />
+                        <span>
+                          {new Date(link.created_at).toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <button className="p-2 rounded-lg hover:bg-gray-800 transition-colors">
+                        <MoreVertical className="w-4 h-4 text-gray-400" />
+                      </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div> */}
-        
-
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-4">
+                        <Link2 className="w-8 h-8 text-gray-600" />
+                      </div>
+                      <p className="text-gray-400 mb-4">{t.noDeepLinks}</p>
+                      <button className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-all">
+                        <Plus className="w-4 h-4 mr-2" />
+                        {t.createFirstDeepLink}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

@@ -10,14 +10,35 @@ export async function getProfile() {
     throw new Error("User not authenticated");
   }
 
+  // First try to get the profile
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   if (error) {
     throw new Error("Error fetching profile");
+  }
+
+  // If no profile exists, create one
+  if (!profile) {
+    const { data: newProfile, error: createError } = await supabase
+      .from('profiles')
+      .insert({
+        id: user.id,
+        user_name: user.email?.split('@')[0] || 'user',
+        email: user.email || '',
+        avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`
+      })
+      .select()
+      .single();
+
+    if (createError) {
+      throw new Error("Error creating profile: " + createError.message);
+    }
+
+    return newProfile;
   }
 
   return profile;
@@ -201,7 +222,12 @@ export async function updateProjectSubDomain(projectId: string, subDomain: strin
     .select('id')
     .eq('sub_domain', subDomain)
     .neq('id', projectId)
-    .single();
+    .maybeSingle();
+
+  // checkError가 있고, 단순히 데이터가 없는 것이 아닌 경우에만 에러 처리
+  if (checkError && checkError.code !== 'PGRST116') {
+    throw new Error("서브도메인 확인 중 오류가 발생했습니다: " + checkError.message);
+  }
 
   if (existingDomain) {
     throw new Error("이미 사용 중인 서브도메인입니다. 다른 서브도메인을 선택해주세요.");
@@ -277,7 +303,7 @@ export async function createApp(projectId: string, platform: 'IOS' | 'ANDROID', 
     .select('*')
     .eq('project_id', projectId)
     .eq('platform', platform)
-    .single();
+    .maybeSingle();
 
   if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116는 결과가 없을 때 발생하는 에러 코드
     throw new Error("앱 정보 조회 중 오류가 발생했습니다: " + fetchError.message);
