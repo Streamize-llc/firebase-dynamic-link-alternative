@@ -472,6 +472,94 @@ export default function ProjectDetailPage() {
         </div>
       </div>
 
+      {/* 할당량 섹션 (현재 월간 이용량, 구독 여부부) */}
+      <div className="border border-gray-800 rounded-2xl p-8 bg-gradient-to-br from-[#111] to-[#151515] mb-8 shadow-lg hover:shadow-indigo-500/10 transition-all duration-300">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              할당량 및 사용량
+            </h2>
+            <p className="text-gray-400">현재 월간 이용량 및 구독 상태를 확인하세요</p>
+          </div>
+          <button
+            onClick={() => window.location.href = `${window.location.pathname}/subscription`}
+            className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            요금제 업그레이드
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-black/40 backdrop-blur-sm rounded-xl p-5 border border-gray-800">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-medium">딥링크 생성</h3>
+              <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full">무제한</span>
+            </div>
+            <div className="flex items-end gap-2 mb-2">
+              <span className="text-3xl font-bold text-white">{project.current_monthly_create_count}</span>
+              <span className="text-gray-400 text-sm mb-1">개</span>
+            </div>
+            <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
+              <div className="bg-blue-500 h-2 rounded-full w-full"></div>
+            </div>
+            <p className="text-gray-500 text-xs">무제한 생성 가능</p>
+          </div>
+          
+          <div className="bg-black/40 backdrop-blur-sm rounded-xl p-5 border border-gray-800">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-medium">월간 클릭 수</h3>
+              <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full">기본</span>
+            </div>
+            <div className="flex items-end gap-2 mb-2">
+              <span className="text-3xl font-bold text-white">{project.current_monthly_click_count}</span>
+              <span className="text-gray-400 text-sm mb-1">/ 10,000</span>
+            </div>
+            <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
+              <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${(project.current_monthly_click_count / 100000) * 100}%` }}></div>
+            </div>
+            <p className="text-gray-500 text-xs">{100000 - project.current_monthly_click_count}개 클릭 남음</p>
+          </div>
+          
+          <div className={`backdrop-blur-sm rounded-xl p-5 border ${project.subscription_tier === 'free' 
+            ? 'bg-black/40 border-gray-800' 
+            : 'bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border-indigo-700'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-medium">현재 구독</h3>
+              {project.subscription_tier === 'free' ? (
+                <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-full">기본</span>
+              ) : (
+                <span className="text-xs px-2 py-1 bg-indigo-500/30 text-indigo-300 rounded-full shadow-sm shadow-indigo-500/30">프리미엄</span>
+              )}
+            </div>
+            <div className="flex items-end gap-2 mb-2">
+              {project.subscription_tier === 'free' ? (
+                <>
+                  <span className="text-3xl font-bold text-white">무료</span>
+                  <span className="text-gray-400 text-sm mb-1">요금제</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">프리미엄</span>
+                  <span className="text-indigo-200 text-sm mb-1">요금제</span>
+                </>
+              )}
+            </div>
+            <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
+              {project.subscription_tier === 'free' ? (
+                <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
+              ) : (
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full shadow-sm shadow-indigo-500/50" style={{ width: '100%' }}></div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div 

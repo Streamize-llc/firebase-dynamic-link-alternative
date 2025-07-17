@@ -61,7 +61,7 @@ function FunctionsSection() {
       </div>
       
       {/* 메인 콘텐츠 */}
-      <div className="max-w-7xl mx-auto px-4 py-32 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 py-10 relative z-10">
         <div className="text-center mb-20">
           <div className="inline-block mb-3 px-4 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10">
             <span className="text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">

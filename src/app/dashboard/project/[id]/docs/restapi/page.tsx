@@ -11,7 +11,7 @@ export default function RestApiDocumentation() {
   const params = useParams()
   const projectId = params.id as string
   const [activeTab, setActiveTab] = useState("authentication")
-  const [project, setProject] = useState<Tables<"projects"> | null>(null)
+  const [project, setProject] = useState<any>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -219,12 +219,140 @@ export default function RestApiDocumentation() {
                 </button>
               </div>
             </div>
+
+            <div className="bg-gradient-to-r from-[#0f172a] to-[#1e293b] p-6 rounded-xl border border-[#334155] shadow-lg mb-6">
+              <h3 className="text-xl font-bold mb-4 text-white bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">API Endpoints Overview</h3>
+              <div className="space-y-4">
+                <div className="bg-[#0f1629] p-4 rounded-lg border border-[#2d3748]">
+                  <div className="flex items-center mb-2">
+                    <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs font-bold mr-2">POST</span>
+                    <code className="text-emerald-400 font-mono">/api/deeplink</code>
+                  </div>
+                  <p className="text-gray-300 text-sm">Create new deeplinks with custom parameters (API Key required)</p>
+                </div>
+                
+                <div className="bg-[#0f1629] p-4 rounded-lg border border-[#2d3748]">
+                  <div className="flex items-center mb-2">
+                    <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs font-bold mr-2">GET</span>
+                    <code className="text-emerald-400 font-mono">/api/deeplink?short_code=XXXX</code>
+                  </div>
+                  <p className="text-gray-300 text-sm">Retrieve deeplink information by short code (Client Key required)</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-[#0f172a] to-[#1e293b] rounded-xl border border-[#334155] shadow-lg overflow-hidden">
+              <div className="bg-[#1e293b] p-5 border-b border-[#334155] flex items-center justify-between">
+                <div className="flex items-center">
+                  <span className="bg-gradient-to-r from-blue-500 to-indigo-400 text-white px-3 py-1.5 rounded-md text-xs font-bold mr-3 shadow-sm">GET</span>
+                  <code className="text-white font-mono text-lg">https://depl.link/api/deeklink</code>
+                </div>
+                <span className="text-xs px-3 py-1 rounded-full bg-blue-900/30 text-blue-400 border border-blue-800">Retrieve API</span>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    API Overview
+                  </h4>
+                  <p className="text-gray-300 leading-relaxed">
+                    This API endpoint is used to retrieve deeplink information. Provide a short_code and it will return detailed information about the corresponding deeplink.
+                  </p>
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                    </svg>
+                    Request Parameters
+                  </h4>
+                  <div className="bg-[#0f1629] p-4 rounded-lg border border-[#2d3748]">
+                    <code className="text-blue-400 font-mono">
+                      /api/deeplink?short_code=XXXX
+                    </code>
+                  </div>
+                  <div className="mt-4">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-[#1e293b]">
+                          <th className="p-3 text-white font-semibold">Parameter</th>
+                          <th className="p-3 text-white font-semibold">Required</th>
+                          <th className="p-3 text-white font-semibold">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#334155]">
+                        <tr>
+                          <td className="p-3 text-emerald-400 font-mono">short_code</td>
+                          <td className="p-3 text-white">Yes</td>
+                          <td className="p-3 text-gray-300">Unique code of the deeplink to retrieve</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    Authentication
+                  </h4>
+                  <p className="text-gray-300 mb-3">
+                    This API requires authentication using your Client Key. Include it in your request header as follows:
+                  </p>
+                  <CodeBlock language="bash" filename="Authorization Header">
+                    {`Authorization: Bearer YOUR_CLIENT_KEY`}
+                  </CodeBlock>
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                    </svg>
+                    Response
+                  </h4>
+                  <CodeBlock language="json" filename="Response JSON">
+                    {`{
+  "id": "12345",
+  "project_id": "67890",
+  "short_code": "XXXX",
+  "slug": "invite",
+  "app_params": {
+    "user_id": "123456789",
+    "invite_code": "123456789"
+  },
+  "android_parameters": {
+    "package_name": "com.example.app",
+    "action": "android.intent.action.VIEW",
+    "fallback_url": "https://play.google.com/store/apps/details?id=com.example.app"
+  },
+  "ios_parameters": {
+    "bundle_id": "com.example.app",
+    "app_store_id": "123456789"
+  },
+  "social_meta": {
+    "title": "Content Title",
+    "description": "Brief description",
+    "thumbnail_url": "https://yourdomain.com/images/thumbnail.png"
+  },
+  "created_at": "2023-01-01T00:00:00.000Z"
+}`}
+                  </CodeBlock>
+                </div>
+              </div>
+            </div>
             
             <div className="bg-gradient-to-r from-[#0f172a] to-[#1e293b] rounded-xl border border-[#334155] shadow-lg overflow-hidden">
               <div className="bg-[#1e293b] p-5 border-b border-[#334155] flex items-center justify-between">
                 <div className="flex items-center">
                   <span className="bg-gradient-to-r from-emerald-500 to-teal-400 text-white px-3 py-1.5 rounded-md text-xs font-bold mr-3 shadow-sm">POST</span>
-                  <code className="text-white font-mono text-lg">/deeplink</code>
+                  <code className="text-white font-mono text-lg">https://depl.link/api/deeklink</code>
                 </div>
                 <span className="text-xs px-3 py-1 rounded-full bg-emerald-900/30 text-emerald-400 border border-emerald-800">Create Deeplink</span>
               </div>

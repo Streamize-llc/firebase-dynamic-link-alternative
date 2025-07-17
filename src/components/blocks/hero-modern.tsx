@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Menu, ArrowRight, X, Command, Circle, Zap, Link2, BarChart3 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSupabase } from "@/utils/supabase/provider";
+import { trackEvent } from "@/lib/mixpanelClient";
+import { usePathname } from "next/navigation";
 
 function HeroModern() {
     const { supabase, user } = useSupabase();
@@ -17,6 +19,7 @@ function HeroModern() {
         minutes: 0,
         seconds: 0
     });
+    const pathname = usePathname();
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -27,6 +30,7 @@ function HeroModern() {
         };
 
         window.addEventListener("mousemove", handleMouseMove);
+        trackEvent("landing_page_view");
         return () => window.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
@@ -52,10 +56,11 @@ function HeroModern() {
     }, []);
 
     const handleLogin = async () => {
+        trackEvent("landing_page_login_click");
         await supabase?.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/callback`,
+                redirectTo: `${window.location.origin}/dashboard/project`,
                 scopes: 'profile email'
             },
         });
@@ -91,30 +96,43 @@ function HeroModern() {
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex items-center justify-between h-24">
                         <a
-                            href="https://kokonutui.com/"
+                            href="/"
                             className="flex items-center gap-3"
                         >
-                            <Command
-                                className="h-6 w-6 text-purple-500"
-                                strokeWidth={1.5}
-                            />
+                            <div className="relative">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg blur opacity-70"></div>
+                                <div className="relative h-6 w-6 bg-black rounded-lg flex items-center justify-center">
+                                    <Command
+                                        className="h-4 w-4 text-orange-500"
+                                        strokeWidth={2}
+                                    />
+                                </div>
+                            </div>
                             <span className="text-xl font-medium tracking-wide">
                                 DEPL
+                                <span className="text-orange-500 font-bold">.</span>
                             </span>
                         </a>
 
                         <div className="hidden md:flex items-center gap-12">
-                            {["Products", "Pricing", "Docs", "Blog"].map(
+                            {[
+                                { name: "Products", href: "/" },
+                                { name: "Blog", href: "/blog" }
+                            ].map(
                                 (item) => (
                                     <a
-                                        key={item}
-                                        href="#"
-                                        className="text-sm text-white/70 hover:text-white transition-colors relative group"
+                                        key={item.name}
+                                        href={item.href}
+                                        className={`text-sm ${pathname === item.href || 
+                                            (item.href === "/blog" && pathname.includes("/blog")) 
+                                            ? "text-white" : "text-white/70"} hover:text-white transition-colors relative group`}
                                     >
-                                        {item}
+                                        {item.name}
                                         <span
-                                            className="absolute -bottom-1 left-0 w-2 h-px bg-purple-500/50 
-                                            transition-all group-hover:w-full"
+                                            className={`absolute -bottom-1 left-0 ${pathname === item.href || 
+                                            (item.href === "/blog" && pathname.includes("/blog")) 
+                                            ? "w-full" : "w-2"} h-px bg-purple-500/50 
+                                            transition-all group-hover:w-full`}
                                         />
                                     </a>
                                 )
@@ -162,9 +180,9 @@ function HeroModern() {
                                 <div className="flex items-center gap-4">
                                     <div
                                         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full 
-                                        bg-purple-500/10 border border-purple-500/20"
+                                        bg-orange-500/10 border border-orange-500/20"
                                     >
-                                        <Circle className="h-2 w-2 fill-purple-500 animate-pulse" />
+                                        <Circle className="h-2 w-2 fill-orange-500 animate-pulse" />
                                         <span className="text-sm font-medium tracking-wide">
                                             Firebase Dynamic Links Alternative
                                         </span>
@@ -173,23 +191,23 @@ function HeroModern() {
 
                                 <div className="space-y-6">
                                     <h1 className="text-5xl font-bold tracking-tight leading-[1.2]">
-                                        Unlimited deep links
+                                        Firebase Dynamic Links
                                         <br />
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500">
-                                          at zero cost
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">
+                                          shutting down soon
                                         </span>
                                     </h1>
 
                                     <div className="flex gap-4">
-                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors">
+                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-orange-500/20 transition-colors">
                                             <div className="text-3xl font-bold tracking-wider">{String(timeLeft.days).padStart(2, '0')}</div>
                                             <div className="text-sm text-white/70 mt-1">days</div>
                                         </div>
-                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors">
+                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-orange-500/20 transition-colors">
                                             <div className="text-3xl font-bold tracking-wider">{String(timeLeft.hours).padStart(2, '0')}</div>
                                             <div className="text-sm text-white/70 mt-1">hours</div>
                                         </div>
-                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors">
+                                        <div className="flex-1 bg-white/5 rounded-xl p-4 backdrop-blur-sm border border-white/10 hover:border-orange-500/20 transition-colors">
                                             <div className="text-3xl font-bold tracking-wider">{String(timeLeft.minutes).padStart(2, '0')}</div>
                                             <div className="text-sm text-white/70 mt-1">minutes</div>
                                         </div>
@@ -197,11 +215,11 @@ function HeroModern() {
                                 </div>
 
                                 <p className="text-lg text-white/80 leading-relaxed max-w-lg font-medium">
-                                    No SDK required. Get comprehensive analytics 
+                                    Time is running out. Switch to our alternative
                                     <br />
-                                    and unlimited deep links - completely free, forever.
+                                    with unlimited deep links and comprehensive analytics.
                                     <br />
-                                    Start before Firebase shuts down their service.
+                                    No SDK required and completely free, forever.
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-4">

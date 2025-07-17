@@ -52,7 +52,6 @@ export async function updateSession(request: NextRequest) {
     if (subdomain) {
       const url = request.nextUrl.clone();
       url.pathname = `/link/${shortCode || ''}`;
-      console.log("TEST", url.pathname)
       return NextResponse.rewrite(url);
     }
   }

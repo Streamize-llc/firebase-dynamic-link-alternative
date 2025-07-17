@@ -156,6 +156,9 @@ export async function getProject(projectId: string) {
       sub_domain,
       created_at,
       owner_id,
+      subscription_tier,
+      current_monthly_create_count,
+      current_monthly_click_count,
       profiles:owner_id (
         user_name,
         avatar_url
@@ -261,6 +264,8 @@ export async function createProject(name: string, description?: string) {
       name,
       description,
       owner_id: user.id,
+      subscription_tier: 'free',
+      next_quota_update_at: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
       api_key: crypto.randomUUID(),
       client_key: crypto.randomUUID()
     })
