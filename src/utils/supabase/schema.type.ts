@@ -55,6 +55,7 @@ export type Database = {
           app_params: Json
           click_count: number
           created_at: string
+          id: string
           ios_parameters: Json
           short_code: string
           slug: string
@@ -68,6 +69,7 @@ export type Database = {
           app_params: Json
           click_count?: number
           created_at?: string
+          id?: string
           ios_parameters: Json
           short_code: string
           slug: string
@@ -81,6 +83,7 @@ export type Database = {
           app_params?: Json
           click_count?: number
           created_at?: string
+          id?: string
           ios_parameters?: Json
           short_code?: string
           slug?: string
