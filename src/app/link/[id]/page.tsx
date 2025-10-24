@@ -25,7 +25,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
       const defaultTitle = '앱 다운로드 - DeepLink';
       const defaultDescription = '더 나은 경험을 위해 모바일 앱을 다운로드하세요.';
-      const defaultImage = '/images/og-image.jpg';
+      const defaultImage = 'https://depl.link/images/og-image.jpg';
+
+      const imageUrl = socialMeta.thumbnail_url || defaultImage;
 
       return {
         title: socialMeta.title || defaultTitle,
@@ -33,13 +35,21 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         openGraph: {
           title: socialMeta.title || defaultTitle,
           description: socialMeta.description || defaultDescription,
-          images: [socialMeta.thumbnail_url || defaultImage],
+          images: [
+            {
+              url: imageUrl,
+              width: 1200,
+              height: 630,
+              alt: socialMeta.title || defaultTitle,
+            }
+          ],
+          type: 'website',
         },
         twitter: {
           card: 'summary_large_image',
           title: socialMeta.title || defaultTitle,
           description: socialMeta.description || defaultDescription,
-          images: [socialMeta.thumbnail_url || defaultImage],
+          images: [imageUrl],
         },
         // iOS Smart App Banner 추가
         other: iosParams?.app_store_id ? {
@@ -52,19 +62,29 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 
   // 기본 메타데이터
+  const defaultImage = 'https://depl.link/images/og-image.jpg';
+
   return {
     title: '앱 다운로드 - DeepLink',
     description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
     openGraph: {
       title: '앱 다운로드 - DeepLink',
       description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
-      images: ['/images/og-image.jpg'],
+      images: [
+        {
+          url: defaultImage,
+          width: 1200,
+          height: 630,
+          alt: '앱 다운로드',
+        }
+      ],
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: '앱 다운로드 - DeepLink',
       description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
-      images: ['/images/og-image.jpg'],
+      images: [defaultImage],
     }
   };
 }
