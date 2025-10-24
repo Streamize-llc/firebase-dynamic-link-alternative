@@ -69,7 +69,7 @@ Retrieve the parameters and metadata of an existing deep link. Use this in your 
 ### Endpoint
 
 ```
-GET /api/deeplink?short_code=abc123
+GET /api/deeplink?slug=abc123
 ```
 
 ### Headers
@@ -82,7 +82,7 @@ Authorization: Bearer YOUR_CLIENT_KEY
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `short_code` | string | Yes | The short code from the deep link URL |
+| `slug` | string | Yes | The slug from the deep link URL |
 
 ### Response
 
@@ -94,7 +94,6 @@ Returns the complete deep link record:
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "workspace_id": "workspace-id",
-  "short_code": "abc123",
   "slug": "summer-sale",
   "app_params": {
     "screen": "promo",
@@ -129,11 +128,11 @@ Returns the complete deep link record:
 ```swift
 // When your app opens from a deep link
 func handleDeepLink(url: URL) {
-    // Extract short_code from URL: https://yourdomain.depl.link/abc123
-    let shortCode = url.lastPathComponent
+    // Extract slug from URL: https://yourdomain.depl.link/abc123
+    let slug = url.lastPathComponent
 
     // Fetch deep link data
-    var request = URLRequest(url: URL(string: "https://depl.link/api/deeplink?short_code=\(shortCode)")!)
+    var request = URLRequest(url: URL(string: "https://depl.link/api/deeplink?slug=\(slug)")!)
     request.setValue("Bearer YOUR_CLIENT_KEY", forHTTPHeaderField: "Authorization")
 
     URLSession.shared.dataTask(with: request) { data, response, error in
@@ -151,12 +150,12 @@ func handleDeepLink(url: URL) {
 ```kotlin
 // When your app opens from a deep link
 fun handleDeepLink(uri: Uri) {
-    // Extract short_code from URL: https://yourdomain.depl.link/abc123
-    val shortCode = uri.lastPathSegment
+    // Extract slug from URL: https://yourdomain.depl.link/abc123
+    val slug = uri.lastPathSegment
 
     // Fetch deep link data
     val request = Request.Builder()
-        .url("https://depl.link/api/deeplink?short_code=$shortCode")
+        .url("https://depl.link/api/deeplink?slug=$slug")
         .addHeader("Authorization", "Bearer YOUR_CLIENT_KEY")
         .build()
 
@@ -235,7 +234,7 @@ All errors follow this format:
 {
   "error": {
     "code": "NOT_FOUND",
-    "message": "Deeplink with the specified short_code not found."
+    "message": "Deeplink with the specified slug not found."
   }
 }
 ```

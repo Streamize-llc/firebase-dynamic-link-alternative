@@ -52,12 +52,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       return getDefaultMetadata();
     }
 
-    // short_code 또는 slug로 조회
+    // slug로 조회
     const { data: deeplink, error } = await supabase
       .from('deeplinks')
       .select('social_meta, ios_parameters')
       .eq('workspace_id', workspace.id)
-      .or(`short_code.eq.${id},slug.eq.${id}`)
+      .eq('slug', id)
       .maybeSingle();
 
     if (error) {
@@ -128,12 +128,12 @@ async function getDeepLinkUrl(id: string, host: string): Promise<Deeplink | null
     return null;
   }
 
-  // 2. workspace_id + (short_code OR slug)로 딥링크 조회
+  // 2. workspace_id + slug로 딥링크 조회
   const { data: deeplink, error: deeplinkError } = await supabase
     .from('deeplinks')
     .select('*')
     .eq('workspace_id', workspace.id)
-    .or(`short_code.eq.${id},slug.eq.${id}`)
+    .eq('slug', id)
     .maybeSingle();
 
   if (deeplinkError) {
