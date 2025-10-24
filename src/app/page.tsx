@@ -47,7 +47,7 @@ export default function HomePage() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 
       {/* Header */}
-      <header className="relative z-50">
+      <header className={`relative z-50 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <div className="max-w-7xl mx-auto px-6 py-6">
           <nav className="flex items-center justify-between">
             <Link href="/" className="text-xl font-bold text-white tracking-tight font-space-grotesk">
@@ -86,22 +86,22 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 pt-32 pb-24">
           <div className="max-w-4xl mx-auto text-center">
             {/* Main Heading */}
-            <h1 className="text-6xl md:text-7xl font-medium tracking-tight text-white mb-4">
+            <h1 className={`text-6xl md:text-7xl font-medium tracking-tight text-white mb-4 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               Deep linking for
               <br />
               modern apps
             </h1>
 
-            <p className="text-sm text-gray-500 uppercase tracking-wider mb-8">
+            <p className={`text-sm text-gray-500 uppercase tracking-wider mb-8 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               Firebase • AppsFlyer • Adjust Alternative
             </p>
 
-            <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+            <p className={`text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               Create custom deep link domains in seconds. No infrastructure, no hassle.
             </p>
 
             {/* Input Section */}
-            <div className="max-w-2xl mx-auto mb-16">
+            <div className={`max-w-2xl mx-auto mb-16 transition-all duration-700 delay-[400ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
                 <div className="flex items-center justify-center gap-2 mb-6">
                   <input
@@ -134,7 +134,7 @@ export default function HomePage() {
             </div>
 
             {/* Features */}
-            <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">
+            <div className={`grid grid-cols-3 gap-8 max-w-3xl mx-auto transition-all duration-700 delay-[500ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <div key="feature-universal" className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 mb-4">
                   <Check className="w-5 h-5 text-white" />
@@ -158,7 +158,7 @@ export default function HomePage() {
         </div>
 
         {/* Platforms Section */}
-        <div className="max-w-7xl mx-auto px-6 py-24 border-t border-white/5">
+        <div className={`max-w-7xl mx-auto px-6 py-24 border-t border-white/5 transition-all duration-700 delay-[600ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="text-center mb-12">
             <p className="text-sm text-gray-500 uppercase tracking-wider">Supported Platforms</p>
           </div>
@@ -191,7 +191,7 @@ export default function HomePage() {
         </div>
 
         {/* Why DEPL Section */}
-        <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
+        <div className={`max-w-7xl mx-auto px-6 py-32 border-t border-white/5 transition-all duration-700 delay-[700ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-20">
               <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight font-space-grotesk">
@@ -270,7 +270,7 @@ export default function HomePage() {
         </div>
 
         {/* Testimonials Video Grid */}
-        <div className="max-w-full mx-auto py-32 border-t border-white/5 overflow-hidden">
+        <div className={`max-w-full mx-auto py-32 border-t border-white/5 overflow-hidden transition-all duration-700 delay-[800ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="text-center mb-16 px-6">
             <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight font-space-grotesk">
               Loved by Developers
@@ -341,7 +341,7 @@ export default function HomePage() {
         </div>
 
         {/* Simple Integration Section */}
-        <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
+        <div className={`max-w-7xl mx-auto px-6 py-32 border-t border-white/5 transition-all duration-700 delay-[900ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight font-space-grotesk">
@@ -418,7 +418,7 @@ export default function HomePage() {
         </div>
 
         {/* Our Story Section */}
-        <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
+        <div className={`max-w-7xl mx-auto px-6 py-32 border-t border-white/5 transition-all duration-700 delay-[1000ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight font-space-grotesk">
