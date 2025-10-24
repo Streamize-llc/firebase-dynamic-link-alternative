@@ -33,9 +33,9 @@ export async function GET() {
     // Extract subdomain (assume 'test' if not in production environment)
     const subdomain = isProd ? host.split('.')[0] : 'test';
     const supabase = await createClient();
-    // Query project and iOS app information at once
+    // Query workspace and iOS app information at once
     const { data: project, error: projectError } = await supabase
-      .from('projects')
+      .from('workspaces')
       .select(`
         id,
         apps!inner(
@@ -49,16 +49,39 @@ export async function GET() {
       .eq('apps.platform', 'IOS')
       .single();
     
-    if (projectError) {
-      return NextResponse.json(
-        { error: 'Subdomain not found.' },
-        { status: 404 }
-      );
+    if (projectError || !project) {
+      console.error('AASA generation failed for subdomain:', { subdomain, error: projectError });
+
+      // iOS/Apple 요구사항: 에러 시에도 200 OK + 빈 AASA 반환
+      return NextResponse.json({
+        applinks: {
+          apps: [],
+          details: []
+        }
+      }, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     }
     
-    const rawPlatformData = project.apps[0].platform_data;
+    const rawPlatformData = project.apps[0]?.platform_data;
     if (!isPlatformData(rawPlatformData)) {
-      throw new Error('Invalid platform data format');
+      console.error('Invalid platform data format:', { subdomain, platform_data: rawPlatformData });
+
+      // 잘못된 데이터 형식도 빈 AASA 반환
+      return NextResponse.json({
+        applinks: {
+          apps: [],
+          details: []
+        }
+      }, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     }
     
     const platformData = rawPlatformData;
@@ -91,9 +114,18 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error creating Apple App Site Association:', error);
-    return NextResponse.json(
-      { error: 'Server error occurred.' },
-      { status: 500 }
-    );
+
+    // 예외 발생 시에도 200 OK + 빈 AASA 반환
+    return NextResponse.json({
+      applinks: {
+        apps: [],
+        details: []
+      }
+    }, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
   }
 }

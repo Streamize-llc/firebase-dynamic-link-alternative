@@ -42,9 +42,13 @@ export default function SupabaseProvider({
       if (event === 'SIGNED_IN') {
         if (session?.user) {
           setUser(session.user);
-          const profile = await getProfile();
-          if (profile) {
-            setProfile(profile);
+          try {
+            const profile = await getProfile();
+            if (profile) {
+              setProfile(profile);
+            }
+          } catch (error) {
+            console.error('Failed to load profile:', error);
           }
         }
       } else if (event === 'SIGNED_OUT') {

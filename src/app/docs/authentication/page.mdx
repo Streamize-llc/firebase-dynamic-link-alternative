@@ -1,0 +1,41 @@
+# Authentication
+
+All API requests require authentication using your API key.
+
+## API Keys
+
+You can find your API key in your workspace settings:
+
+1. Go to **Dashboard** → **Your Workspace**
+2. Copy your **API Key**
+
+## Using Your API Key
+
+Include your API key in the `Authorization` header of all requests:
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Example Request
+
+```bash
+curl https://api.depl.link/v1/deeplinks \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json"
+```
+
+## Security Best Practices
+
+- **Never** expose your API key in client-side code
+- Use environment variables to store your API key
+- Rotate your API key regularly
+- Use different API keys for development and production
+
+## Rate Limits
+
+| Plan | Rate Limit |
+|------|------------|
+| Free | 100 requests/minute |
+| Pro  | 1000 requests/minute |
+| Enterprise | Custom |

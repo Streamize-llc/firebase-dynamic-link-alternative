@@ -1,175 +1,158 @@
-// import LinkContent from './content'
-import { Metadata, ResolvingMetadata } from 'next'
-// import { createClient } from '@/utils/supabase/server'
-import { redirect, permanentRedirect } from 'next/navigation'
+import { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
-// type Props = {
-//   params: { id: string }
-//   searchParams: { [key: string]: string | string[] | undefined }
-// }
-
-// export async function generateMetadata(
-//   { params, searchParams }: Props,
-//   parent: ResolvingMetadata
-// ): Promise<Metadata> {
-//   const supabase = await createClient();
-//   const { id } = await params
-  
-//   if (id) {
-//     const { data: deeplink, error } = await supabase
-//       .from('deeplinks')
-//       .select('*')
-//       .eq('short_code', id)
-//       .single()
-      
-//     if (deeplink) {
-//       const socialMeta = deeplink.social_meta as { title: string; description: string; thumbnail_url: string };
-//       return {
-//         title: `${socialMeta.title || '앱 다운로드'} - 딥링크`,
-//         description: socialMeta.description || '모바일 앱을 다운로드하여 더 나은 경험을 즐겨보세요.',
-//         openGraph: {
-//           title: `${socialMeta.title || '앱 다운로드'} - 딥링크`,
-//           description: socialMeta.description || '모바일 앱을 다운로드하여 더 나은 경험을 즐겨보세요.',
-//           images: [socialMeta.thumbnail_url || '/images/og-image.jpg'],
-//         },
-//       }
-//     }
-//   }
-
-  // return {
-  //   title: 'App Download - DeepLink',
-  //   description: 'Download the mobile app for a better experience.'
-  // }
-// }
+import LinkRedirectClient from './LinkRedirectClient'
+import type { Deeplink } from '@/types/deeplink'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const supabase = await createClient();
   const { id } = await params;
 
-  try { // 안정성을 위해 try/catch 추가
+  try {
     const { data: deeplink, error } = await supabase
       .from('deeplinks')
-      .select('social_meta') // 필요한 필드만 선택
+      .select('social_meta, ios_parameters')
       .eq('short_code', id)
-      .maybeSingle(); // 에러 없이 찾지 못한 경우를 처리하기 위해 maybeSingle 사용
+      .maybeSingle();
 
     if (error) {
-        console.error("딥링크 메타데이터 조회 오류:", error);
-        // 요구사항에 따라 대체(fallback) 메타데이터 반환 또는 에러 다시 던지기
+      console.error("딥링크 메타데이터 조회 오류:", { short_code: id, error });
     }
 
     if (deeplink && deeplink.social_meta) {
-      // 필드를 선택적으로 만들기 위해 ? 추가
       const socialMeta = deeplink.social_meta as { title?: string; description?: string; thumbnail_url?: string };
+      const iosParams = deeplink.ios_parameters as { app_store_id?: string } | null;
+
       const defaultTitle = '앱 다운로드 - DeepLink';
       const defaultDescription = '더 나은 경험을 위해 모바일 앱을 다운로드하세요.';
-      const defaultImage = '/images/og-image.jpg'; // 이 이미지가 public 폴더에 있는지 확인
+      const defaultImage = '/images/og-image.jpg';
 
       return {
-        title: `${socialMeta.title || defaultTitle}`,
+        title: socialMeta.title || defaultTitle,
         description: socialMeta.description || defaultDescription,
         openGraph: {
-          title: `${socialMeta.title || defaultTitle}`,
+          title: socialMeta.title || defaultTitle,
           description: socialMeta.description || defaultDescription,
           images: [socialMeta.thumbnail_url || defaultImage],
         },
-        // 선택 사항: 트위터 카드 메타데이터 추가
         twitter: {
-            card: 'summary_large_image',
-            title: `${socialMeta.title || defaultTitle}`,
-            description: socialMeta.description || defaultDescription,
-            images: [socialMeta.thumbnail_url || defaultImage],
-        }
+          card: 'summary_large_image',
+          title: socialMeta.title || defaultTitle,
+          description: socialMeta.description || defaultDescription,
+          images: [socialMeta.thumbnail_url || defaultImage],
+        },
+        // iOS Smart App Banner 추가
+        other: iosParams?.app_store_id ? {
+          'apple-itunes-app': `app-id=${iosParams.app_store_id}`
+        } : undefined
       }
     }
   } catch (e) {
-      console.error("메타데이터 조회 중 예외 발생:", e);
-      // 예외 발생 시 대체 메타데이터 반환
+    console.error("메타데이터 조회 중 예외 발생:", { short_code: id, error: e });
   }
 
-  // 딥링크를 찾지 못했거나 오류 발생 시 기본 메타데이터
+  // 기본 메타데이터
   return {
     title: '앱 다운로드 - DeepLink',
     description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
     openGraph: {
-        title: '앱 다운로드 - DeepLink',
-        description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
-        images: ['/images/og-image.jpg'],
+      title: '앱 다운로드 - DeepLink',
+      description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
+      images: ['/images/og-image.jpg'],
     },
     twitter: {
-        card: 'summary_large_image',
-        title: '앱 다운로드 - DeepLink',
-        description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
-        images: ['/images/og-image.jpg'],
+      card: 'summary_large_image',
+      title: '앱 다운로드 - DeepLink',
+      description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
+      images: ['/images/og-image.jpg'],
     }
   };
 }
 
-interface AndroidParameters {
-  package_name: string;
-}
-
-interface IOSParameters {
-  app_store_id: string;
-  bundle_id: string;
-}
-
-async function getDeepLinkUrl(id: string) {
+async function getDeepLinkUrl(id: string, host: string): Promise<Deeplink | null> {
   const supabase = await createClient();
-  const { data: deeplink, error } = await supabase
+  const isProd = process.env.NODE_ENV === 'production';
+
+  // 서브도메인 추출
+  const subdomain = isProd ? host.split('.')[0] : 'test';
+
+  // 1. 서브도메인으로 workspace 조회
+  const { data: workspace, error: workspaceError } = await supabase
+    .from('workspaces')
+    .select('id')
+    .eq('sub_domain', subdomain)
+    .single();
+
+  if (workspaceError || !workspace) {
+    console.error('워크스페이스 조회 오류:', { subdomain, error: workspaceError });
+    return null;
+  }
+
+  // 2. workspace_id + short_code로 딥링크 조회
+  const { data: deeplink, error: deeplinkError } = await supabase
     .from('deeplinks')
     .select('*')
+    .eq('workspace_id', workspace.id)
     .eq('short_code', id)
     .single();
 
-  if (error) {
-    console.error(error);
+  if (deeplinkError) {
+    console.error('딥링크 조회 오류:', { workspace_id: workspace.id, short_code: id, error: deeplinkError });
     return null;
   }
-  return deeplink;
-}
 
-// Android 앱 링크 생성 함수
-function createAndroidAppLink(packageName: string, fallbackUrl: string, deepLinkUrl: string): string {
-  // Intent URL 형식으로 생성
-  return `intent://${deepLinkUrl}#Intent;package=${packageName};action=android.intent.action.VIEW;scheme=https;S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end;`;
+  return deeplink as Deeplink;
 }
 
 export default async function AppLinkHandler({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const deeplink = await getDeepLinkUrl(id)
   const headersList = await headers()
   const userAgent = headersList.get('user-agent') || ''
   const host = headersList.get('host') || ''
-  const subdomain = host.split('.')[0]
-  const normalizedSubdomain = subdomain === 'www' ? '' : subdomain
 
-  const isIOS = /iPhone|iPad|iPod/i.test(userAgent)
-  const isAndroid = /Android/i.test(userAgent)
-  
+  const deeplink = await getDeepLinkUrl(id, host)
+
   if (!deeplink) {
-    return null
-  }
-  
-  if (isAndroid) {
-    const deepLinkUrl = `${normalizedSubdomain}.depl.link/${id}`
-    const androidParams = deeplink.android_parameters as unknown as AndroidParameters;
-    const androidAppLink = createAndroidAppLink(
-      androidParams.package_name,
-      `https://play.google.com/store/apps/details?id=${androidParams.package_name}`,
-      deepLinkUrl
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
+        <h1 className="text-2xl font-bold mb-4">딥링크를 찾을 수 없습니다</h1>
+        <p className="text-gray-400">유효하지 않은 링크입니다.</p>
+      </div>
     )
-    return redirect(androidAppLink)
   }
 
-  if (isIOS) {
-    // TODO : 아이폰 앱 정보 가져오기
-    const iosParams = deeplink.ios_parameters as unknown as IOSParameters;
-    return permanentRedirect(`https://apps.apple.com/KR/app/id${iosParams.app_store_id}?mt=8`)
+  // 소셜 크롤러 감지
+  const isCrawler = /facebookexternalhit|Twitterbot|WhatsApp|Slackbot|KakaoTalkBot|LinkedInBot|Pinterest|Discordbot/i.test(userAgent);
+
+  if (isCrawler) {
+    // 크롤러에게는 HTML + 메타 태그 반환 (리디렉션 없음)
+    const socialMeta = deeplink.social_meta as { title?: string; description?: string; thumbnail_url?: string } | null;
+
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
+        <div className="max-w-md mx-auto px-6 text-center">
+          <h1 className="text-2xl font-bold mb-4">{socialMeta?.title || '앱 다운로드'}</h1>
+          <p className="text-gray-400 mb-8">{socialMeta?.description || '더 나은 경험을 위해 모바일 앱을 다운로드하세요.'}</p>
+
+          {socialMeta?.thumbnail_url && (
+            <img
+              src={socialMeta.thumbnail_url}
+              alt={socialMeta.title || 'Preview'}
+              className="w-full rounded-lg"
+            />
+          )}
+        </div>
+      </div>
+    );
   }
 
+  // 일반 사용자는 Client Component로 리디렉션 처리
   return (
-    <p>This link requires a mobile device. Please open this link on an iOS or Android device to continue.</p>
-  )
+    <LinkRedirectClient
+      deeplink={deeplink}
+      userAgent={userAgent}
+      host={host}
+      shortCode={id}
+    />
+  );
 }

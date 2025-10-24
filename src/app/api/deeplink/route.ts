@@ -70,7 +70,7 @@ export async function GET(request: Request) {
     
     // First verify project with client_key
     const { data: projectData, error: projectError } = await supabase
-      .from('projects')
+      .from('workspaces')
       .select('id')
       .eq('client_key', clientKey)
       .single();
@@ -182,7 +182,7 @@ export async function POST(request: Request) {
     
     // API 키로 프로젝트 조회
     const { data: project, error: projectError } = await supabase
-      .from('projects')
+      .from('workspaces')
       .select(`
         *,
         apps (
@@ -248,9 +248,42 @@ export async function POST(request: Request) {
         androidParameters.fallback_url = `https://play.google.com/store/apps/details?id=${androidData.package_name}`;
       }
     }
-    
-    // 여기서 실제 딥링크 생성 로직 구현
-    const shortCode = generateRandomString(4)
+
+    // shortCode 생성 with 중복 체크
+    let shortCode: string = '';
+    let attempts = 0;
+    const MAX_ATTEMPTS = 10;
+
+    while (attempts < MAX_ATTEMPTS) {
+      shortCode = generateRandomString(6);  // 6글자로 증가 (62^6 = 56억 조합)
+
+      // 기존 shortCode 확인 (workspace 내에서 중복 체크)
+      const { data: existing } = await supabase
+        .from('deeplinks')
+        .select('short_code')
+        .eq('workspace_id', project.id)
+        .eq('short_code', shortCode)
+        .maybeSingle();
+
+      if (!existing) {
+        break;  // 중복 없음, 사용 가능
+      }
+
+      attempts++;
+    }
+
+    if (attempts === MAX_ATTEMPTS) {
+      return NextResponse.json(
+        {
+          error: {
+            code: "SHORT_CODE_GENERATION_FAILED",
+            message: "Failed to generate unique short code after 10 attempts. Please try again."
+          }
+        },
+        { status: 500 }
+      );
+    }
+
     const deeplinkUrl = `https://${project.sub_domain || 'app'}.depl.link/${shortCode}`;
 
     const { data: deeplink, error: deeplinkError } = await supabase
@@ -258,20 +291,28 @@ export async function POST(request: Request) {
       .insert({
         android_parameters: androidParameters,
         ios_parameters: iosParameters,
-        app_params: body.app_params,  
+        app_params: body.app_params,
         social_meta: socialMeta,
-        project_id: project.id,
+        workspace_id: project.id,
         short_code: shortCode,
         slug: body.slug,
-        sub_domain: project.sub_domain || 'app',
+        source: 'API',
       })
 
     if (deeplinkError) {
+      console.error('딥링크 생성 실패:', {
+        workspace_id: project.id,
+        short_code: shortCode,
+        slug: body.slug,
+        error: deeplinkError
+      });
+
       return NextResponse.json(
-        { 
+        {
           error: {
-            code: "SERVER_ERROR",
-            message: "server error"
+            code: deeplinkError.code || "DEEPLINK_CREATION_FAILED",
+            message: deeplinkError.message || "Failed to create deeplink in database.",
+            details: process.env.NODE_ENV === 'development' ? deeplinkError : undefined
           }
         },
         { status: 500 }

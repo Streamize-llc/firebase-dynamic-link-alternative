@@ -44,13 +44,13 @@ export async function getProfile() {
   return profile;
 }
 
-export async function getDeepLinkAdmin(projectId: string) {
+export async function getDeepLinkAdmin(workspaceId: string) {
   const supabase = await createClient();
 
   const { data: deeplinks, error } = await supabase
     .from('deeplinks')
     .select('*')
-    .eq('project_id', projectId)
+    .eq('workspace_id', workspaceId)
     .limit(10);
 
   if (error) {
@@ -60,20 +60,21 @@ export async function getDeepLinkAdmin(projectId: string) {
   return deeplinks;
 }
 
-export async function getProjects() {
+export async function getWorkspaces() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     throw new Error("User not authenticated");
   }
 
-  // 사용자가 소유하거나 멤버로 속한 모든 프로젝트 가져오기
-  const { data: ownedProjects, error: ownedError } = await supabase
-    .from('projects')
+  // 사용자가 소유하거나 멤버로 속한 모든 워크스페이스 가져오기
+  const { data: ownedWorkspaces, error: ownedError } = await supabase
+    .from('workspaces')
     .select(`
       id,
       name,
       description,
+      sub_domain,
       created_at,
       owner_id,
       api_key,
@@ -82,7 +83,7 @@ export async function getProjects() {
         user_name,
         avatar_url
       ),
-      apps!project_id (
+      apps!workspace_id (
         id,
         name,
         platform,
@@ -92,27 +93,28 @@ export async function getProjects() {
     .eq('owner_id', user.id);
 
   if (ownedError) {
-    throw new Error("소유한 프로젝트 조회 중 오류가 발생했습니다: " + ownedError.message);
+    throw new Error("소유한 워크스페이스 조회 중 오류가 발생했습니다: " + ownedError.message);
   }
 
-  // 사용자가 멤버로 속한 프로젝트 가져오기 (소유자가 아닌 경우)
-  const { data: memberProjects, error: memberError } = await supabase
-    .from('project_memberships')
+  // 사용자가 멤버로 속한 워크스페이스 가져오기 (소유자가 아닌 경우)
+  const { data: memberWorkspaces, error: memberError } = await supabase
+    .from('workspace_memberships')
     .select(`
-      project_id,
+      workspace_id,
       role,
       status,
-      projects:project_id (
+      workspaces:workspace_id (
         id,
         name,
         description,
+        sub_domain,
         created_at,
         owner_id,
         profiles:owner_id (
           user_name,
           avatar_url
         ),
-        apps!project_id (
+        apps!workspace_id (
           id,
           name,
           platform,
@@ -125,28 +127,28 @@ export async function getProjects() {
     .neq('role', 'OWNER');
 
   if (memberError) {
-    throw new Error("멤버로 속한 프로젝트 조회 중 오류가 발생했습니다: " + memberError.message);
+    throw new Error("멤버로 속한 워크스페이스 조회 중 오류가 발생했습니다: " + memberError.message);
   }
 
-  // 멤버 프로젝트 데이터 형식 변환
-  const formattedMemberProjects = memberProjects
-    .filter(item => item.projects) // null 체크
-    .map(item => item.projects);
+  // 멤버 워크스페이스 데이터 형식 변환
+  const formattedMemberWorkspaces = memberWorkspaces
+    .filter(item => item.workspaces) // null 체크
+    .map(item => item.workspaces);
 
   // 두 결과 합치기
-  return [...ownedProjects, ...formattedMemberProjects];
+  return [...ownedWorkspaces, ...formattedMemberWorkspaces];
 }
 
-export async function getProject(projectId: string) {
+export async function getWorkspace(workspaceId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     throw new Error("인증된 사용자가 아닙니다");
   }
 
-  // 프로젝트 정보 가져오기
-  const { data: project, error: projectError } = await supabase
-    .from('projects')
+  // 워크스페이스 정보 가져오기
+  const { data: workspace, error: workspaceError } = await supabase
+    .from('workspaces')
     .select(`
       id,
       name,
@@ -164,39 +166,39 @@ export async function getProject(projectId: string) {
         avatar_url
       )
     `)
-    .eq('id', projectId)
+    .eq('id', workspaceId)
     .single();
 
-  if (projectError) {
-    throw new Error("프로젝트 정보 조회 중 오류가 발생했습니다: " + projectError.message);
+  if (workspaceError) {
+    throw new Error("워크스페이스 정보 조회 중 오류가 발생했습니다: " + workspaceError.message);
   }
 
-  if (!project) {
-    throw new Error("프로젝트를 찾을 수 없습니다");
+  if (!workspace) {
+    throw new Error("워크스페이스를 찾을 수 없습니다");
   }
 
-  // 사용자가 이 프로젝트에 접근할 권한이 있는지 확인
+  // 사용자가 이 워크스페이스에 접근할 권한이 있는지 확인
   const { data: membership, error: membershipError } = await supabase
-    .from('project_memberships')
+    .from('workspace_memberships')
     .select('role, status')
-    .eq('project_id', projectId)
+    .eq('workspace_id', workspaceId)
     .eq('user_id', user.id)
     .single();
 
   if (membershipError && membershipError.code !== 'PGRST116') { // PGRST116: 결과가 없음
-    throw new Error("프로젝트 접근 권한 확인 중 오류가 발생했습니다: " + membershipError.message);
+    throw new Error("워크스페이스 접근 권한 확인 중 오류가 발생했습니다: " + membershipError.message);
   }
 
-  // 프로젝트 소유자가 아니고, 멤버십이 없거나 승인되지 않은 경우 접근 거부
-  if (project.owner_id !== user.id && (!membership || membership.status !== 'ACCEPTED')) {
-    throw new Error("이 프로젝트에 접근할 권한이 없습니다");
+  // 워크스페이스 소유자가 아니고, 멤버십이 없거나 승인되지 않은 경우 접근 거부
+  if (workspace.owner_id !== user.id && (!membership || membership.status !== 'ACCEPTED')) {
+    throw new Error("이 워크스페이스에 접근할 권한이 없습니다");
   }
 
-  // 프로젝트에 연결된 앱 정보 가져오기
+  // 워크스페이스에 연결된 앱 정보 가져오기
   const { data: apps, error: appsError } = await supabase
     .from('apps')
     .select('*')
-    .eq('project_id', projectId);
+    .eq('workspace_id', workspaceId);
 
   if (appsError) {
     throw new Error("앱 정보 조회 중 오류가 발생했습니다: " + appsError.message);
@@ -204,15 +206,15 @@ export async function getProject(projectId: string) {
 
   // 플랫폼 정보 추가
   const platforms = apps ? apps.map(app => app.platform) : [];
-  
+
   return {
-    ...project,
+    ...workspace,
     platforms,
     apps
   };
 }
 
-export async function updateProjectSubDomain(projectId: string, subDomain: string) {
+export async function updateWorkspaceSubDomain(workspaceId: string, subDomain: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -221,10 +223,10 @@ export async function updateProjectSubDomain(projectId: string, subDomain: strin
 
   // 서브도메인 중복 확인
   const { data: existingDomain, error: checkError } = await supabase
-    .from('projects')
+    .from('workspaces')
     .select('id')
     .eq('sub_domain', subDomain)
-    .neq('id', projectId)
+    .neq('id', workspaceId)
     .maybeSingle();
 
   // checkError가 있고, 단순히 데이터가 없는 것이 아닌 경우에만 에러 처리
@@ -236,33 +238,34 @@ export async function updateProjectSubDomain(projectId: string, subDomain: strin
     throw new Error("이미 사용 중인 서브도메인입니다. 다른 서브도메인을 선택해주세요.");
   }
 
-  const { data: project, error: projectError } = await supabase
-    .from('projects')
+  const { data: workspace, error: workspaceError } = await supabase
+    .from('workspaces')
     .update({ sub_domain: subDomain })
-    .eq('id', projectId)
+    .eq('id', workspaceId)
     .select()
     .single();
 
-  if (projectError) {
-    throw new Error("프로젝트 도메인 업데이트 중 오류가 발생했습니다: " + projectError.message);
+  if (workspaceError) {
+    throw new Error("워크스페이스 도메인 업데이트 중 오류가 발생했습니다: " + workspaceError.message);
   }
 
-  return project;
+  return workspace;
 }
 
-export async function createProject(name: string, description?: string) {
+export async function createWorkspace(name: string, subDomain: string, description?: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     throw new Error("User not authenticated");
   }
 
-  // 프로젝트 생성 및 소유자 정보 저장
-  const { data: project, error: projectError } = await supabase
-    .from('projects')
+  // 워크스페이스 생성 및 소유자 정보 저장
+  const { data: workspace, error: workspaceError } = await supabase
+    .from('workspaces')
     .insert({
       name,
       description,
+      sub_domain: subDomain,
       owner_id: user.id,
       subscription_tier: 'free',
       next_quota_update_at: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
@@ -272,15 +275,15 @@ export async function createProject(name: string, description?: string) {
     .select()
     .single();
 
-  if (projectError) {
-    throw new Error("프로젝트 생성 중 오류가 발생했습니다: " + projectError.message);
+  if (workspaceError) {
+    throw new Error("워크스페이스 생성 중 오류가 발생했습니다: " + workspaceError.message);
   }
 
-  // 프로젝트 멤버십 생성 (소유자를 멤버로 추가)
+  // 워크스페이스 멤버십 생성 (소유자를 멤버로 추가)
   const { error: membershipError } = await supabase
-    .from('project_memberships')
+    .from('workspace_memberships')
     .insert({
-      project_id: project.id,
+      workspace_id: workspace.id,
       user_id: user.id,
       invited_by: user.id,
       role: 'OWNER',
@@ -289,24 +292,24 @@ export async function createProject(name: string, description?: string) {
     });
 
   if (membershipError) {
-    throw new Error("프로젝트 멤버십 생성 중 오류가 발생했습니다: " + membershipError.message);
+    throw new Error("워크스페이스 멤버십 생성 중 오류가 발생했습니다: " + membershipError.message);
   }
 
-  return project;
+  return workspace;
 }
 
-export async function createApp(projectId: string, platform: 'IOS' | 'ANDROID', platformData: any) {
+export async function createApp(workspaceId: string, platform: 'IOS' | 'ANDROID', platformData: any) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     throw new Error("User not authenticated");
   }
-  
-  // 프로젝트에 해당 플랫폼의 앱이 이미 존재하는지 확인
+
+  // 워크스페이스에 해당 플랫폼의 앱이 이미 존재하는지 확인
   const { data: existingApp, error: fetchError } = await supabase
     .from('apps')
     .select('*')
-    .eq('project_id', projectId)
+    .eq('workspace_id', workspaceId)
     .eq('platform', platform)
     .maybeSingle();
 
@@ -345,7 +348,7 @@ export async function createApp(projectId: string, platform: 'IOS' | 'ANDROID', 
     const { data: newApp, error: insertError } = await supabase
       .from('apps')
       .insert({
-        project_id: projectId,
+        workspace_id: workspaceId,
         platform: platform,
         name: appName,
         platform_data: platformData
@@ -358,6 +361,197 @@ export async function createApp(projectId: string, platform: 'IOS' | 'ANDROID', 
     }
 
     return newApp;
+  }
+}
+
+// 모든 워크스페이스의 딥링크 가져오기
+export async function getAllDeeplinks() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
+  // 사용자의 모든 워크스페이스 ID 가져오기
+  const workspaces = await getWorkspaces();
+  const workspaceIds = workspaces.map((w: any) => w.id);
+
+  if (workspaceIds.length === 0) {
+    return [];
+  }
+
+  // 모든 워크스페이스의 딥링크 가져오기
+  const { data: deeplinks, error } = await supabase
+    .from('deeplinks')
+    .select(`
+      *,
+      workspaces:workspace_id (
+        id,
+        name,
+        sub_domain
+      )
+    `)
+    .in('workspace_id', workspaceIds)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error("딥링크 조회 중 오류가 발생했습니다: " + error.message);
+  }
+
+  return deeplinks;
+}
+
+// 워크스페이스별 딥링크 가져오기
+export async function getWorkspaceDeeplinks(workspaceId: string, source?: 'UI' | 'API', limit?: number) {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from('deeplinks')
+    .select(`
+      *,
+      workspaces:workspace_id (
+        id,
+        name,
+        sub_domain
+      )
+    `)
+    .eq('workspace_id', workspaceId)
+    .order('created_at', { ascending: false });
+
+  // source 필터 적용
+  if (source) {
+    query = query.eq('source', source);
+  }
+
+  // limit 적용
+  if (limit) {
+    query = query.limit(limit);
+  }
+
+  const { data: deeplinks, error } = await query;
+
+  if (error) {
+    throw new Error("딥링크 조회 중 오류가 발생했습니다: " + error.message);
+  }
+
+  return deeplinks;
+}
+
+// 워크스페이스 통계
+export async function getWorkspaceStats(workspaceId: string) {
+  const supabase = await createClient();
+
+  const { data: deeplinks, error } = await supabase
+    .from('deeplinks')
+    .select('click_count, created_at')
+    .eq('workspace_id', workspaceId);
+
+  if (error) {
+    throw new Error("통계 조회 중 오류가 발생했습니다: " + error.message);
+  }
+
+  const totalClicks = deeplinks.reduce((sum, link) => sum + link.click_count, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const clicksToday = deeplinks
+    .filter(link => new Date(link.created_at) >= today)
+    .reduce((sum, link) => sum + link.click_count, 0);
+
+  return {
+    totalLinks: deeplinks.length,
+    totalClicks,
+    clicksToday,
+    avgPerLink: deeplinks.length ? Math.round(totalClicks / deeplinks.length) : 0
+  };
+}
+
+// 딥링크 생성 (UI에서 사용)
+export async function createDeeplink(
+  workspaceId: string,
+  data: {
+    slug: string;
+    app_params: any;
+    ios_parameters?: any;
+    android_parameters?: any;
+    social_meta?: {
+      title?: string;
+      description?: string;
+      thumbnail_url?: string;
+    };
+  }
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
+  // 워크스페이스 권한 확인
+  const workspace = await getWorkspace(workspaceId);
+  if (!workspace) {
+    throw new Error("워크스페이스를 찾을 수 없습니다");
+  }
+
+  // 랜덤 short_code 생성
+  const shortCode = crypto.randomBytes(4).toString('hex').substring(0, 8);
+
+  // 소셜 메타 기본값 설정
+  const socialMeta = {
+    title: data.social_meta?.title || "Depl.link | App Download",
+    description: data.social_meta?.description || "Download the mobile app for a better experience.",
+    thumbnail_url: data.social_meta?.thumbnail_url || "/images/og-image.jpg"
+  };
+
+  // 딥링크 생성
+  const { data: deeplink, error } = await supabase
+    .from('deeplinks')
+    .insert({
+      workspace_id: workspaceId,
+      slug: data.slug,
+      short_code: shortCode,
+      app_params: data.app_params,
+      ios_parameters: data.ios_parameters || {},
+      android_parameters: data.android_parameters || {},
+      social_meta: socialMeta,
+      source: 'UI',
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error("딥링크 생성 중 오류가 발생했습니다: " + error.message);
+  }
+
+  return deeplink;
+}
+
+// 딥링크 클릭 추적
+export async function incrementDeeplinkClick(workspaceId: string, shortCode: string) {
+  const supabase = await createClient();
+
+  try {
+    // 딥링크 클릭 수 증가
+    const { error: clickError } = await supabase.rpc('increment_click_count', {
+      p_workspace_id: workspaceId,
+      p_short_code: shortCode
+    });
+
+    if (clickError) {
+      console.error('딥링크 클릭 수 증가 실패:', { workspaceId, shortCode, error: clickError });
+    }
+
+    // 워크스페이스 월별 클릭 수 증가
+    const { error: workspaceError } = await supabase.rpc('increment_workspace_click', {
+      p_workspace_id: workspaceId
+    });
+
+    if (workspaceError) {
+      console.error('워크스페이스 클릭 수 증가 실패:', { workspaceId, error: workspaceError });
+    }
+  } catch (error) {
+    console.error('클릭 추적 중 예외 발생:', { workspaceId, shortCode, error });
+    // 에러를 던지지 않음 - 클릭 추적 실패가 사용자 경험을 방해하면 안 됨
   }
 }
 

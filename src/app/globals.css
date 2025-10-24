@@ -85,3 +85,163 @@ body {
     font-family: 'SF Mono', Monaco, 'Inconsolata', 'Fira Code', Consolas, monospace;
   }
 }
+
+/* Documentation styles */
+article.prose {
+  @apply text-gray-300 leading-relaxed;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+article.prose h1 {
+  @apply text-5xl font-bold text-white mb-6 mt-2 tracking-tight;
+  letter-spacing: -0.02em;
+}
+
+article.prose h2 {
+  @apply text-3xl font-bold text-white mb-4 mt-12 tracking-tight pb-3;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+  letter-spacing: -0.01em;
+}
+
+article.prose h3 {
+  @apply text-2xl font-semibold text-white mb-3 mt-8;
+  letter-spacing: -0.01em;
+}
+
+article.prose h4 {
+  @apply text-xl font-semibold text-white mb-2 mt-6;
+}
+
+article.prose p {
+  @apply mb-5 leading-relaxed text-gray-300;
+  font-size: 16px;
+}
+
+article.prose a {
+  @apply text-blue-400 hover:text-blue-300 no-underline;
+  text-decoration: underline;
+  text-decoration-color: rgba(96, 165, 250, 0.3);
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+}
+
+article.prose a:hover {
+  text-decoration-color: rgba(96, 165, 250, 0.8);
+}
+
+article.prose ul, article.prose ol {
+  @apply my-5 ml-6 space-y-2;
+}
+
+article.prose li {
+  @apply text-gray-300 leading-relaxed;
+  padding-left: 0.5rem;
+}
+
+article.prose ul > li::marker {
+  @apply text-gray-500;
+}
+
+article.prose code {
+  @apply bg-gray-800/80 text-blue-300 px-2 py-0.5 rounded font-mono;
+  font-size: 0.9em;
+  font-weight: 500;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+article.prose pre {
+  @apply bg-gray-900 rounded-xl p-5 overflow-x-auto my-6 relative;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+article.prose pre code {
+  @apply bg-transparent p-0 border-0 text-gray-200;
+  font-size: 14px;
+  line-height: 1.7;
+  text-shadow: none;
+}
+
+/* Code syntax highlighting with CSS */
+article.prose pre code .comment {
+  @apply text-gray-500 italic;
+}
+
+article.prose pre code .string {
+  @apply text-green-400;
+}
+
+article.prose pre code .keyword {
+  @apply text-purple-400;
+}
+
+article.prose pre code .function {
+  @apply text-blue-400;
+}
+
+article.prose table {
+  @apply w-full my-6 border-collapse;
+  background: rgba(17, 24, 39, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+article.prose thead {
+  @apply bg-gray-800/50;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+article.prose th {
+  @apply text-left p-4 text-white font-semibold;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+article.prose td {
+  @apply p-4 border-t;
+  border-color: rgba(75, 85, 99, 0.2);
+}
+
+article.prose tr:hover {
+  @apply bg-gray-800/30;
+}
+
+article.prose blockquote {
+  @apply border-l-4 border-blue-500 pl-5 py-2 italic text-gray-400 my-6;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 0 8px 8px 0;
+}
+
+article.prose strong {
+  @apply text-white font-semibold;
+}
+
+article.prose hr {
+  @apply border-gray-800 my-8;
+}
+
+/* Make first paragraph larger */
+article.prose > p:first-of-type {
+  @apply text-lg text-gray-300;
+  font-size: 18px;
+}
+
+/* Infinite scroll animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 40s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}

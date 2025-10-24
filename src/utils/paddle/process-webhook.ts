@@ -73,7 +73,7 @@ export class ProcessWebhook {
 
       // 프로젝트 정보 조회
       const { data: project } = await supabase
-        .from('projects')
+        .from('workspaces')
         .select('*')
         .eq('id', customData.projectId)
         .maybeSingle();
@@ -84,7 +84,7 @@ export class ProcessWebhook {
         if (eventData.data.status === 'active') {
           const subscriptionInfo = getSubscriptionInfoFromPriceId(eventData.data.items[0].price?.id || '');
           await supabase
-            .from('projects')
+            .from('workspaces')
             .update({
               active_subscription_id: response.data[0].id,
               subscription_status: eventData.data.status,
@@ -97,7 +97,7 @@ export class ProcessWebhook {
             .eq('id', customData.projectId);
         } else {
           await supabase
-            .from('projects')
+            .from('workspaces')
             .update({
               subscription_status: eventData.data.status
             })

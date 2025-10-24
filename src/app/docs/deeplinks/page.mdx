@@ -1,0 +1,109 @@
+# Deep Links API
+
+Create and manage deep links through our REST API.
+
+## Create Deep Link
+
+Create a new deep link for your mobile app.
+
+### Endpoint
+
+```
+POST /api/deeplink
+```
+
+### Headers
+
+```
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+```
+
+### Request Body
+
+```json
+{
+  "slug": "summer-sale",
+  "ios_url": "myapp://promo/summer",
+  "android_url": "myapp://promo/summer",
+  "fallback_url": "https://myapp.com/promo/summer"
+}
+```
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `slug` | string | No | Custom short URL slug. Auto-generated if not provided. |
+| `ios_url` | string | Yes | Deep link URL for iOS |
+| `android_url` | string | Yes | Deep link URL for Android |
+| `fallback_url` | string | Yes | Fallback URL for web browsers |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "abc123",
+    "slug": "summer-sale",
+    "short_url": "https://yourdomain.depl.link/summer-sale",
+    "ios_url": "myapp://promo/summer",
+    "android_url": "myapp://promo/summer",
+    "fallback_url": "https://myapp.com/promo/summer",
+    "created_at": "2025-01-15T10:30:00Z"
+  }
+}
+```
+
+## Get Deep Link
+
+Retrieve details of an existing deep link.
+
+### Endpoint
+
+```
+GET /api/deeplink?slug=summer-sale
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "abc123",
+    "slug": "summer-sale",
+    "clicks": 1234,
+    "ios_clicks": 567,
+    "android_clicks": 432,
+    "web_clicks": 235
+  }
+}
+```
+
+## Error Responses
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "Invalid API key"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "error": "Slug already exists"
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "error": "Deep link not found"
+}
+```

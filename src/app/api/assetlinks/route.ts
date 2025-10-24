@@ -34,7 +34,7 @@ export async function GET() {
     const subdomain = isProd ? host.split('.')[0] : 'test';
     const supabase = await createClient();
     const { data: project, error: projectError } = await supabase
-      .from('projects')
+      .from('workspaces')
       .select(`
         id,
         apps!inner(
