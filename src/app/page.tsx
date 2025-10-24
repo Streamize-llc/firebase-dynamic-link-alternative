@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useSupabase } from "@/utils/supabase/provider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Script from "next/script";
 
 export default function HomePage() {
   const [subdomain, setSubdomain] = useState("");
@@ -41,8 +42,42 @@ export default function HomePage() {
     }
   };
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "DEPL",
+    "applicationCategory": "DeveloperApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Enterprise-grade deep linking solution for mobile apps. Free alternative to Firebase Dynamic Links, AppsFlyer, Adjust, and Branch. No SDK required, just REST API.",
+    "operatingSystem": "Web, iOS, Android",
+    "url": "https://depl.link",
+    "featureList": [
+      "Universal Links for iOS",
+      "App Links for Android",
+      "Deep Link Analytics",
+      "Custom Domain Support",
+      "REST API Integration",
+      "No SDK Required"
+    ],
+    "provider": {
+      "@type": "Organization",
+      "name": "DEPL",
+      "url": "https://depl.link"
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-black relative">
+    <>
+      <Script
+        id="structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <div className="min-h-screen bg-black relative">
       {/* Subtle grid background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 
@@ -467,5 +502,6 @@ export default function HomePage() {
         </div>
       </main>
     </div>
+    </>
   );
 }
