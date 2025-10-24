@@ -161,14 +161,22 @@ export default function ConnectIOSAppModal({ isOpen, onClose, workspaceId, exist
                 type="text"
                 id="appId"
                 value={appId}
-                onChange={(e) => setAppId(e.target.value)}
-                placeholder="1234567890"
+                onChange={(e) => {
+                  let value = e.target.value.trim();
+                  // Remove "id" prefix if present (e.g., "id6450730873" → "6450730873")
+                  if (value.toLowerCase().startsWith('id')) {
+                    value = value.substring(2);
+                  }
+                  // Allow only numbers
+                  setAppId(value.replace(/\D/g, ''));
+                }}
+                placeholder="6450730873"
                 disabled={isLoading}
                 className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/20 disabled:opacity-50 font-mono text-sm"
                 required
               />
               <p className="mt-1 text-xs text-gray-500">
-                Your app's App Store ID
+                Your app's App Store ID (numbers only, not "id6450730873")
               </p>
             </div>
 
