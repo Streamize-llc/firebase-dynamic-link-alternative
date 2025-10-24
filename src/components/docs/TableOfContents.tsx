@@ -43,23 +43,23 @@ export default function TableOfContents() {
   if (headings.length === 0) return null;
 
   return (
-    <div className="fixed right-8 top-28 hidden xl:block w-56">
-      <div className="space-y-3">
-        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+    <div className="fixed right-12 top-32 hidden xl:block w-64">
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+        <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em] mb-4">
           On This Page
         </p>
-        <nav className="space-y-2 border-l-2 border-gray-800">
+        <nav className="space-y-2">
           {headings.map((heading) => (
             <a
               key={heading.id}
               href={`#${heading.id}`}
               className={`
-                block text-sm transition-all pl-4 py-1 border-l-2 -ml-[2px]
-                ${heading.level === 3 ? 'pl-6 text-xs' : ''}
+                block text-[13px] transition-all duration-200 py-1.5 px-3 rounded-lg
+                ${heading.level === 3 ? 'pl-6' : ''}
                 ${
                   activeId === heading.id
-                    ? 'text-white font-medium border-blue-500'
-                    : 'text-gray-400 hover:text-gray-300 border-transparent hover:border-gray-600'
+                    ? 'text-white font-medium bg-white/10'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }
               `}
             >

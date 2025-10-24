@@ -1,36 +1,64 @@
 # Authentication
 
-All API requests require authentication using your API key.
+All API requests require authentication using your workspace keys.
 
-## API Keys
+## Key Types
 
-You can find your API key in your workspace settings:
+DEPL uses two types of keys for different operations:
 
-1. Go to **Dashboard** → **Your Workspace**
-2. Copy your **API Key**
+### API Key (api_key)
+- **Purpose**: Create deep links (write operations)
+- **Usage**: Server-side only
+- **Security**: Keep this secret, never expose in client code
 
-## Using Your API Key
+### Client Key (client_key)
+- **Purpose**: Retrieve deep link data (read operations)
+- **Usage**: Can be used in mobile apps
+- **Security**: Safe to embed in mobile applications
 
-Include your API key in the `Authorization` header of all requests:
+## Finding Your Keys
+
+You can find both keys in your workspace settings:
+
+1. Go to **Dashboard** → **Your Workspace** → **Settings**
+2. Copy your **API Key** for creating deep links
+3. Copy your **Client Key** for retrieving deep link data
+
+## Using Your Keys
+
+Include the appropriate key in the `Authorization` header:
+
+### Creating Deep Links (API Key)
 
 ```bash
-Authorization: Bearer YOUR_API_KEY
+curl https://depl.link/api/deeplink \
+  -X POST \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "slug": "summer-sale",
+    "app_params": {
+      "screen": "promo",
+      "promo_id": "summer"
+    }
+  }'
 ```
 
-## Example Request
+### Retrieving Deep Links (Client Key)
 
 ```bash
-curl https://api.depl.link/v1/deeplinks \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json"
+curl "https://depl.link/api/deeplink?short_code=abc123" \
+  -H "Authorization: Bearer YOUR_CLIENT_KEY"
 ```
 
 ## Security Best Practices
 
 - **Never** expose your API key in client-side code
-- Use environment variables to store your API key
-- Rotate your API key regularly
-- Use different API keys for development and production
+- Use API Key only on your backend servers
+- Client Key can be safely used in mobile apps
+- Store keys in environment variables
+- Rotate your keys regularly if compromised
+- Use different workspaces for development and production
 
 ## Rate Limits
 

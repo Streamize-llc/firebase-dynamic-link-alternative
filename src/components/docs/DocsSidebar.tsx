@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FileText, Shield, Link as LinkIcon } from 'lucide-react';
+import { FileText, Shield, Link as LinkIcon, Home } from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -19,7 +19,7 @@ const navigation: NavSection[] = [
   {
     title: 'Getting Started',
     items: [
-      { title: 'Introduction', href: '/docs', icon: FileText },
+      { title: 'Introduction', href: '/docs', icon: Home },
     ],
   },
   {
@@ -35,12 +35,12 @@ export default function DocsSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed top-16 z-30 h-[calc(100vh-4rem)] w-64 shrink-0 border-r border-gray-800/50 overflow-y-auto bg-black/40">
-      <div className="py-8 px-6">
-        <nav className="space-y-8">
+    <aside className="fixed top-16 z-30 h-[calc(100vh-4rem)] w-72 shrink-0 border-r border-white/5 overflow-y-auto bg-transparent">
+      <div className="py-10 px-6">
+        <nav className="space-y-10">
           {navigation.map((section) => (
             <div key={section.title}>
-              <h4 className="mb-3 text-xs font-bold text-gray-500 uppercase tracking-widest px-3">
+              <h4 className="mb-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em] px-3">
                 {section.title}
               </h4>
               <div className="space-y-1">
@@ -53,16 +53,28 @@ export default function DocsSidebar() {
                       key={item.href}
                       href={item.href}
                       className={`
-                        flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all group
+                        relative flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-all duration-200 group
                         ${
                           isActive
-                            ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-white border-l-2 border-blue-500'
-                            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                            ? 'bg-white/5 text-white shadow-lg border border-white/10'
+                            : 'text-gray-400 hover:text-white hover:bg-white/5'
                         }
                       `}
                     >
-                      {Icon && <Icon className={`h-4 w-4 ${isActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-gray-400'}`} />}
-                      {item.title}
+                      {isActive && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-xl" />
+                      )}
+                      {Icon && (
+                        <Icon
+                          className={`h-[18px] w-[18px] relative z-10 ${
+                            isActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-gray-300'
+                          }`}
+                        />
+                      )}
+                      <span className="relative z-10">{item.title}</span>
+                      {isActive && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-r-full" />
+                      )}
                     </Link>
                   );
                 })}

@@ -86,132 +86,154 @@ body {
   }
 }
 
-/* Documentation styles */
+/* Documentation styles - Premium Design */
 article.prose {
-  @apply text-gray-300 leading-relaxed;
+  @apply text-gray-300 leading-[1.8];
   font-size: 16px;
-  line-height: 1.75;
 }
 
 article.prose h1 {
-  @apply text-5xl font-bold text-white mb-6 mt-2 tracking-tight;
-  letter-spacing: -0.02em;
+  @apply text-6xl font-bold text-white mb-8 mt-0 tracking-tight;
+  letter-spacing: -0.03em;
+  background: linear-gradient(to bottom, #ffffff, #e5e5e5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 article.prose h2 {
-  @apply text-3xl font-bold text-white mb-4 mt-12 tracking-tight pb-3;
-  border-bottom: 1px solid rgba(75, 85, 99, 0.3);
-  letter-spacing: -0.01em;
+  @apply text-4xl font-bold text-white mb-6 mt-16 tracking-tight;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 100px;
+}
+
+article.prose h2::before {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 60px;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  margin-bottom: 1.5rem;
+  border-radius: 2px;
 }
 
 article.prose h3 {
-  @apply text-2xl font-semibold text-white mb-3 mt-8;
+  @apply text-2xl font-semibold text-white mb-4 mt-10;
   letter-spacing: -0.01em;
+  scroll-margin-top: 100px;
 }
 
 article.prose h4 {
-  @apply text-xl font-semibold text-white mb-2 mt-6;
+  @apply text-xl font-semibold text-white mb-3 mt-8;
+  letter-spacing: -0.01em;
 }
 
 article.prose p {
-  @apply mb-5 leading-relaxed text-gray-300;
+  @apply mb-6 leading-[1.8] text-gray-300;
   font-size: 16px;
 }
 
 article.prose a {
-  @apply text-blue-400 hover:text-blue-300 no-underline;
+  @apply text-blue-400 hover:text-blue-300 no-underline font-medium;
   text-decoration: underline;
   text-decoration-color: rgba(96, 165, 250, 0.3);
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
   transition: all 0.2s ease;
 }
 
 article.prose a:hover {
-  text-decoration-color: rgba(96, 165, 250, 0.8);
+  text-decoration-color: rgba(96, 165, 250, 1);
 }
 
 article.prose ul, article.prose ol {
-  @apply my-5 ml-6 space-y-2;
+  @apply my-6 ml-0 space-y-3;
 }
 
 article.prose li {
-  @apply text-gray-300 leading-relaxed;
-  padding-left: 0.5rem;
+  @apply text-gray-300 leading-[1.8] pl-8 relative;
+}
+
+article.prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
 }
 
 article.prose ul > li::marker {
-  @apply text-gray-500;
+  content: '';
 }
 
+/* Inline code */
 article.prose code {
-  @apply bg-gray-800/80 text-blue-300 px-2 py-0.5 rounded font-mono;
+  @apply bg-white/10 text-blue-300 px-2 py-1 rounded-lg font-mono;
   font-size: 0.9em;
   font-weight: 500;
-  border: 1px solid rgba(75, 85, 99, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Code blocks */
 article.prose pre {
-  @apply bg-gray-900 rounded-xl p-5 overflow-x-auto my-6 relative;
-  border: 1px solid rgba(75, 85, 99, 0.3);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  @apply bg-black/40 backdrop-blur-sm rounded-2xl p-6 overflow-x-auto my-8 relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 article.prose pre code {
   @apply bg-transparent p-0 border-0 text-gray-200;
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.8;
   text-shadow: none;
+  font-weight: 400;
 }
 
-/* Code syntax highlighting with CSS */
-article.prose pre code .comment {
-  @apply text-gray-500 italic;
-}
-
-article.prose pre code .string {
-  @apply text-green-400;
-}
-
-article.prose pre code .keyword {
-  @apply text-purple-400;
-}
-
-article.prose pre code .function {
-  @apply text-blue-400;
-}
-
+/* Tables */
 article.prose table {
-  @apply w-full my-6 border-collapse;
-  background: rgba(17, 24, 39, 0.5);
-  border-radius: 8px;
+  @apply w-full my-8 border-collapse;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   overflow: hidden;
+  backdrop-filter: blur(12px);
 }
 
 article.prose thead {
-  @apply bg-gray-800/50;
-  border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+  @apply bg-white/5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 article.prose th {
   @apply text-left p-4 text-white font-semibold;
-  font-size: 14px;
+  font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 article.prose td {
   @apply p-4 border-t;
-  border-color: rgba(75, 85, 99, 0.2);
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
-article.prose tr:hover {
-  @apply bg-gray-800/30;
+article.prose tbody tr {
+  transition: background-color 0.2s ease;
 }
 
+article.prose tbody tr:hover {
+  @apply bg-white/5;
+}
+
+/* Blockquotes */
 article.prose blockquote {
-  @apply border-l-4 border-blue-500 pl-5 py-2 italic text-gray-400 my-6;
+  @apply pl-6 py-4 italic text-gray-300 my-8 border-l-2;
   background: rgba(59, 130, 246, 0.05);
-  border-radius: 0 8px 8px 0;
+  border-color: #3b82f6;
+  border-radius: 0 12px 12px 0;
+  backdrop-filter: blur(12px);
 }
 
 article.prose strong {
@@ -219,13 +241,14 @@ article.prose strong {
 }
 
 article.prose hr {
-  @apply border-gray-800 my-8;
+  @apply border-white/10 my-12;
 }
 
-/* Make first paragraph larger */
+/* First paragraph styling */
 article.prose > p:first-of-type {
-  @apply text-lg text-gray-300;
-  font-size: 18px;
+  @apply text-xl text-gray-300;
+  font-size: 20px;
+  line-height: 1.7;
 }
 
 /* Infinite scroll animation */

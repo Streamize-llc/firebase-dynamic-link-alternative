@@ -4,7 +4,7 @@ Create and manage deep links through our REST API.
 
 ## Create Deep Link
 
-Create a new deep link for your mobile app.
+Create a new deep link for your mobile app. The platform-specific URLs (iOS/Android) are automatically configured based on your workspace's app settings.
 
 ### Endpoint
 
@@ -24,9 +24,16 @@ Content-Type: application/json
 ```json
 {
   "slug": "summer-sale",
-  "ios_url": "myapp://promo/summer",
-  "android_url": "myapp://promo/summer",
-  "fallback_url": "https://myapp.com/promo/summer"
+  "app_params": {
+    "screen": "promo",
+    "promo_id": "summer2024",
+    "discount": "50"
+  },
+  "social_meta": {
+    "title": "Summer Sale - 50% Off!",
+    "description": "Don't miss our biggest sale of the year",
+    "thumbnail_url": "https://mycdn.com/summer-sale.jpg"
+  }
 }
 ```
 
@@ -34,76 +41,212 @@ Content-Type: application/json
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `slug` | string | No | Custom short URL slug. Auto-generated if not provided. |
-| `ios_url` | string | Yes | Deep link URL for iOS |
-| `android_url` | string | Yes | Deep link URL for Android |
-| `fallback_url` | string | Yes | Fallback URL for web browsers |
+| `slug` | string | Yes | Custom identifier for your deep link (used in the URL path) |
+| `app_params` | object | Yes | Custom parameters that your app will receive when the deep link is opened |
+| `social_meta` | object | No | Metadata for social media sharing (title, description, thumbnail) |
+| `social_meta.title` | string | No | Social media title (default: "Depl.link \| App Download") |
+| `social_meta.description` | string | No | Social media description (default: "Download the mobile app...") |
+| `social_meta.thumbnail_url` | string | No | Social media thumbnail URL (default: "/images/og-image.jpg") |
+
+**Note**: The `app_params` object can contain any custom fields your app needs. These parameters will be available when your app opens the deep link.
 
 ### Response
+
+**Success (200 OK)**
 
 ```json
 {
   "success": true,
-  "data": {
-    "id": "abc123",
-    "slug": "summer-sale",
-    "short_url": "https://yourdomain.depl.link/summer-sale",
-    "ios_url": "myapp://promo/summer",
-    "android_url": "myapp://promo/summer",
-    "fallback_url": "https://myapp.com/promo/summer",
-    "created_at": "2025-01-15T10:30:00Z"
-  }
+  "deeplink_url": "https://yourdomain.depl.link/abc123",
+  "created_at": "2025-01-15T10:30:00Z"
 }
 ```
 
 ## Get Deep Link
 
-Retrieve details of an existing deep link.
+Retrieve the parameters and metadata of an existing deep link. Use this in your mobile app to fetch the `app_params` when the deep link is opened.
 
 ### Endpoint
 
 ```
-GET /api/deeplink?slug=summer-sale
+GET /api/deeplink?short_code=abc123
 ```
+
+### Headers
+
+```
+Authorization: Bearer YOUR_CLIENT_KEY
+```
+
+### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `short_code` | string | Yes | The short code from the deep link URL |
 
 ### Response
 
+**Success (200 OK)**
+
+Returns the complete deep link record:
+
 ```json
 {
-  "success": true,
-  "data": {
-    "id": "abc123",
-    "slug": "summer-sale",
-    "clicks": 1234,
-    "ios_clicks": 567,
-    "android_clicks": 432,
-    "web_clicks": 235
-  }
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "workspace_id": "workspace-id",
+  "short_code": "abc123",
+  "slug": "summer-sale",
+  "app_params": {
+    "screen": "promo",
+    "promo_id": "summer2024",
+    "discount": "50"
+  },
+  "ios_parameters": {
+    "bundle_id": "com.myapp.ios",
+    "app_store_id": "123456789"
+  },
+  "android_parameters": {
+    "package_name": "com.myapp.android",
+    "action": "android.intent.action.VIEW",
+    "fallback_url": "https://play.google.com/store/apps/details?id=com.myapp.android"
+  },
+  "social_meta": {
+    "title": "Summer Sale - 50% Off!",
+    "description": "Don't miss our biggest sale of the year",
+    "thumbnail_url": "https://mycdn.com/summer-sale.jpg"
+  },
+  "click_count": 1234,
+  "source": "API",
+  "created_at": "2025-01-15T10:30:00Z",
+  "updated_at": "2025-01-15T10:30:00Z"
+}
+```
+
+## Mobile App Integration
+
+### iOS (Swift)
+
+```swift
+// When your app opens from a deep link
+func handleDeepLink(url: URL) {
+    // Extract short_code from URL: https://yourdomain.depl.link/abc123
+    let shortCode = url.lastPathComponent
+
+    // Fetch deep link data
+    var request = URLRequest(url: URL(string: "https://depl.link/api/deeplink?short_code=\(shortCode)")!)
+    request.setValue("Bearer YOUR_CLIENT_KEY", forHTTPHeaderField: "Authorization")
+
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let data = data {
+            let deeplink = try? JSONDecoder().decode(DeepLink.self, from: data)
+            // Use deeplink.app_params to navigate your app
+            navigateToScreen(params: deeplink?.app_params)
+        }
+    }.resume()
+}
+```
+
+### Android (Kotlin)
+
+```kotlin
+// When your app opens from a deep link
+fun handleDeepLink(uri: Uri) {
+    // Extract short_code from URL: https://yourdomain.depl.link/abc123
+    val shortCode = uri.lastPathSegment
+
+    // Fetch deep link data
+    val request = Request.Builder()
+        .url("https://depl.link/api/deeplink?short_code=$shortCode")
+        .addHeader("Authorization", "Bearer YOUR_CLIENT_KEY")
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onResponse(call: Call, response: Response) {
+            val deeplink = gson.fromJson(response.body?.string(), DeepLink::class.java)
+            // Use deeplink.app_params to navigate your app
+            navigateToScreen(deeplink.app_params)
+        }
+    })
 }
 ```
 
 ## Error Responses
 
-### 401 Unauthorized
+All errors follow this format:
 
 ```json
 {
-  "error": "Invalid API key"
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message"
+  }
 }
 ```
 
-### 400 Bad Request
+### Common Error Codes
+
+#### 401 Unauthorized - Invalid API Key (POST)
 
 ```json
 {
-  "error": "Slug already exists"
+  "error": {
+    "code": "INVALID_API_KEY",
+    "message": "Invalid API key."
+  }
 }
 ```
 
-### 404 Not Found
+#### 401 Unauthorized - Invalid Client Key (GET)
 
 ```json
 {
-  "error": "Deep link not found"
+  "error": {
+    "code": "INVALID_CLIENT_KEY",
+    "message": "Invalid client_key."
+  }
+}
+```
+
+#### 400 Bad Request - Missing Fields
+
+```json
+{
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "Required fields are missing. slug and app_params are required."
+  }
+}
+```
+
+#### 400 Bad Request - No Apps Configured
+
+```json
+{
+  "error": {
+    "code": "NO_APPS_CONFIGURED",
+    "message": "프로젝트에 등록된 앱이 없습니다."
+  }
+}
+```
+
+#### 404 Not Found - Deep Link Not Found
+
+```json
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Deeplink with the specified short_code not found."
+  }
+}
+```
+
+#### 500 Server Error
+
+```json
+{
+  "error": {
+    "code": "SERVER_ERROR",
+    "message": "An internal server error occurred."
+  }
 }
 ```
