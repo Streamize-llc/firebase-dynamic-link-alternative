@@ -87,9 +87,9 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto text-center">
             {/* Main Heading */}
             <h1 className={`text-6xl md:text-7xl font-medium tracking-tight text-white mb-4 transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-              Deep linking for
+              Deep Linking for
               <br />
-              modern apps
+              Modern Apps
             </h1>
 
             <p className={`text-sm text-gray-500 uppercase tracking-wider mb-8 transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
