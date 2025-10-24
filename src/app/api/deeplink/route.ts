@@ -49,16 +49,16 @@ export async function GET(request: Request) {
     
     const clientKey = authHeader.replace('Bearer ', '');
     
-    // Extract short_code parameter from URL
+    // Extract slug parameter from URL
     const { searchParams } = new URL(request.url);
-    const shortCode = searchParams.get('short_code');
-    
-    if (!shortCode) {
+    const slug = searchParams.get('slug');
+
+    if (!slug) {
       return NextResponse.json(
-        { 
+        {
           error: {
             code: "INVALID_REQUEST",
-            message: "short_code parameter is required."
+            message: "slug parameter is required."
           }
         },
         { status: 400 }
@@ -87,20 +87,20 @@ export async function GET(request: Request) {
       );
     }
     
-    // Query deeplink with project ID and short_code
+    // Query deeplink with project ID and slug
     const { data: deeplinkData, error: deeplinkError } = await supabase
       .from('deeplinks')
       .select('*')
-      .eq('project_id', projectData.id)
-      .eq('short_code', shortCode)
+      .eq('workspace_id', projectData.id)
+      .eq('slug', slug)
       .single();
-    
+
     if (deeplinkError || !deeplinkData) {
       return NextResponse.json(
-        { 
+        {
           error: {
             code: "NOT_FOUND",
-            message: "Deeplink with the specified short_code not found."
+            message: "Deeplink with the specified slug not found."
           }
         },
         { status: 404 }
@@ -140,12 +140,12 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!body.slug || !body.app_params) {
+    if (!body.app_params) {
       return NextResponse.json(
-        { 
+        {
           error: {
             code: "INVALID_REQUEST",
-            message: "Required fields are missing. slug and app_params are required."
+            message: "Required field missing. app_params is required."
           }
         },
         { status: 400 }
@@ -249,42 +249,72 @@ export async function POST(request: Request) {
       }
     }
 
-    // shortCode 생성 with 중복 체크
-    let shortCode: string = '';
-    let attempts = 0;
-    const MAX_ATTEMPTS = 10;
+    // slug 생성 또는 사용자 지정 slug 사용
+    let slug: string = '';
+    let isRandomSlug: boolean;
 
-    while (attempts < MAX_ATTEMPTS) {
-      shortCode = generateRandomString(6);  // 6글자로 증가 (62^6 = 56억 조합)
+    if (body.slug) {
+      // 사용자가 slug 지정
+      slug = body.slug;
+      isRandomSlug = false;
 
-      // 기존 shortCode 확인 (workspace 내에서 중복 체크)
+      // 중복 체크
       const { data: existing } = await supabase
         .from('deeplinks')
-        .select('short_code')
+        .select('slug')
         .eq('workspace_id', project.id)
-        .eq('short_code', shortCode)
+        .eq('slug', slug)
         .maybeSingle();
 
-      if (!existing) {
-        break;  // 중복 없음, 사용 가능
+      if (existing) {
+        return NextResponse.json(
+          {
+            error: {
+              code: "SLUG_ALREADY_EXISTS",
+              message: "A deeplink with this slug already exists in your workspace."
+            }
+          },
+          { status: 409 }
+        );
+      }
+    } else {
+      // 랜덤 slug 생성 with 중복 체크
+      isRandomSlug = true;
+      let attempts = 0;
+      const MAX_ATTEMPTS = 10;
+
+      while (attempts < MAX_ATTEMPTS) {
+        slug = generateRandomString(6);  // 6글자 랜덤 (62^6 = 56억 조합)
+
+        // 기존 slug 확인 (workspace 내에서 중복 체크)
+        const { data: existing } = await supabase
+          .from('deeplinks')
+          .select('slug')
+          .eq('workspace_id', project.id)
+          .eq('slug', slug)
+          .maybeSingle();
+
+        if (!existing) {
+          break;  // 중복 없음, 사용 가능
+        }
+
+        attempts++;
       }
 
-      attempts++;
+      if (attempts === MAX_ATTEMPTS) {
+        return NextResponse.json(
+          {
+            error: {
+              code: "SLUG_GENERATION_FAILED",
+              message: "Failed to generate unique slug after 10 attempts. Please try again."
+            }
+          },
+          { status: 500 }
+        );
+      }
     }
 
-    if (attempts === MAX_ATTEMPTS) {
-      return NextResponse.json(
-        {
-          error: {
-            code: "SHORT_CODE_GENERATION_FAILED",
-            message: "Failed to generate unique short code after 10 attempts. Please try again."
-          }
-        },
-        { status: 500 }
-      );
-    }
-
-    const deeplinkUrl = `https://${project.sub_domain || 'app'}.depl.link/${shortCode}`;
+    const deeplinkUrl = `https://${project.sub_domain || 'app'}.depl.link/${slug}`;
 
     const { data: deeplink, error: deeplinkError } = await supabase
       .from('deeplinks')
@@ -294,16 +324,16 @@ export async function POST(request: Request) {
         app_params: body.app_params,
         social_meta: socialMeta,
         workspace_id: project.id,
-        short_code: shortCode,
-        slug: body.slug,
+        slug: slug,
+        is_random_slug: isRandomSlug,
         source: 'API',
       })
 
     if (deeplinkError) {
       console.error('딥링크 생성 실패:', {
         workspace_id: project.id,
-        short_code: shortCode,
-        slug: body.slug,
+        slug: slug,
+        is_random_slug: isRandomSlug,
         error: deeplinkError
       });
 

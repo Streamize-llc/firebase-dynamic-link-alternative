@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Link2, Plus, BarChart3, MousePointerClick, ExternalLink, LogOut, Copy, TrendingUp, Globe, Settings, Smartphone, Code, Hand, Check, BookOpen } from "lucide-react";
+import { Link2, Plus, BarChart3, MousePointerClick, ExternalLink, LogOut, Copy, TrendingUp, Globe, Settings, Smartphone, Code, Hand, Check, BookOpen, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSupabase } from "@/utils/supabase/provider";
 import { useRouter } from "next/navigation";
@@ -37,12 +37,23 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
   const [activeTab, setActiveTab] = useState("ui");
   const [copiedClientKey, setCopiedClientKey] = useState(false);
   const [copiedApiKey, setCopiedApiKey] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
   const { supabase } = useSupabase();
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+
+    // Get user email for contact link
+    const getUserEmail = async () => {
+      if (!supabase) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        setUserEmail(user.email);
+      }
+    };
+    getUserEmail();
+  }, [supabase]);
 
   // Display deeplinks based on active tab
   const displayedDeeplinks = activeTab === "ui" ? manualLinks : apiLinks;
@@ -93,6 +104,9 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
     return `${Math.floor(diffDays / 30)} months ago`;
   };
 
+  // Contact mailto link
+  const contactMailto = `mailto:admin@streamize.net?subject=${encodeURIComponent(`[DEPL] Support Request from ${userEmail || 'User'}`)}&body=${encodeURIComponent(`Hi DEPL Team,\n\nWorkspace: ${workspace.name} (${workspace.sub_domain}.depl.link)\nUser: ${userEmail}\n\n[Please describe your issue or question here]\n\n`)}`;
+
   return (
     <div className="min-h-screen bg-black relative">
       {/* Subtle grid background */}
@@ -124,6 +138,17 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Docs</span>
+                </Button>
+              </Link>
+
+              <Link href={contactMailto}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-white"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  <span className="hidden md:inline">Contact</span>
                 </Button>
               </Link>
 
@@ -529,7 +554,7 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
                       const url = `${workspace.sub_domain}.depl.link/${link.slug}`;
 
                       return (
-                        <tr key={link.short_code} className="hover:bg-white/5 transition-all group">
+                        <tr key={link.slug} className="hover:bg-white/5 transition-all group">
                           <td className="px-6 py-5">
                             <div className="flex items-center gap-3">
                               <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/5 border border-white/10">

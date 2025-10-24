@@ -14,7 +14,7 @@ interface LinkRedirectClientProps {
   deeplink: Deeplink;
   userAgent: string;
   host: string;
-  shortCode: string;
+  slug: string;
 }
 
 // Android Intent URL 생성
@@ -26,11 +26,11 @@ export default function LinkRedirectClient({
   deeplink,
   userAgent,
   host,
-  shortCode
+  slug
 }: LinkRedirectClientProps) {
   useEffect(() => {
     // 클릭 추적 (비동기, 에러 무시)
-    incrementDeeplinkClick(deeplink.workspace_id, shortCode).catch(err => {
+    incrementDeeplinkClick(deeplink.workspace_id, slug).catch(err => {
       console.error('클릭 추적 실패:', err);
     });
 
@@ -48,7 +48,7 @@ export default function LinkRedirectClient({
 
         const subdomain = host.split('.')[0];
         const normalizedSubdomain = subdomain === 'www' ? '' : subdomain;
-        const deepLinkUrl = `${normalizedSubdomain}.depl.link/${shortCode}`;
+        const deepLinkUrl = `${normalizedSubdomain}.depl.link/${slug}`;
 
         const fallbackUrl = deeplink.android_parameters.fallback_url ||
           `https://play.google.com/store/apps/details?id=${deeplink.android_parameters.package_name}`;
@@ -74,15 +74,15 @@ export default function LinkRedirectClient({
           ? new URLSearchParams(appParams as Record<string, any>).toString()
           : '';
         const universalLinkUrl = queryString
-          ? `https://${subdomain}.depl.link/${shortCode}?${queryString}`
-          : `https://${subdomain}.depl.link/${shortCode}`;
+          ? `https://${subdomain}.depl.link/${slug}?${queryString}`
+          : `https://${subdomain}.depl.link/${slug}`;
 
         window.location.href = universalLinkUrl;
       }
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [deeplink, userAgent, host, shortCode]);
+  }, [deeplink, userAgent, host, slug]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">

@@ -23,8 +23,8 @@ export interface AppParams {
 
 export interface Deeplink {
   workspace_id: string;
-  short_code: string;
   slug: string;
+  is_random_slug: boolean;
   app_params: AppParams | null;
   ios_parameters: IOSParameters | null;
   android_parameters: AndroidParameters | null;
@@ -88,8 +88,8 @@ export function isDeeplink(obj: any): obj is Deeplink {
     typeof obj === 'object' &&
     obj !== null &&
     typeof obj.workspace_id === 'string' &&
-    typeof obj.short_code === 'string' &&
     typeof obj.slug === 'string' &&
+    typeof obj.is_random_slug === 'boolean' &&
     typeof obj.app_params === 'object' &&
     isIOSParameters(obj.ios_parameters) &&
     isAndroidParameters(obj.android_parameters) &&

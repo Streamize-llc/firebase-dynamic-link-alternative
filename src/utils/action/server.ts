@@ -493,9 +493,6 @@ export async function createDeeplink(
     throw new Error("워크스페이스를 찾을 수 없습니다");
   }
 
-  // 랜덤 short_code 생성
-  const shortCode = crypto.randomBytes(4).toString('hex').substring(0, 8);
-
   // 소셜 메타 기본값 설정
   const socialMeta = {
     title: data.social_meta?.title || "Depl.link | App Download",
@@ -509,7 +506,7 @@ export async function createDeeplink(
     .insert({
       workspace_id: workspaceId,
       slug: data.slug,
-      short_code: shortCode,
+      is_random_slug: false,  // UI에서는 항상 사용자가 slug 지정
       app_params: data.app_params,
       ios_parameters: data.ios_parameters || {},
       android_parameters: data.android_parameters || {},
@@ -527,18 +524,18 @@ export async function createDeeplink(
 }
 
 // 딥링크 클릭 추적
-export async function incrementDeeplinkClick(workspaceId: string, shortCode: string) {
+export async function incrementDeeplinkClick(workspaceId: string, slug: string) {
   const supabase = await createClient();
 
   try {
     // 딥링크 클릭 수 증가
     const { error: clickError } = await supabase.rpc('increment_click_count', {
       p_workspace_id: workspaceId,
-      p_short_code: shortCode
+      p_slug: slug
     });
 
     if (clickError) {
-      console.error('딥링크 클릭 수 증가 실패:', { workspaceId, shortCode, error: clickError });
+      console.error('딥링크 클릭 수 증가 실패:', { workspaceId, slug, error: clickError });
     }
 
     // 워크스페이스 월별 클릭 수 증가
@@ -550,7 +547,7 @@ export async function incrementDeeplinkClick(workspaceId: string, shortCode: str
       console.error('워크스페이스 클릭 수 증가 실패:', { workspaceId, error: workspaceError });
     }
   } catch (error) {
-    console.error('클릭 추적 중 예외 발생:', { workspaceId, shortCode, error });
+    console.error('클릭 추적 중 예외 발생:', { workspaceId, slug, error });
     // 에러를 던지지 않음 - 클릭 추적 실패가 사용자 경험을 방해하면 안 됨
   }
 }

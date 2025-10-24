@@ -254,7 +254,7 @@ export default function AllDeepLinksClient({ workspaces, deeplinks, stats }: All
                     const url = `${workspace?.sub_domain}.depl.link/${link.slug}`;
 
                     return (
-                      <tr key={link.short_code} className="hover:bg-gray-800/20 transition-all group">
+                      <tr key={link.slug} className="hover:bg-gray-800/20 transition-all group">
                         <td className="px-6 py-5">
                           <Link
                             href={`/dashboard/${link.workspace_id}`}

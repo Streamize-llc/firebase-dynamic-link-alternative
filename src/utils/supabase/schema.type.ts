@@ -57,7 +57,7 @@ export type Database = {
           created_at: string
           id: string
           ios_parameters: Json
-          short_code: string
+          is_random_slug: boolean
           slug: string
           social_meta: Json
           source: string | null
@@ -71,7 +71,7 @@ export type Database = {
           created_at?: string
           id?: string
           ios_parameters: Json
-          short_code: string
+          is_random_slug?: boolean
           slug: string
           social_meta: Json
           source?: string | null
@@ -85,7 +85,7 @@ export type Database = {
           created_at?: string
           id?: string
           ios_parameters?: Json
-          short_code?: string
+          is_random_slug?: boolean
           slug?: string
           social_meta?: Json
           source?: string | null
@@ -313,7 +313,7 @@ export type Database = {
     }
     Functions: {
       increment_click_count: {
-        Args: { p_short_code: string; p_workspace_id: string }
+        Args: { p_slug: string; p_workspace_id: string }
         Returns: undefined
       }
       increment_workspace_click: {

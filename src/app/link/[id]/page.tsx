@@ -4,19 +4,64 @@ import { createClient } from '@/utils/supabase/server'
 import LinkRedirectClient from './LinkRedirectClient'
 import type { Deeplink } from '@/types/deeplink'
 
+function getDefaultMetadata(): Metadata {
+  const defaultImage = 'https://depl.link/images/og-image.jpg';
+
+  return {
+    title: '앱 다운로드 - DeepLink',
+    description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
+    openGraph: {
+      title: '앱 다운로드 - DeepLink',
+      description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
+      images: [
+        {
+          url: defaultImage,
+          width: 1200,
+          height: 630,
+          alt: '앱 다운로드',
+        }
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: '앱 다운로드 - DeepLink',
+      description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
+      images: [defaultImage],
+    }
+  };
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const supabase = await createClient();
   const { id } = await params;
+  const headersList = await headers();
+  const host = headersList.get('host') || '';
+  const isProd = process.env.NODE_ENV === 'production';
+  const subdomain = isProd ? host.split('.')[0] : 'test';
 
   try {
+    // workspace 조회
+    const { data: workspace } = await supabase
+      .from('workspaces')
+      .select('id')
+      .eq('sub_domain', subdomain)
+      .maybeSingle();
+
+    if (!workspace) {
+      return getDefaultMetadata();
+    }
+
+    // short_code 또는 slug로 조회
     const { data: deeplink, error } = await supabase
       .from('deeplinks')
       .select('social_meta, ios_parameters')
-      .eq('short_code', id)
+      .eq('workspace_id', workspace.id)
+      .or(`short_code.eq.${id},slug.eq.${id}`)
       .maybeSingle();
 
     if (error) {
-      console.error("딥링크 메타데이터 조회 오류:", { short_code: id, error });
+      console.error("딥링크 메타데이터 조회 오류:", { id, error });
     }
 
     if (deeplink && deeplink.social_meta) {
@@ -58,35 +103,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       }
     }
   } catch (e) {
-    console.error("메타데이터 조회 중 예외 발생:", { short_code: id, error: e });
+    console.error("메타데이터 조회 중 예외 발생:", { id, error: e });
   }
 
-  // 기본 메타데이터
-  const defaultImage = 'https://depl.link/images/og-image.jpg';
-
-  return {
-    title: '앱 다운로드 - DeepLink',
-    description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
-    openGraph: {
-      title: '앱 다운로드 - DeepLink',
-      description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
-      images: [
-        {
-          url: defaultImage,
-          width: 1200,
-          height: 630,
-          alt: '앱 다운로드',
-        }
-      ],
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: '앱 다운로드 - DeepLink',
-      description: '더 나은 경험을 위해 모바일 앱을 다운로드하세요.',
-      images: [defaultImage],
-    }
-  };
+  return getDefaultMetadata();
 }
 
 async function getDeepLinkUrl(id: string, host: string): Promise<Deeplink | null> {
@@ -108,16 +128,21 @@ async function getDeepLinkUrl(id: string, host: string): Promise<Deeplink | null
     return null;
   }
 
-  // 2. workspace_id + short_code로 딥링크 조회
+  // 2. workspace_id + (short_code OR slug)로 딥링크 조회
   const { data: deeplink, error: deeplinkError } = await supabase
     .from('deeplinks')
     .select('*')
     .eq('workspace_id', workspace.id)
-    .eq('short_code', id)
-    .single();
+    .or(`short_code.eq.${id},slug.eq.${id}`)
+    .maybeSingle();
 
   if (deeplinkError) {
-    console.error('딥링크 조회 오류:', { workspace_id: workspace.id, short_code: id, error: deeplinkError });
+    console.error('딥링크 조회 오류:', { workspace_id: workspace.id, id, error: deeplinkError });
+    return null;
+  }
+
+  if (!deeplink) {
+    console.log('딥링크 없음:', { workspace_id: workspace.id, id });
     return null;
   }
 
@@ -172,7 +197,7 @@ export default async function AppLinkHandler({ params }: { params: Promise<{ id:
       deeplink={deeplink}
       userAgent={userAgent}
       host={host}
-      shortCode={id}
+      slug={id}
     />
   );
 }
