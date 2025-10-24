@@ -134,7 +134,7 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-400 hover:text-white"
+                  className="text-gray-400 hover:text-black"
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Docs</span>
@@ -145,7 +145,7 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-400 hover:text-white"
+                  className="text-gray-400 hover:text-black"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
                   <span className="hidden md:inline">Contact</span>
@@ -155,18 +155,20 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-black"
               >
-                <Settings className="h-4 w-4" />
+                <Settings className="h-4 w-4 mr-2" />
+                <span className="hidden md:inline">Settings</span>
               </Button>
 
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-black"
                 onClick={handleSignOut}
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-4 w-4 mr-2" />
+                <span className="hidden md:inline">Logout</span>
               </Button>
             </div>
           </nav>
