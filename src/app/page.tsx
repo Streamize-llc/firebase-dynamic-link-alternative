@@ -340,6 +340,83 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Simple Integration Section */}
+        <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight font-space-grotesk">
+                Simple Integration
+              </h2>
+              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                No SDK. No complex setup. Just deep links that work.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
+                <div className="text-red-400 text-4xl mb-4">✗</div>
+                <h3 className="text-2xl font-bold text-white mb-4">Traditional MMPs</h3>
+                <div className="space-y-3 text-gray-400">
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-400 mt-1">•</span>
+                    <span>Complex SDK integration across platforms</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-400 mt-1">•</span>
+                    <span>Weeks of development time</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-400 mt-1">•</span>
+                    <span>Expensive attribution features you don't need</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-400 mt-1">•</span>
+                    <span>Bloated app size and dependencies</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl blur-xl transition-opacity opacity-0 group-hover:opacity-100" />
+                <div className="relative bg-black border border-white/20 rounded-2xl p-8 backdrop-blur-sm">
+                  <div className="text-green-400 text-4xl mb-4">✓</div>
+                  <h3 className="text-2xl font-bold text-white mb-4">DEPL</h3>
+                  <div className="space-y-3 text-gray-300">
+                    <div className="flex items-start gap-3">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Simple REST API - no SDK required</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Start in minutes, not weeks</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Focus on deep links, not attribution noise</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Zero impact on your app bundle</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/5 border-l-4 border-white/20 rounded-r-2xl p-8 backdrop-blur-sm">
+              <p className="text-2xl text-white font-medium mb-4">
+                99% of startups don't need a full MMP
+              </p>
+              <p className="text-gray-400 text-lg leading-relaxed">
+                Most teams just need reliable deep links that work across platforms.
+                You don't need complex attribution models, fraud detection, or multi-touch analytics
+                when you're just trying to get users from a link into your app.
+                DEPL focuses on doing one thing exceptionally well: deep linking.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Our Story Section */}
         <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
           <div className="max-w-4xl mx-auto">
