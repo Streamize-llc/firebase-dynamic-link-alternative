@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ConnectIOSAppModal from "@/components/modal/ConnectIOSAppModal";
 import ConnectAndroidAppModal from "@/components/modal/ConnectAndroidAppModal";
+import CreateDeeplinkModal from "@/components/modal/CreateDeeplinkModal";
 import { Space_Grotesk } from "next/font/google";
 import { toast } from "sonner";
 
@@ -32,6 +33,7 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
   const [mounted, setMounted] = useState(false);
   const [isIOSModalOpen, setIsIOSModalOpen] = useState(false);
   const [isAndroidModalOpen, setIsAndroidModalOpen] = useState(false);
+  const [isCreateLinkModalOpen, setIsCreateLinkModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("ui");
   const [copiedClientKey, setCopiedClientKey] = useState(false);
   const [copiedApiKey, setCopiedApiKey] = useState(false);
@@ -452,6 +454,7 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
                   <p className="text-sm text-gray-400 mt-1">Manage and track your deep links</p>
                 </div>
                 <Button
+                  onClick={() => setIsCreateLinkModalOpen(true)}
                   className="bg-white text-black hover:bg-gray-200 hidden md:flex"
                 >
                   <Plus className="mr-2 h-4 w-4" />
@@ -603,6 +606,11 @@ export default function WorkspaceDashboardClient({ workspace, manualLinks, apiLi
         onClose={() => setIsAndroidModalOpen(false)}
         workspaceId={workspace.id}
         existingApp={workspace.apps?.find((app: any) => app.platform === 'ANDROID')}
+      />
+      <CreateDeeplinkModal
+        isOpen={isCreateLinkModalOpen}
+        onClose={() => setIsCreateLinkModalOpen(false)}
+        workspaceId={workspace.id}
       />
     </div>
   );
