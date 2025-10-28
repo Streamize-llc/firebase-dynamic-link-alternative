@@ -29,6 +29,12 @@ export default function LinkRedirectClient({
   slug
 }: LinkRedirectClientProps) {
   useEffect(() => {
+    console.log('=== DEPL 디버깅 시작 ===');
+    console.log('1. 전체 딥링크 데이터:', JSON.stringify(deeplink, null, 2));
+    console.log('2. User Agent:', userAgent);
+    console.log('3. Host:', host);
+    console.log('4. Slug:', slug);
+
     // 클릭 추적 (비동기, 에러 무시)
     incrementDeeplinkClick(deeplink.workspace_id, slug).catch(err => {
       console.error('클릭 추적 실패:', err);
@@ -37,12 +43,21 @@ export default function LinkRedirectClient({
     const isAndroid = /Android/i.test(userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
 
+    console.log('5. 플랫폼 감지 - isAndroid:', isAndroid, 'isIOS:', isIOS);
+
     // 1초 후 리디렉션 (메타 태그 크롤링 시간 확보)
     const timer = setTimeout(() => {
       if (isAndroid) {
+        console.log('6. Android 처리 시작');
+        console.log('7. android_parameters:', JSON.stringify(deeplink.android_parameters, null, 2));
+
         // Android 파라미터 타입 검증
-        if (!isAndroidParameters(deeplink.android_parameters)) {
-          console.error('Invalid android_parameters:', deeplink.android_parameters);
+        const isValid = isAndroidParameters(deeplink.android_parameters);
+        console.log('8. android_parameters 검증 결과:', isValid);
+
+        if (!isValid) {
+          console.error('❌ android_parameters 검증 실패!');
+          console.error('받은 데이터:', deeplink.android_parameters);
           return;
         }
 
@@ -59,11 +74,20 @@ export default function LinkRedirectClient({
           deepLinkUrl
         );
 
+        console.log('9. 생성된 Intent URL:', androidAppLink);
+        console.log('10. 리디렉션 실행!');
         window.location.href = androidAppLink;
       } else if (isIOS) {
+        console.log('6. iOS 처리 시작');
+        console.log('7. ios_parameters:', JSON.stringify(deeplink.ios_parameters, null, 2));
+
         // iOS 파라미터 타입 검증
-        if (!isIOSParameters(deeplink.ios_parameters)) {
-          console.error('Invalid ios_parameters:', deeplink.ios_parameters);
+        const isValid = isIOSParameters(deeplink.ios_parameters);
+        console.log('8. ios_parameters 검증 결과:', isValid);
+
+        if (!isValid) {
+          console.error('❌ ios_parameters 검증 실패!');
+          console.error('받은 데이터:', deeplink.ios_parameters);
           return;
         }
 
@@ -77,6 +101,8 @@ export default function LinkRedirectClient({
           ? `https://${subdomain}.depl.link/${slug}?${queryString}`
           : `https://${subdomain}.depl.link/${slug}`;
 
+        console.log('9. 생성된 Universal Link URL:', universalLinkUrl);
+        console.log('10. 리디렉션 실행!');
         window.location.href = universalLinkUrl;
       }
     }, 1000);
