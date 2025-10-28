@@ -55,21 +55,24 @@ export default function LinkRedirectClient({
         const isValid = isAndroidParameters(deeplink.android_parameters);
         console.log('8. android_parameters 검증 결과:', isValid);
 
-        if (!isValid) {
+        if (!isValid || !deeplink.android_parameters) {
           console.error('❌ android_parameters 검증 실패!');
           console.error('받은 데이터:', deeplink.android_parameters);
           return;
         }
 
+        // 타입 가드 통과 후 변수에 할당
+        const androidParams = deeplink.android_parameters;
+
         const subdomain = host.split('.')[0];
         const normalizedSubdomain = subdomain === 'www' ? '' : subdomain;
         const deepLinkUrl = `${normalizedSubdomain}.depl.link/${slug}`;
 
-        const fallbackUrl = deeplink.android_parameters.fallback_url ||
-          `https://play.google.com/store/apps/details?id=${deeplink.android_parameters.package_name}`;
+        const fallbackUrl = androidParams.fallback_url ||
+          `https://play.google.com/store/apps/details?id=${androidParams.package_name}`;
 
         const androidAppLink = createAndroidAppLink(
-          deeplink.android_parameters.package_name,
+          androidParams.package_name,
           fallbackUrl,
           deepLinkUrl
         );
@@ -85,7 +88,7 @@ export default function LinkRedirectClient({
         const isValid = isIOSParameters(deeplink.ios_parameters);
         console.log('8. ios_parameters 검증 결과:', isValid);
 
-        if (!isValid) {
+        if (!isValid || !deeplink.ios_parameters) {
           console.error('❌ ios_parameters 검증 실패!');
           console.error('받은 데이터:', deeplink.ios_parameters);
           return;
