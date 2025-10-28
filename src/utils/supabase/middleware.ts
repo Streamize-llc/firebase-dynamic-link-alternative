@@ -33,7 +33,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // 제외할 경로들 (앱 라우트)
-  const excludedPaths = ['/dashboard', '/dashboard_deprecated', '/api', '/blog', '/callback', '/test', '/landing2', '/docs'];
+  const excludedPaths = ['/dashboard', '/dashboard_deprecated', '/api', '/blog', '/callback', '/test', '/landing2', '/docs', '/.well-known'];
   const isExcludedPath = excludedPaths.some(path => pathname.startsWith(path));
 
   // URL 경로에서 shortCode 확인
