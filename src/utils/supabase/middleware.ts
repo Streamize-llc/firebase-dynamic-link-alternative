@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest) {
   const shortCode = pathSegments.length > 0 ? pathSegments[0] : null;
 
   // 프로덕션 환경에서 *.depl.link 형식인 경우 처리
-  if (isProd && host.endsWith('.depl.link')) {
+  if (isProd && host.endsWith('.depl.link') && !isExcludedPath) {
     const subdomain = host.split('.')[0];
 
     // 서브도메인이 존재하면 /link/shortCode로 리다이렉트
@@ -50,7 +50,7 @@ export async function updateSession(request: NextRequest) {
       url.pathname = `/link/${shortCode || ''}`;
       return NextResponse.rewrite(url);
     }
-  } else if (!isProd && host.endsWith('.localhost:3000')) {
+  } else if (!isProd && host.endsWith('.localhost:3000') && !isExcludedPath) {
     const subdomain = host.split('.')[0];
 
     if (subdomain) {
