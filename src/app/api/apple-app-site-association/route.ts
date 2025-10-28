@@ -85,25 +85,15 @@ export async function GET() {
     }
     
     const platformData = rawPlatformData;
-    
-    // Temporary data (actually needs DB lookup by subdomain)
-    const dummyIosApps = [
-      {
-        platform_data: {
-          teamId: platformData.team_id,
-          bundleId: platformData.bundle_id
-        }
-      }
-    ];
-    
+
     // Configure response according to Apple App Site Association format
     const response = {
       applinks: {
         apps: [],
-        details: dummyIosApps.map((app: any) => ({
-          appID: `${app.platform_data.team_id}.${app.platform_data.bundle_id}`,
+        details: [{
+          appID: `${platformData.team_id}.${platformData.bundle_id}`,
           paths: ["NOT /_/*", "/*"]
-        }))
+        }]
       }
     };
     

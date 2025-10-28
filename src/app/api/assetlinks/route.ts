@@ -3,13 +3,13 @@ import { createClient } from '@/utils/supabase/server';
 import { headers } from 'next/headers';
 
 interface PlatformData {
-  sha256_list: string;
+  sha256_list: string[];
   package_name: string;
 }
 
 function isPlatformData(data: any): data is PlatformData {
-  return typeof data === 'object' && 
-         typeof data.sha256_list === 'string' && 
+  return typeof data === 'object' &&
+         Array.isArray(data.sha256_list) &&
          typeof data.package_name === 'string';
 }
 
