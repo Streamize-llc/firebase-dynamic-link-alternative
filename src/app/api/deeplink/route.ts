@@ -210,7 +210,7 @@ export async function POST(request: Request) {
     // 프로젝트에 연결된 앱 정보 확인
     if (!project.apps || project.apps.length === 0) {
       return NextResponse.json(
-        { 
+        {
           error: {
             code: "NO_APPS_CONFIGURED",
             message: "프로젝트에 등록된 앱이 없습니다."
@@ -219,35 +219,11 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    
-    // iOS 및 Android 앱 정보 추출
-    const iosApp = project.apps.find(app => app.platform === 'ios');
-    const androidApp = project.apps.find(app => app.platform === 'android');
-    
-    // iOS 및 Android 파라미터 설정
+
+    // android_parameters, ios_parameters는 더 이상 사용하지 않음
+    // 빈 객체로 저장 (DB 스키마 호환성 유지)
     const iosParameters: IOSParameters = {};
     const androidParameters: AndroidParameters = {};
-    
-    // iOS 앱 정보가 있는 경우 파라미터 설정
-    if (iosApp && iosApp.platform_data) {
-      const iosData = iosApp.platform_data as { bundle_id?: string, app_store_id?: string };
-      if (iosData.bundle_id) {
-        iosParameters.bundle_id = iosData.bundle_id;
-      }
-      if (iosData.app_store_id) {
-        iosParameters.app_store_id = iosData.app_store_id;
-      }
-    }
-    
-    // Android 앱 정보가 있는 경우 파라미터 설정
-    if (androidApp && androidApp.platform_data) {
-      const androidData = androidApp.platform_data as { package_name?: string };
-      if (androidData.package_name) {
-        androidParameters.package_name = androidData.package_name;
-        androidParameters.action = 'android.intent.action.VIEW';
-        androidParameters.fallback_url = `https://play.google.com/store/apps/details?id=${androidData.package_name}`;
-      }
-    }
 
     // slug 생성 또는 사용자 지정 slug 사용
     let slug: string = '';

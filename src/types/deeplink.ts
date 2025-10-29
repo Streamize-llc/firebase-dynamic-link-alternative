@@ -26,8 +26,19 @@ export interface Deeplink {
   slug: string;
   is_random_slug: boolean;
   app_params: AppParams | null;
+
+  /**
+   * @deprecated 더 이상 사용되지 않음. apps 테이블의 platform_data에서 실시간으로 조회.
+   * DB 스키마 호환성을 위해 빈 객체로 저장됨.
+   */
   ios_parameters: IOSParameters | null;
+
+  /**
+   * @deprecated 더 이상 사용되지 않음. apps 테이블의 platform_data에서 실시간으로 조회.
+   * DB 스키마 호환성을 위해 빈 객체로 저장됨.
+   */
   android_parameters: AndroidParameters | null;
+
   social_meta: SocialMeta | null;
   click_count: number;
   created_at: string;

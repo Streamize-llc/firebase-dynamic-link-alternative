@@ -2,19 +2,53 @@
 
 import { useEffect } from 'react';
 import { incrementDeeplinkClick } from '@/utils/action/server';
-import {
-  type Deeplink,
-  type AndroidParameters,
-  type IOSParameters,
-  isAndroidParameters,
-  isIOSParameters
-} from '@/types/deeplink';
+import type { Deeplink } from '@/types/deeplink';
+
+interface AppData {
+  id: string;
+  platform: string;
+  platform_data: any;
+}
+
+interface AndroidPlatformData {
+  package_name: string;
+  sha256_list?: string[];
+}
+
+interface IOSPlatformData {
+  bundle_id: string;
+  team_id: string;
+  app_store_id?: string;
+}
 
 interface LinkRedirectClientProps {
   deeplink: Deeplink;
+  apps: AppData[];
   userAgent: string;
   host: string;
   slug: string;
+}
+
+// Android platform_data 검증
+function isAndroidPlatformData(data: any): data is AndroidPlatformData {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    typeof data.package_name === 'string' &&
+    data.package_name.length > 0
+  );
+}
+
+// iOS platform_data 검증
+function isIOSPlatformData(data: any): data is IOSPlatformData {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    typeof data.bundle_id === 'string' &&
+    data.bundle_id.length > 0 &&
+    typeof data.team_id === 'string' &&
+    data.team_id.length > 0
+  );
 }
 
 // Android Intent URL 생성
@@ -24,6 +58,7 @@ function createAndroidAppLink(packageName: string, fallbackUrl: string, deepLink
 
 export default function LinkRedirectClient({
   deeplink,
+  apps,
   userAgent,
   host,
   slug
@@ -31,9 +66,10 @@ export default function LinkRedirectClient({
   useEffect(() => {
     console.log('=== DEPL 디버깅 시작 ===');
     console.log('1. 전체 딥링크 데이터:', JSON.stringify(deeplink, null, 2));
-    console.log('2. User Agent:', userAgent);
-    console.log('3. Host:', host);
-    console.log('4. Slug:', slug);
+    console.log('2. 앱 데이터:', JSON.stringify(apps, null, 2));
+    console.log('3. User Agent:', userAgent);
+    console.log('4. Host:', host);
+    console.log('5. Slug:', slug);
 
     // 클릭 추적 (비동기, 에러 무시)
     incrementDeeplinkClick(deeplink.workspace_id, slug).catch(err => {
@@ -43,54 +79,67 @@ export default function LinkRedirectClient({
     const isAndroid = /Android/i.test(userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
 
-    console.log('5. 플랫폼 감지 - isAndroid:', isAndroid, 'isIOS:', isIOS);
+    console.log('6. 플랫폼 감지 - isAndroid:', isAndroid, 'isIOS:', isIOS);
 
     // 1초 후 리디렉션 (메타 태그 크롤링 시간 확보)
     const timer = setTimeout(() => {
       if (isAndroid) {
-        console.log('6. Android 처리 시작');
-        console.log('7. android_parameters:', JSON.stringify(deeplink.android_parameters, null, 2));
+        console.log('7. Android 처리 시작');
 
-        // Android 파라미터 타입 검증
-        const isValid = isAndroidParameters(deeplink.android_parameters);
-        console.log('8. android_parameters 검증 결과:', isValid);
+        // Android 앱 찾기
+        const androidApp = apps.find(app => app.platform.toUpperCase() === 'ANDROID');
+        console.log('8. Android 앱:', androidApp);
 
-        if (!isValid || !deeplink.android_parameters) {
-          console.error('❌ android_parameters 검증 실패!');
-          console.error('받은 데이터:', deeplink.android_parameters);
+        if (!androidApp || !androidApp.platform_data) {
+          console.error('❌ Android 앱 정보 없음!');
           return;
         }
 
-        // 타입 가드 통과 후 변수에 할당
-        const androidParams = deeplink.android_parameters;
+        // platform_data 검증
+        const isValid = isAndroidPlatformData(androidApp.platform_data);
+        console.log('9. platform_data 검증 결과:', isValid);
 
+        if (!isValid) {
+          console.error('❌ platform_data 검증 실패!');
+          console.error('받은 데이터:', androidApp.platform_data);
+          return;
+        }
+
+        const androidData = androidApp.platform_data;
         const subdomain = host.split('.')[0];
         const normalizedSubdomain = subdomain === 'www' ? '' : subdomain;
         const deepLinkUrl = `${normalizedSubdomain}.depl.link/${slug}`;
 
-        const fallbackUrl = androidParams.fallback_url ||
-          `https://play.google.com/store/apps/details?id=${androidParams.package_name}`;
+        const fallbackUrl = `https://play.google.com/store/apps/details?id=${androidData.package_name}`;
 
         const androidAppLink = createAndroidAppLink(
-          androidParams.package_name,
+          androidData.package_name,
           fallbackUrl,
           deepLinkUrl
         );
 
-        console.log('9. 생성된 Intent URL:', androidAppLink);
-        console.log('10. 리디렉션 실행!');
+        console.log('10. 생성된 Intent URL:', androidAppLink);
+        console.log('11. 리디렉션 실행!');
         window.location.href = androidAppLink;
       } else if (isIOS) {
-        console.log('6. iOS 처리 시작');
-        console.log('7. ios_parameters:', JSON.stringify(deeplink.ios_parameters, null, 2));
+        console.log('7. iOS 처리 시작');
 
-        // iOS 파라미터 타입 검증
-        const isValid = isIOSParameters(deeplink.ios_parameters);
-        console.log('8. ios_parameters 검증 결과:', isValid);
+        // iOS 앱 찾기
+        const iosApp = apps.find(app => app.platform.toUpperCase() === 'IOS');
+        console.log('8. iOS 앱:', iosApp);
 
-        if (!isValid || !deeplink.ios_parameters) {
-          console.error('❌ ios_parameters 검증 실패!');
-          console.error('받은 데이터:', deeplink.ios_parameters);
+        if (!iosApp || !iosApp.platform_data) {
+          console.error('❌ iOS 앱 정보 없음!');
+          return;
+        }
+
+        // platform_data 검증
+        const isValid = isIOSPlatformData(iosApp.platform_data);
+        console.log('9. platform_data 검증 결과:', isValid);
+
+        if (!isValid) {
+          console.error('❌ platform_data 검증 실패!');
+          console.error('받은 데이터:', iosApp.platform_data);
           return;
         }
 
@@ -104,14 +153,14 @@ export default function LinkRedirectClient({
           ? `https://${subdomain}.depl.link/${slug}?${queryString}`
           : `https://${subdomain}.depl.link/${slug}`;
 
-        console.log('9. 생성된 Universal Link URL:', universalLinkUrl);
-        console.log('10. 리디렉션 실행!');
+        console.log('10. 생성된 Universal Link URL:', universalLinkUrl);
+        console.log('11. 리디렉션 실행!');
         window.location.href = universalLinkUrl;
       }
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [deeplink, userAgent, host, slug]);
+  }, [deeplink, apps, userAgent, host, slug]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">

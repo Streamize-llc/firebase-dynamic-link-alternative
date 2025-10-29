@@ -109,7 +109,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return getDefaultMetadata();
 }
 
-async function getDeepLinkUrl(id: string, host: string): Promise<Deeplink | null> {
+interface AppData {
+  id: string;
+  platform: string;
+  platform_data: any;
+}
+
+interface DeepLinkWithApps {
+  deeplink: Deeplink;
+  apps: AppData[];
+}
+
+async function getDeepLinkUrl(id: string, host: string): Promise<DeepLinkWithApps | null> {
   const supabase = await createClient();
   const isProd = process.env.NODE_ENV === 'production';
 
@@ -146,7 +157,21 @@ async function getDeepLinkUrl(id: string, host: string): Promise<Deeplink | null
     return null;
   }
 
-  return deeplink as Deeplink;
+  // 3. workspace의 앱 정보 조회
+  const { data: apps, error: appsError } = await supabase
+    .from('apps')
+    .select('id, platform, platform_data')
+    .eq('workspace_id', workspace.id);
+
+  if (appsError) {
+    console.error('앱 정보 조회 오류:', { workspace_id: workspace.id, error: appsError });
+    return null;
+  }
+
+  return {
+    deeplink: deeplink as Deeplink,
+    apps: apps || []
+  };
 }
 
 export default async function AppLinkHandler({ params }: { params: Promise<{ id: string }> }) {
@@ -155,9 +180,9 @@ export default async function AppLinkHandler({ params }: { params: Promise<{ id:
   const userAgent = headersList.get('user-agent') || ''
   const host = headersList.get('host') || ''
 
-  const deeplink = await getDeepLinkUrl(id, host)
+  const result = await getDeepLinkUrl(id, host)
 
-  if (!deeplink) {
+  if (!result) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
         <h1 className="text-2xl font-bold mb-4">딥링크를 찾을 수 없습니다</h1>
@@ -165,6 +190,8 @@ export default async function AppLinkHandler({ params }: { params: Promise<{ id:
       </div>
     )
   }
+
+  const { deeplink, apps } = result;
 
   // 소셜 크롤러 감지
   const isCrawler = /facebookexternalhit|Twitterbot|WhatsApp|Slackbot|KakaoTalkBot|LinkedInBot|Pinterest|Discordbot/i.test(userAgent);
@@ -195,6 +222,7 @@ export default async function AppLinkHandler({ params }: { params: Promise<{ id:
   return (
     <LinkRedirectClient
       deeplink={deeplink}
+      apps={apps}
       userAgent={userAgent}
       host={host}
       slug={id}
