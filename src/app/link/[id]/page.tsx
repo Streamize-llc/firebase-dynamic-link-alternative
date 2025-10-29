@@ -153,7 +153,7 @@ async function getDeepLinkUrl(id: string, host: string): Promise<DeepLinkWithApp
   }
 
   if (!deeplink) {
-    console.log('딥링크 없음:', { workspace_id: workspace.id, id });
+    console.log('Deeplink not found:', { workspace_id: workspace.id, id });
     return null;
   }
 

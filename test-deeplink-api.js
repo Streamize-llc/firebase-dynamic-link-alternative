@@ -74,7 +74,7 @@ function makeRequest(url, options, postData = null) {
 
 async function test1_createDeeplink() {
   console.log('\n========================================');
-  console.log('TEST 1: 딥링크 생성 (POST /api/deeplink)');
+  console.log('TEST 1: Create Deeplink (POST /api/deeplink)');
   console.log('========================================');
 
   const payload = {
@@ -91,7 +91,7 @@ async function test1_createDeeplink() {
     }
   };
 
-  console.log('📤 요청 데이터:', JSON.stringify(payload, null, 2));
+  console.log('📤 Request data:', JSON.stringify(payload, null, 2));
 
   try {
     const response = await makeRequest(
@@ -106,11 +106,11 @@ async function test1_createDeeplink() {
       JSON.stringify(payload)
     );
 
-    console.log(`\n✅ 응답 상태: ${response.status}`);
-    console.log('📥 응답 데이터:', JSON.stringify(response.data, null, 2));
+    console.log(`\n✅ Response status: ${response.status}`);
+    console.log('📥 Response data:', JSON.stringify(response.data, null, 2));
 
     if (response.status === 200 && response.data.deeplink_url) {
-      console.log(`\n🔗 생성된 딥링크: ${response.data.deeplink_url}`);
+      console.log(`\n🔗 Created deeplink: ${response.data.deeplink_url}`);
 
       // shortCode 추출
       const shortCode = response.data.deeplink_url.split('/').pop();
@@ -127,10 +127,10 @@ async function test1_createDeeplink() {
 
 async function test2_getDeeplink(shortCode) {
   console.log('\n========================================');
-  console.log('TEST 2: 딥링크 조회 (GET /api/deeplink)');
+  console.log('TEST 2: Get Deeplink (GET /api/deeplink)');
   console.log('========================================');
 
-  console.log(`📤 조회할 shortCode: ${shortCode}`);
+  console.log(`📤 ShortCode to retrieve: ${shortCode}`);
 
   try {
     const response = await makeRequest(
@@ -143,8 +143,8 @@ async function test2_getDeeplink(shortCode) {
       }
     );
 
-    console.log(`\n✅ 응답 상태: ${response.status}`);
-    console.log('📥 응답 데이터:', JSON.stringify(response.data, null, 2));
+    console.log(`\n✅ Response status: ${response.status}`);
+    console.log('📥 Response data:', JSON.stringify(response.data, null, 2));
 
     return response.data;
   } catch (error) {
@@ -155,11 +155,11 @@ async function test2_getDeeplink(shortCode) {
 
 async function test3_checkMetaTags(shortCode) {
   console.log('\n========================================');
-  console.log('TEST 3: 소셜 메타 태그 확인 (크롤러 시뮬레이션)');
+  console.log('TEST 3: Check Social Meta Tags (Crawler Simulation)');
   console.log('========================================');
 
   const deeplinkUrl = `${config.baseUrl.replace('http://', `http://${config.subdomain}.`).replace('https://', `https://${config.subdomain}.`)}/${shortCode}`;
-  console.log(`📤 요청 URL: ${deeplinkUrl}`);
+  console.log(`📤 Request URL: ${deeplinkUrl}`);
   console.log('🤖 User-Agent: facebookexternalhit/1.1');
 
   try {
@@ -188,7 +188,7 @@ async function test3_checkMetaTags(shortCode) {
       req.end();
     });
 
-    console.log(`\n✅ 응답 상태: ${response.status}`);
+    console.log(`\n✅ Response status: ${response.status}`);
 
     // 메타 태그 추출
     const metaTags = {
@@ -198,12 +198,12 @@ async function test3_checkMetaTags(shortCode) {
       'twitter:card': (response.html.match(/<meta name="twitter:card" content="([^"]+)"/) || [])[1],
     };
 
-    console.log('\n📋 발견된 메타 태그:');
+    console.log('\n📋 Found Meta Tags:');
     Object.entries(metaTags).forEach(([key, value]) => {
       if (value) {
         console.log(`  ✅ ${key}: ${value}`);
       } else {
-        console.log(`  ❌ ${key}: (없음)`);
+        console.log(`  ❌ ${key}: (none)`);
       }
     });
 
@@ -216,11 +216,11 @@ async function test3_checkMetaTags(shortCode) {
 
 async function test4_androidUserAgent(shortCode) {
   console.log('\n========================================');
-  console.log('TEST 4: Android User-Agent 테스트');
+  console.log('TEST 4: Android User-Agent Test');
   console.log('========================================');
 
   const deeplinkUrl = `${config.baseUrl.replace('http://', `http://${config.subdomain}.`).replace('https://', `https://${config.subdomain}.`)}/${shortCode}`;
-  console.log(`📤 요청 URL: ${deeplinkUrl}`);
+  console.log(`📤 Request URL: ${deeplinkUrl}`);
   console.log('📱 User-Agent: Android');
 
   try {
@@ -249,20 +249,20 @@ async function test4_androidUserAgent(shortCode) {
       req.end();
     });
 
-    console.log(`\n✅ 응답 상태: ${response.status}`);
+    console.log(`\n✅ Response status: ${response.status}`);
 
-    // Client-side 리디렉션인지 확인
+    // Check for client-side redirection
     if (response.html.includes('window.location.href')) {
-      console.log('✅ Client-side 리디렉션 감지됨');
+      console.log('✅ Client-side redirection detected');
       const intentMatch = response.html.match(/window\.location\.href\s*=\s*["']([^"']+)["']/);
       if (intentMatch) {
-        console.log(`🔗 리디렉션 URL: ${intentMatch[1].substring(0, 100)}...`);
+        console.log(`🔗 Redirect URL: ${intentMatch[1].substring(0, 100)}...`);
       }
     }
 
-    // 로딩 UI 확인
+    // Check for loading UI
     if (response.html.includes('앱으로 이동 중')) {
-      console.log('✅ 로딩 UI 표시됨');
+      console.log('✅ Loading UI displayed');
     }
 
     return response;
@@ -274,11 +274,11 @@ async function test4_androidUserAgent(shortCode) {
 
 async function test5_iOSUserAgent(shortCode) {
   console.log('\n========================================');
-  console.log('TEST 5: iOS User-Agent 테스트');
+  console.log('TEST 5: iOS User-Agent Test');
   console.log('========================================');
 
   const deeplinkUrl = `${config.baseUrl.replace('http://', `http://${config.subdomain}.`).replace('https://', `https://${config.subdomain}.`)}/${shortCode}`;
-  console.log(`📤 요청 URL: ${deeplinkUrl}`);
+  console.log(`📤 Request URL: ${deeplinkUrl}`);
   console.log('📱 User-Agent: iPhone');
 
   try {
@@ -307,20 +307,20 @@ async function test5_iOSUserAgent(shortCode) {
       req.end();
     });
 
-    console.log(`\n✅ 응답 상태: ${response.status}`);
+    console.log(`\n✅ Response status: ${response.status}`);
 
-    // Smart App Banner 확인
+    // Check for Smart App Banner
     if (response.html.includes('apple-itunes-app')) {
-      console.log('✅ iOS Smart App Banner 메타 태그 발견');
+      console.log('✅ iOS Smart App Banner meta tag found');
       const appIdMatch = response.html.match(/app-id=(\d+)/);
       if (appIdMatch) {
         console.log(`📱 App Store ID: ${appIdMatch[1]}`);
       }
     }
 
-    // Universal Link 리디렉션 확인
+    // Check for Universal Link redirection
     if (response.html.includes('window.location.href')) {
-      console.log('✅ Client-side 리디렉션 감지됨');
+      console.log('✅ Client-side redirection detected');
       const urlMatch = response.html.match(/window\.location\.href\s*=\s*["']([^"']+)["']/);
       if (urlMatch) {
         console.log(`🔗 Universal Link URL: ${urlMatch[1]}`);
@@ -338,8 +338,8 @@ async function test5_iOSUserAgent(shortCode) {
 // 메인 테스트 실행
 // ========================================
 async function runAllTests() {
-  console.log('🚀 Deeplink API 테스트 시작\n');
-  console.log('설정:');
+  console.log('🚀 Starting Deeplink API Test\n');
+  console.log('Configuration:');
   console.log(`  - Base URL: ${config.baseUrl}`);
   console.log(`  - Subdomain: ${config.subdomain}`);
   console.log(`  - API Key: ${config.apiKey.substring(0, 10)}...`);
@@ -370,11 +370,11 @@ async function runAllTests() {
     await test5_iOSUserAgent(shortCode);
 
     console.log('\n========================================');
-    console.log('✅ 모든 테스트 완료!');
+    console.log('✅ All tests completed!');
     console.log('========================================\n');
-    console.log(`🔗 테스트 링크: ${config.baseUrl.replace('http://', `http://${config.subdomain}.`).replace('https://', `https://${config.subdomain}.`)}/${shortCode}`);
-    console.log('\n💡 브라우저에서 위 링크를 열어보세요!');
-    console.log('💡 모바일 디바이스에서도 테스트해보세요!');
+    console.log(`🔗 Test link: ${config.baseUrl.replace('http://', `http://${config.subdomain}.`).replace('https://', `https://${config.subdomain}.`)}/${shortCode}`);
+    console.log('\n💡 Open the link above in your browser!');
+    console.log('💡 Test on mobile devices too!');
 
   } catch (error) {
     console.error('\n❌ 테스트 실패:', error);
