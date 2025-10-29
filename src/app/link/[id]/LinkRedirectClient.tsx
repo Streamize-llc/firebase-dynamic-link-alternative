@@ -64,52 +64,55 @@ export default function LinkRedirectClient({
   slug
 }: LinkRedirectClientProps) {
   useEffect(() => {
-    console.log('=== DEPL 디버깅 시작 ===');
-    console.log('1. 전체 딥링크 데이터:', JSON.stringify(deeplink, null, 2));
-    console.log('2. 앱 데이터:', JSON.stringify(apps, null, 2));
+    console.log('=== DEPL Debug Start ===');
+    console.log('1. Deeplink data:', JSON.stringify(deeplink, null, 2));
+    console.log('2. Apps data:', JSON.stringify(apps, null, 2));
     console.log('3. User Agent:', userAgent);
     console.log('4. Host:', host);
     console.log('5. Slug:', slug);
 
-    // 클릭 추적 (비동기, 에러 무시)
+    // Click tracking (async, ignore errors)
     incrementDeeplinkClick(deeplink.workspace_id, slug).catch(err => {
-      console.error('클릭 추적 실패:', err);
+      console.error('Click tracking failed:', err);
     });
+
+    // No apps configured
+    if (!apps || apps.length === 0) {
+      console.error('❌ No apps registered!');
+      alert('No app information found. Please contact the administrator.');
+      return;
+    }
 
     const isAndroid = /Android/i.test(userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+    const isDesktop = !isAndroid && !isIOS;
 
-    console.log('6. 플랫폼 감지 - isAndroid:', isAndroid, 'isIOS:', isIOS);
+    console.log('6. Platform detection - isAndroid:', isAndroid, 'isIOS:', isIOS, 'isDesktop:', isDesktop);
 
     // 1초 후 리디렉션 (메타 태그 크롤링 시간 확보)
     const timer = setTimeout(() => {
-      if (isAndroid) {
-        console.log('7. Android 처리 시작');
+      // Find apps
+      const androidApp = apps.find(app => app.platform.toUpperCase() === 'ANDROID');
+      const iosApp = apps.find(app => app.platform.toUpperCase() === 'IOS');
 
-        // Android 앱 찾기
-        const androidApp = apps.find(app => app.platform.toUpperCase() === 'ANDROID');
-        console.log('8. Android 앱:', androidApp);
+      console.log('7. App availability - Android:', androidApp ? 'Available' : 'N/A', 'iOS:', iosApp ? 'Available' : 'N/A');
 
+      // Android redirect function
+      const redirectToAndroid = () => {
         if (!androidApp || !androidApp.platform_data) {
-          console.error('❌ Android 앱 정보 없음!');
-          return;
+          console.error('❌ Android app info not found');
+          return false;
         }
 
-        // platform_data 검증
-        const isValid = isAndroidPlatformData(androidApp.platform_data);
-        console.log('9. platform_data 검증 결과:', isValid);
-
-        if (!isValid) {
-          console.error('❌ platform_data 검증 실패!');
-          console.error('받은 데이터:', androidApp.platform_data);
-          return;
+        if (!isAndroidPlatformData(androidApp.platform_data)) {
+          console.error('❌ Android platform_data validation failed:', androidApp.platform_data);
+          return false;
         }
 
         const androidData = androidApp.platform_data;
-        const subdomain = host.split('.')[0];
-        const normalizedSubdomain = subdomain === 'www' ? '' : subdomain;
+        const subdomain = host.split('.')[0] || 'app';
+        const normalizedSubdomain = subdomain === 'www' ? 'app' : subdomain;
         const deepLinkUrl = `${normalizedSubdomain}.depl.link/${slug}`;
-
         const fallbackUrl = `https://play.google.com/store/apps/details?id=${androidData.package_name}`;
 
         const androidAppLink = createAndroidAppLink(
@@ -118,44 +121,81 @@ export default function LinkRedirectClient({
           deepLinkUrl
         );
 
-        console.log('10. 생성된 Intent URL:', androidAppLink);
-        console.log('11. 리디렉션 실행!');
+        console.log('✅ Android redirect:', androidAppLink);
         window.location.href = androidAppLink;
-      } else if (isIOS) {
-        console.log('7. iOS 처리 시작');
+        return true;
+      };
 
-        // iOS 앱 찾기
-        const iosApp = apps.find(app => app.platform.toUpperCase() === 'IOS');
-        console.log('8. iOS 앱:', iosApp);
-
+      // iOS redirect function
+      const redirectToIOS = () => {
         if (!iosApp || !iosApp.platform_data) {
-          console.error('❌ iOS 앱 정보 없음!');
-          return;
+          console.error('❌ iOS app info not found');
+          return false;
         }
 
-        // platform_data 검증
-        const isValid = isIOSPlatformData(iosApp.platform_data);
-        console.log('9. platform_data 검증 결과:', isValid);
-
-        if (!isValid) {
-          console.error('❌ platform_data 검증 실패!');
-          console.error('받은 데이터:', iosApp.platform_data);
-          return;
+        if (!isIOSPlatformData(iosApp.platform_data)) {
+          console.error('❌ iOS platform_data validation failed:', iosApp.platform_data);
+          return false;
         }
 
-        // Universal Link URL 구성
-        const subdomain = host.split('.')[0];
+        const subdomain = host.split('.')[0] || 'app';
         const appParams = deeplink.app_params || {};
-        const queryString = Object.keys(appParams).length > 0
-          ? new URLSearchParams(appParams as Record<string, any>).toString()
-          : '';
+
+        // Safely convert app_params to query string
+        let queryString = '';
+        try {
+          if (Object.keys(appParams).length > 0) {
+            const params = new URLSearchParams();
+            Object.entries(appParams).forEach(([key, value]) => {
+              if (value !== null && value !== undefined) {
+                params.append(key, String(value));
+              }
+            });
+            queryString = params.toString();
+          }
+        } catch (e) {
+          console.error('app_params parsing error:', e);
+        }
+
         const universalLinkUrl = queryString
           ? `https://${subdomain}.depl.link/${slug}?${queryString}`
           : `https://${subdomain}.depl.link/${slug}`;
 
-        console.log('10. 생성된 Universal Link URL:', universalLinkUrl);
-        console.log('11. 리디렉션 실행!');
+        console.log('✅ iOS redirect:', universalLinkUrl);
         window.location.href = universalLinkUrl;
+        return true;
+      };
+
+      // Platform-specific handling
+      let redirected = false;
+
+      if (isAndroid) {
+        console.log('8. Processing Android user');
+        redirected = redirectToAndroid();
+        if (!redirected) {
+          console.log('9. Android app not available, fallback to iOS');
+          redirected = redirectToIOS();
+        }
+      } else if (isIOS) {
+        console.log('8. Processing iOS user');
+        redirected = redirectToIOS();
+        if (!redirected) {
+          console.log('9. iOS app not available, fallback to Android');
+          redirected = redirectToAndroid();
+        }
+      } else {
+        console.log('8. Processing Desktop/PC user - Android priority');
+        redirected = redirectToAndroid();
+        if (!redirected) {
+          console.log('9. Android app not available, fallback to iOS');
+          redirected = redirectToIOS();
+        }
+      }
+
+      // All attempts failed
+      if (!redirected) {
+        console.error('❌ No valid app configuration available');
+        alert('App configuration is invalid. Please contact the administrator.');
       }
     }, 1000);
 
