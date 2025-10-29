@@ -98,7 +98,7 @@ export default function LinkRedirectClient({
       console.log('7. App availability - Android:', androidApp ? 'Available' : 'N/A', 'iOS:', iosApp ? 'Available' : 'N/A');
 
       // Android redirect function
-      const redirectToAndroid = () => {
+      const redirectToAndroid = (forceWebStore = false) => {
         if (!androidApp || !androidApp.platform_data) {
           console.error('❌ Android app info not found');
           return false;
@@ -110,24 +110,33 @@ export default function LinkRedirectClient({
         }
 
         const androidData = androidApp.platform_data;
+        const playStoreUrl = `https://play.google.com/store/apps/details?id=${androidData.package_name}`;
+
+        // Desktop/PC 사용자는 웹 스토어로 직접 이동
+        if (forceWebStore || isDesktop) {
+          console.log('✅ Android redirect (Web Store):', playStoreUrl);
+          window.location.href = playStoreUrl;
+          return true;
+        }
+
+        // Android 디바이스는 Intent URL 사용
         const subdomain = host.split('.')[0] || 'app';
         const normalizedSubdomain = subdomain === 'www' ? 'app' : subdomain;
         const deepLinkUrl = `${normalizedSubdomain}.depl.link/${slug}`;
-        const fallbackUrl = `https://play.google.com/store/apps/details?id=${androidData.package_name}`;
 
         const androidAppLink = createAndroidAppLink(
           androidData.package_name,
-          fallbackUrl,
+          playStoreUrl,
           deepLinkUrl
         );
 
-        console.log('✅ Android redirect:', androidAppLink);
+        console.log('✅ Android redirect (Intent):', androidAppLink);
         window.location.href = androidAppLink;
         return true;
       };
 
       // iOS redirect function
-      const redirectToIOS = () => {
+      const redirectToIOS = (forceWebStore = false) => {
         if (!iosApp || !iosApp.platform_data) {
           console.error('❌ iOS app info not found');
           return false;
@@ -138,6 +147,19 @@ export default function LinkRedirectClient({
           return false;
         }
 
+        const iosData = iosApp.platform_data;
+
+        // Desktop/PC 사용자는 App Store 웹으로 이동
+        if (forceWebStore || isDesktop) {
+          const appStoreUrl = iosData.app_store_id
+            ? `https://apps.apple.com/app/id${iosData.app_store_id}`
+            : `https://apps.apple.com`;
+          console.log('✅ iOS redirect (Web Store):', appStoreUrl);
+          window.location.href = appStoreUrl;
+          return true;
+        }
+
+        // iOS 디바이스는 Universal Link 사용
         const subdomain = host.split('.')[0] || 'app';
         const appParams = deeplink.app_params || {};
 
@@ -161,7 +183,7 @@ export default function LinkRedirectClient({
           ? `https://${subdomain}.depl.link/${slug}?${queryString}`
           : `https://${subdomain}.depl.link/${slug}`;
 
-        console.log('✅ iOS redirect:', universalLinkUrl);
+        console.log('✅ iOS redirect (Universal Link):', universalLinkUrl);
         window.location.href = universalLinkUrl;
         return true;
       };
