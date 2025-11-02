@@ -1,0 +1,557 @@
+# DEPL - Deep Linking Platform API
+
+> Firebase Dynamic Links alternative for iOS and Android apps
+
+## Overview
+
+DEPL is a platform for creating and managing mobile app deep links. It provides URL shortening, platform-specific routing, and social media optimization through a simple REST API.
+
+**Base URL**: https://depl.link
+**Deep Link Format**: https://{subdomain}.depl.link/{slug}
+
+## Core Concepts
+
+### Workspace
+Your organizational container. Each workspace has:
+- Unique subdomain (e.g., `myapp.depl.link`)
+- API Key (server-side, for creating links)
+- Client Key (mobile apps, for reading link data)
+
+### Deep Link
+Short URL that opens your mobile app:
+- **Slug**: Unique identifier (e.g., `/summer-sale`)
+- **App Params**: Custom JSON data passed to your app
+- **Social Meta**: Title, description, thumbnail for social sharing
+
+### Authentication Keys
+- **API Key**: Server-side only, creates deep links
+- **Client Key**: Safe for mobile apps, retrieves link data
+
+## API Reference
+
+### Create Deep Link
+
+**Endpoint**
+```
+POST https://depl.link/api/deeplink
+```
+
+**Headers**
+```
+Authorization: Bearer {API_KEY}
+Content-Type: application/json
+```
+
+**Request Body**
+```json
+{
+  "slug": "summer-sale",
+  "app_params": {
+    "screen": "promo",
+    "promo_id": "summer2024",
+    "discount": "50"
+  },
+  "social_meta": {
+    "title": "Summer Sale - 50% Off!",
+    "description": "Limited time offer",
+    "thumbnail_url": "https://cdn.example.com/sale.jpg"
+  }
+}
+```
+
+**Parameters**
+- `slug` (string, optional): Custom identifier. Auto-generated if omitted.
+- `app_params` (object, required): Custom data for your app.
+- `social_meta` (object, optional): Metadata for social sharing.
+
+**Response (200 OK)**
+```json
+{
+  "success": true,
+  "deeplink_url": "https://myapp.depl.link/summer-sale",
+  "created_at": "2025-11-02T10:30:00Z"
+}
+```
+
+**Example (cURL)**
+```bash
+curl https://depl.link/api/deeplink \
+  -X POST \
+  -H "Authorization: Bearer api_550e8400-..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_params": {"screen": "home"}
+  }'
+```
+
+**Example (Node.js)**
+```javascript
+const response = await fetch('https://depl.link/api/deeplink', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${process.env.DEPL_API_KEY}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    slug: 'product-123',
+    app_params: {
+      screen: 'product_detail',
+      product_id: '123'
+    }
+  })
+});
+
+const { deeplink_url } = await response.json();
+```
+
+**Example (Python)**
+```python
+import requests
+import os
+
+response = requests.post(
+    'https://depl.link/api/deeplink',
+    headers={
+        'Authorization': f"Bearer {os.getenv('DEPL_API_KEY')}",
+        'Content-Type': 'application/json'
+    },
+    json={
+        'slug': 'refer-friend',
+        'app_params': {
+            'screen': 'referral',
+            'referrer_id': 'user123'
+        }
+    }
+)
+
+data = response.json()
+print(data['deeplink_url'])
+```
+
+### Get Deep Link Data
+
+Retrieve deep link information in your mobile app.
+
+**Endpoint**
+```
+GET https://depl.link/api/deeplink?slug={slug}
+```
+
+**Headers**
+```
+Authorization: Bearer {CLIENT_KEY}
+```
+
+**Response (200 OK)**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "workspace_id": "workspace-uuid",
+  "slug": "summer-sale",
+  "app_params": {
+    "screen": "promo",
+    "promo_id": "summer2024"
+  },
+  "social_meta": {
+    "title": "Summer Sale",
+    "description": "50% off"
+  },
+  "click_count": 1234,
+  "created_at": "2025-11-02T10:30:00Z"
+}
+```
+
+## Mobile App Integration
+
+### iOS Setup
+
+**1. Configure in DEPL Dashboard**
+- Bundle ID: `com.myapp.ios`
+- Team ID: `ABCD123456`
+- App Store ID: `1234567890`
+
+**2. Xcode Configuration**
+
+Add Associated Domains capability:
+```
+applinks:myapp.depl.link
+```
+
+**3. Handle Universal Links**
+
+```swift
+// AppDelegate.swift or SceneDelegate.swift
+func application(_ application: UIApplication,
+                 continue userActivity: NSUserActivity,
+                 restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+
+    guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+          let url = userActivity.webpageURL else {
+        return false
+    }
+
+    // Extract slug from URL: https://myapp.depl.link/summer-sale
+    let slug = url.lastPathSegment ?? ""
+    handleDeepLink(slug: slug)
+    return true
+}
+
+func handleDeepLink(slug: String) {
+    // Fetch deep link data
+    let urlString = "https://depl.link/api/deeplink?slug=\(slug)"
+    guard let url = URL(string: urlString) else { return }
+
+    var request = URLRequest(url: url)
+    request.setValue("Bearer YOUR_CLIENT_KEY", forHTTPHeaderField: "Authorization")
+
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        guard let data = data else { return }
+
+        let deepLink = try? JSONDecoder().decode(DeepLinkResponse.self, from: data)
+
+        // Navigate based on app_params
+        if let screen = deepLink?.app_params["screen"] as? String {
+            DispatchQueue.main.async {
+                self.navigate(to: screen, params: deepLink?.app_params)
+            }
+        }
+    }.resume()
+}
+
+struct DeepLinkResponse: Codable {
+    let slug: String
+    let app_params: [String: AnyCodable]
+}
+```
+
+**4. Verify AASA File**
+```bash
+curl https://myapp.depl.link/.well-known/apple-app-site-association
+```
+
+### Android Setup
+
+**1. Configure in DEPL Dashboard**
+- Package Name: `com.myapp.android`
+- SHA-256 Fingerprints (get from keystore):
+
+```bash
+keytool -list -v -keystore ~/.android/debug.keystore \
+  -alias androiddebugkey -storepass android -keypass android
+```
+
+**2. AndroidManifest.xml**
+
+```xml
+<activity android:name=".MainActivity">
+    <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data
+            android:scheme="https"
+            android:host="myapp.depl.link" />
+    </intent-filter>
+</activity>
+```
+
+**3. Handle Deep Links**
+
+```kotlin
+// MainActivity.kt
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    handleIntent(intent)
+}
+
+override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    intent?.let { handleIntent(it) }
+}
+
+private fun handleIntent(intent: Intent) {
+    val uri = intent.data ?: return
+
+    // Extract slug: https://myapp.depl.link/summer-sale
+    val slug = uri.lastPathSegment ?: return
+    fetchDeepLinkData(slug)
+}
+
+private fun fetchDeepLinkData(slug: String) {
+    val url = "https://depl.link/api/deeplink?slug=$slug"
+
+    val request = Request.Builder()
+        .url(url)
+        .addHeader("Authorization", "Bearer YOUR_CLIENT_KEY")
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onResponse(call: Call, response: Response) {
+            val json = response.body?.string()
+            val deepLink = gson.fromJson(json, DeepLinkResponse::class.java)
+
+            // Navigate based on app_params
+            val screen = deepLink.app_params["screen"] as? String
+            runOnUiThread {
+                navigate(screen, deepLink.app_params)
+            }
+        }
+    })
+}
+
+data class DeepLinkResponse(
+    val slug: String,
+    val app_params: Map<String, Any>
+)
+```
+
+**4. Verify Asset Links**
+```bash
+curl https://myapp.depl.link/.well-known/assetlinks.json
+```
+
+## Error Codes
+
+```json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable message"
+  }
+}
+```
+
+| HTTP | Code | Description |
+|------|------|-------------|
+| 400 | INVALID_REQUEST | Missing app_params |
+| 400 | NO_APPS_CONFIGURED | Configure iOS/Android app first |
+| 401 | INVALID_API_KEY | Wrong API key |
+| 401 | INVALID_CLIENT_KEY | Wrong client key |
+| 404 | NOT_FOUND | Slug doesn't exist |
+| 409 | SLUG_ALREADY_EXISTS | Slug already used |
+| 500 | SERVER_ERROR | Internal error |
+
+## Common Use Cases
+
+### Product Deep Link
+```json
+{
+  "slug": "product-123",
+  "app_params": {
+    "screen": "product_detail",
+    "product_id": "123",
+    "category": "electronics"
+  },
+  "social_meta": {
+    "title": "iPhone 15 Pro - $999",
+    "thumbnail_url": "https://cdn.shop.com/iphone15.jpg"
+  }
+}
+```
+
+### Referral Link
+```json
+{
+  "slug": "refer-user123",
+  "app_params": {
+    "screen": "referral",
+    "referrer_id": "user123",
+    "campaign": "friend_invite"
+  }
+}
+```
+
+### Promo Campaign
+```json
+{
+  "slug": "summer-2025",
+  "app_params": {
+    "screen": "promo",
+    "promo_code": "SUMMER50",
+    "utm_source": "instagram",
+    "utm_campaign": "summer_2025"
+  }
+}
+```
+
+## Testing
+
+### iOS
+Must use physical device (simulators don't support Universal Links):
+
+1. Send link via iMessage/Email
+2. Tap the link
+3. App should open automatically
+
+Debug with Safari on device:
+1. Type full URL in address bar
+2. Safari shows "Open in [App]" banner
+
+### Android
+Test with adb:
+```bash
+adb shell am start -W -a android.intent.action.VIEW \
+  -d "https://myapp.depl.link/test-slug" \
+  com.myapp.android
+```
+
+Or send via messaging app and tap.
+
+### Social Media Previews
+Test with Facebook Debugger:
+```
+https://developers.facebook.com/tools/debug/
+```
+
+## Best Practices
+
+### Security
+```javascript
+// ❌ NEVER expose API key in frontend
+fetch('https://depl.link/api/deeplink', {
+  headers: { 'Authorization': 'Bearer api_key_here' } // WRONG!
+});
+
+// ✅ Always use backend
+// server.js
+app.post('/api/create-link', async (req, res) => {
+  const response = await fetch('https://depl.link/api/deeplink', {
+    headers: { 'Authorization': `Bearer ${process.env.DEPL_API_KEY}` }
+  });
+  res.json(await response.json());
+});
+```
+
+### Environment Variables
+```bash
+# .env (never commit!)
+DEPL_API_KEY=api_550e8400-...
+DEPL_CLIENT_KEY=client_650e8400-...
+```
+
+### Slug Naming
+```
+❌ Bad: abc123, link1, test
+✅ Good: summer-sale-2025, product-iphone15, refer-friend
+```
+
+### App Params Structure
+```json
+{
+  "screen": "target_screen",
+  "id": "unique_identifier",
+  "utm_source": "instagram",
+  "utm_campaign": "summer_2025"
+}
+```
+
+### Social Meta Images
+- Size: 1200x630px (Facebook/LinkedIn)
+- Format: JPG or PNG
+- Must be HTTPS and publicly accessible
+
+## Troubleshooting
+
+### iOS Universal Links Not Working
+
+Check:
+1. AASA file accessible: `curl https://myapp.depl.link/.well-known/apple-app-site-association`
+2. Associated Domains in Xcode: `applinks:myapp.depl.link`
+3. Bundle ID matches exactly
+4. Test on physical device (not simulator)
+5. Clear Safari cache: Settings → Safari → Clear History
+
+### Android App Links Not Working
+
+Check:
+1. Asset links accessible: `curl https://myapp.depl.link/.well-known/assetlinks.json`
+2. SHA-256 fingerprints match (debug + release)
+3. `android:autoVerify="true"` in intent filter
+4. Package name matches exactly
+5. Clear app defaults: Settings → Apps → Your App → Open by default
+
+### API Errors
+
+**401 Unauthorized**
+- Verify API Key for POST requests
+- Verify Client Key for GET requests
+- Check `Authorization: Bearer {key}` format
+
+**400 NO_APPS_CONFIGURED**
+- Configure at least one app (iOS or Android) in dashboard
+
+**409 SLUG_ALREADY_EXISTS**
+- Choose different slug or omit to auto-generate
+
+## Migration from Firebase Dynamic Links
+
+**Before (Firebase)**
+```javascript
+const shortLink = await admin.dynamicLinks().createShortLink({
+  longDynamicLink: 'https://myapp.page.link/?link=...'
+});
+```
+
+**After (DEPL)**
+```javascript
+const response = await fetch('https://depl.link/api/deeplink', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${API_KEY}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    app_params: { screen: 'promo', id: '123' }
+  })
+});
+```
+
+No SDK required - pure REST API.
+
+## Platform Behavior
+
+When user clicks: `https://myapp.depl.link/summer-sale`
+
+**iOS User**
+- App installed → Opens app with Universal Link
+- App not installed → Redirects to App Store
+
+**Android User**
+- App installed → Opens app with App Link
+- App not installed → Redirects to Play Store
+
+**Desktop User**
+- Redirects to app store (Android or iOS)
+
+**Social Crawlers** (Facebook, Twitter, WhatsApp)
+- Shows preview with social_meta
+- No automatic redirect
+
+## Quick Start
+
+1. **Create workspace** at https://depl.link
+2. **Configure apps** in dashboard (iOS/Android)
+3. **Get API keys** from dashboard
+4. **Create deep link**:
+```bash
+curl https://depl.link/api/deeplink \
+  -X POST \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"app_params": {"screen": "home"}}'
+```
+5. **Integrate in mobile app** (see iOS/Android sections)
+6. **Test** on physical device
+
+## Additional Resources
+
+- Dashboard: https://depl.link/dashboard
+- Documentation: https://depl.link/docs
+- Authentication Guide: https://depl.link/docs/authentication
+- API Reference: https://depl.link/docs/deeplinks
+
+---
+
+**Version**: 1.0
+**Last Updated**: 2025-11-02
