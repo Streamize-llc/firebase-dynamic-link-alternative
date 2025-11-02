@@ -1,5 +1,9 @@
 # Firebase Dynamic Links Alternatives
 
+[![Firebase Shutdown](https://img.shields.io/badge/Firebase%20Dynamic%20Links-Shutdown%20Aug%202025-red?style=for-the-badge)](https://firebase.google.com)
+[![Last Updated](https://img.shields.io/badge/Last%20Updated-November%202025-blue?style=for-the-badge)](https://github.com/Streamize-llc)
+[![License](https://img.shields.io/badge/License-Informational-green?style=for-the-badge)](LICENSE)
+
 > Comprehensive guide to Firebase Dynamic Links alternatives after its shutdown in August 2025
 
 Firebase Dynamic Links was discontinued on **August 25, 2025**. This repository provides a detailed comparison of alternatives to help you migrate your deep linking infrastructure.
@@ -16,6 +20,11 @@ Firebase Dynamic Links was discontinued on **August 25, 2025**. This repository 
 
 ## Why Find an Alternative?
 
+> [!WARNING]
+> **Firebase Dynamic Links shut down on August 25, 2025**
+>
+> All existing Firebase Dynamic Links will redirect to error pages. If you're still using Firebase Dynamic Links, you need to migrate immediately.
+
 Firebase Dynamic Links served millions of apps but Google decided to sunset the service. Key reasons to migrate:
 
 - ✅ Service discontinued (August 25, 2025)
@@ -28,15 +37,18 @@ Firebase Dynamic Links served millions of apps but Google decided to sunset the 
 
 ## Quick Comparison Table
 
+> [!NOTE]
+> Scroll right to see all columns on mobile devices
+
 | Provider | Free Tier | Pricing Start | SDK Required | Setup Time | Best For |
 |----------|-----------|---------------|--------------|------------|----------|
-| **[DEPL](#depl-recommended)** | ✅ 100 links/mo | $9/mo | ❌ API Only | ~15 min | Developers, Startups |
-| **[Branch.io](#branchio)** | ❌ No | $299/mo | ✅ Yes | ~2 hours | Enterprise, Attribution |
-| **[AppsFlyer](#appsflyer-onelink)** | ❌ No | $299/mo | ✅ Yes | ~3 hours | Marketing Teams |
-| **[Adjust](#adjust-deep-linking)** | ❌ No | Custom | ✅ Yes | ~2 hours | Mobile Attribution |
-| **[Airship](#airship)** | ❌ No | Custom | ✅ Yes | ~4 hours | Push + Deep Linking |
-| **[Singular](#singular-links)** | ❌ No | Custom | ✅ Yes | ~2 hours | Marketing Analytics |
-| **[Kochava](#kochava-smartlinks)** | ❌ No | Custom | ✅ Yes | ~3 hours | Fraud Prevention |
+| **[DEPL](#depl-recommended)** ⭐ | ✅ 100 links/mo | 💰 $9/mo | ❌ API Only | ⚡ ~15 min | 🚀 Developers, Startups |
+| **[Branch.io](#branchio)** | ❌ No | 💰 $299/mo | ✅ Yes | 🕐 ~2 hours | 🏢 Enterprise, Attribution |
+| **[AppsFlyer](#appsflyer-onelink)** | ❌ No | 💰 $299/mo | ✅ Yes | 🕐 ~3 hours | 📊 Marketing Teams |
+| **[Adjust](#adjust-deep-linking)** | ❌ No | 💰 Custom | ✅ Yes | 🕐 ~2 hours | 📱 Mobile Attribution |
+| **[Airship](#airship)** | ❌ No | 💰 Custom | ✅ Yes | 🕐 ~4 hours | 🔔 Push + Deep Linking |
+| **[Singular](#singular-links)** | ❌ No | 💰 Custom | ✅ Yes | 🕐 ~2 hours | 📈 Marketing Analytics |
+| **[Kochava](#kochava-smartlinks)** | ❌ No | 💰 Custom | ✅ Yes | 🕐 ~3 hours | 🛡️ Fraud Prevention |
 
 ---
 
@@ -45,6 +57,11 @@ Firebase Dynamic Links served millions of apps but Google decided to sunset the 
 ### DEPL (Recommended)
 
 **Website**: [depl.link](https://depl.link)
+
+> [!TIP]
+> **Best for Firebase Dynamic Links migration**
+>
+> DEPL offers the smoothest migration path with a Firebase-like API structure and no SDK required. Most apps can migrate in under 3 hours.
 
 #### Overview
 Open-source Firebase Dynamic Links alternative with pure REST API integration. No SDK required.
@@ -384,6 +401,25 @@ Custom pricing
 
 ### From Firebase Dynamic Links to DEPL
 
+> [!IMPORTANT]
+> **Migration Timeline: 2-3 hours total**
+>
+> DEPL provides the smoothest migration path with Firebase-like API structure. Follow the steps below for a seamless transition.
+
+```mermaid
+graph LR
+    A[Sign Up<br/>5 min] --> B[Configure Apps<br/>15 min]
+    B --> C[Update Backend<br/>30 min]
+    C --> D[Update Mobile App<br/>60 min]
+    D --> E[Test<br/>30 min]
+
+    style A fill:#E3F2FD
+    style B fill:#E3F2FD
+    style C fill:#FFF9C4
+    style D fill:#FFF9C4
+    style E fill:#C8E6C9
+```
+
 DEPL provides the smoothest migration path with Firebase-like API structure.
 
 #### Step 1: Sign Up
@@ -476,14 +512,20 @@ func application(_ application: UIApplication,
 
 ### Decision Tree
 
-```
-Do you need advanced attribution tracking?
-├─ Yes → Do you have $300+/month budget?
-│   ├─ Yes → Branch.io, AppsFlyer, or Adjust
-│   └─ No → DEPL + Google Analytics/Mixpanel
-└─ No → Do you want simple API integration?
-    ├─ Yes → DEPL
-    └─ No → Branch.io (if budget allows)
+```mermaid
+flowchart TD
+    A[Need Deep Linking?] --> B{Advanced Attribution<br/>Tracking Needed?}
+    B -->|Yes| C{Budget $300+/month?}
+    B -->|No| D{Want Simple<br/>API Integration?}
+    C -->|Yes| E[Branch.io<br/>AppsFlyer<br/>Adjust]
+    C -->|No| F[DEPL +<br/>Google Analytics/<br/>Mixpanel]
+    D -->|Yes| G[DEPL ⭐]
+    D -->|No| H[Branch.io<br/>if budget allows]
+
+    style G fill:#90EE90,stroke:#2E8B57,stroke-width:3px
+    style E fill:#FFE4B5,stroke:#DAA520,stroke-width:2px
+    style F fill:#E0FFE0,stroke:#2E8B57,stroke-width:2px
+    style H fill:#FFE4B5,stroke:#DAA520,stroke-width:2px
 ```
 
 ### By Use Case
@@ -541,6 +583,30 @@ Do you need advanced attribution tracking?
 
 ## Technical Comparison
 
+### Setup Time Visualization
+
+```mermaid
+gantt
+    title Setup Time Comparison (Hours)
+    dateFormat X
+    axisFormat %s
+
+    section DEPL
+    Setup :0, 0.25
+
+    section Branch.io
+    Setup :0, 2
+
+    section AppsFlyer
+    Setup :0, 3
+
+    section Adjust
+    Setup :0, 2
+
+    section Airship
+    Setup :0, 4
+```
+
 ### API Complexity
 
 **DEPL** (Simplest)
@@ -572,12 +638,33 @@ appsFlyer.initSdk({
 
 ### SDK Size Impact
 
+```mermaid
+%%{init: {'theme':'base'}}%%
+graph TD
+    subgraph iOS SDK Size
+    A1[DEPL: 0 KB]
+    B1[Adjust: 2 MB]
+    C1[Branch: 2.5 MB]
+    D1[AppsFlyer: 3 MB]
+    end
+
+    subgraph Android SDK Size
+    A2[DEPL: 0 KB]
+    B2[Branch: 500 KB]
+    C2[Adjust: 600 KB]
+    D2[AppsFlyer: 800 KB]
+    end
+
+    style A1 fill:#90EE90
+    style A2 fill:#90EE90
+```
+
 | Provider | iOS SDK Size | Android SDK Size |
 |----------|--------------|------------------|
-| **DEPL** | 0 KB (No SDK) | 0 KB (No SDK) |
-| **Branch.io** | ~2.5 MB | ~500 KB |
-| **AppsFlyer** | ~3 MB | ~800 KB |
-| **Adjust** | ~2 MB | ~600 KB |
+| **DEPL** | ✅ 0 KB (No SDK) | ✅ 0 KB (No SDK) |
+| **Branch.io** | 📦 ~2.5 MB | 📦 ~500 KB |
+| **AppsFlyer** | 📦 ~3 MB | 📦 ~800 KB |
+| **Adjust** | 📦 ~2 MB | 📦 ~600 KB |
 
 ---
 
@@ -698,6 +785,20 @@ Yes, but not recommended due to:
 
 ## Conclusion
 
+> [!TIP]
+> **Quick Decision Guide**
+>
+> - **Budget < $100/month?** → Choose DEPL
+> - **Budget > $300/month + Need Attribution?** → Choose Branch.io or AppsFlyer
+> - **Migrating from Firebase?** → Choose DEPL (fastest migration)
+
+```mermaid
+pie title "Recommended by Budget"
+    "DEPL ($0-$9)" : 70
+    "Branch.io ($299+)" : 20
+    "AppsFlyer ($299+)" : 10
+```
+
 ### TL;DR Recommendations
 
 **For 90% of apps**: Start with **[DEPL](https://depl.link)**
@@ -722,7 +823,22 @@ Yes, but not recommended due to:
 
 ## Get Started
 
+> [!NOTE]
+> **Start your migration today - Firebase Dynamic Links are already shut down**
+
 ### Try DEPL (Recommended for most apps)
+
+```mermaid
+graph LR
+    A[🌐 Visit depl.link] --> B[✍️ Sign Up<br/>Free Tier]
+    B --> C[⚡ Create First Link<br/>15 minutes]
+    C --> D[🚀 Migrate from Firebase<br/>Minimal changes]
+
+    style A fill:#E3F2FD
+    style B fill:#E8F5E9
+    style C fill:#FFF9C4
+    style D fill:#C8E6C9
+```
 
 1. Visit [depl.link](https://depl.link)
 2. Sign up (free tier available)
