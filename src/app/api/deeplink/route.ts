@@ -230,6 +230,19 @@ export async function POST(request: Request) {
     let isRandomSlug: boolean;
 
     if (body.slug) {
+      // slug 형식 검증
+      if (!/^[a-zA-Z0-9\-_]+$/.test(body.slug)) {
+        return NextResponse.json(
+          {
+            error: {
+              code: "INVALID_SLUG",
+              message: "Slug may only contain letters, numbers, hyphens, and underscores."
+            }
+          },
+          { status: 400 }
+        );
+      }
+
       // 사용자가 slug 지정
       slug = body.slug;
       isRandomSlug = false;
@@ -304,6 +317,8 @@ export async function POST(request: Request) {
         is_random_slug: isRandomSlug,
         source: 'API',
       })
+      .select('id, slug, app_params, social_meta, source, created_at')
+      .single()
 
     if (deeplinkError) {
       console.error('딥링크 생성 실패:', {
@@ -326,12 +341,12 @@ export async function POST(request: Request) {
     }
     
     return NextResponse.json(
-      { 
+      {
         success: true,
         deeplink_url: deeplinkUrl,
-        created_at: new Date().toISOString()
+        data: deeplink,
       },
-      { status: 200 }
+      { status: 201 }
     );
   } catch (error) {
     return NextResponse.json(

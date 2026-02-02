@@ -39,16 +39,11 @@ export async function GET(request: Request) {
       );
     }
 
-    // TEMPORARY: Skip DB check for design testing
-    // Just return available for now
-    return NextResponse.json({ available: true }, { status: 200 });
-
-    /* DB check - commented out for design testing
     const supabase = await createClient();
 
     // Check if subdomain already exists
     const { data, error } = await supabase
-      .from('projects')
+      .from('workspaces')
       .select('id')
       .eq('sub_domain', subdomain)
       .limit(1);
@@ -64,7 +59,6 @@ export async function GET(request: Request) {
     const available = !data || data.length === 0;
 
     return NextResponse.json({ available }, { status: 200 });
-    */
   } catch (error) {
     console.error('Error checking subdomain:', error);
     return NextResponse.json(

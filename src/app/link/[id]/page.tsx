@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import LinkRedirectClient from './LinkRedirectClient'
 import type { Deeplink } from '@/types/deeplink'
@@ -183,12 +184,7 @@ export default async function AppLinkHandler({ params }: { params: Promise<{ id:
   const result = await getDeepLinkUrl(id, host)
 
   if (!result) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-        <h1 className="text-2xl font-bold mb-4">딥링크를 찾을 수 없습니다</h1>
-        <p className="text-gray-400">유효하지 않은 링크입니다.</p>
-      </div>
-    )
+    notFound()
   }
 
   const { deeplink, apps } = result;
